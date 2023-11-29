@@ -1,0 +1,110 @@
+use aoc::grid::Grid;
+use aoc::io;
+
+const FILES: [&str; 2] = [
+    "./src/bin/2022_08/sample_input.txt",
+    "./src/bin/2022_08/input.txt",
+];
+
+fn part1(grid: &Grid<u32>) {
+    // Check visibility for each internal tree
+    let mut visible = Grid::<bool>::new(grid.rows, grid.cols, false);
+
+    for i in 0..grid.rows {
+        let mut best: [i32; 2] = [-1, -1];
+
+        // left to right sweep
+        for j in 0..grid.cols {
+            let val = grid.get(i, j).unwrap() as i32;
+            if val > best[0] {
+                best[0] = val;
+                visible.set(i, j, true);
+            }
+        }
+
+        // right to left sweep
+        for j in (0..grid.cols).rev() {
+            let val = grid.get(i, j).unwrap() as i32;
+            if val > best[1] {
+                best[1] = val;
+                visible.set(i, j, true);
+            }
+        }
+    }
+
+    for j in 0..grid.cols {
+        let mut best: [i32; 2] = [-1, -1];
+
+        // top to bottom sweep
+        for i in 0..grid.rows {
+            let val = grid.get(i, j).unwrap() as i32;
+            if val > best[0] {
+                best[0] = val;
+                visible.set(i, j, true);
+            }
+        }
+
+        // bottom to top sweep
+        for i in (0..grid.rows).rev() {
+            let val = grid.get(i, j).unwrap() as i32;
+            if val > best[1] {
+                best[1] = val;
+                visible.set(i, j, true);
+            }
+        }
+    }
+
+    let ans = visible
+        .values
+        .iter()
+        .map(|row| row.iter().filter(|&x| *x).count())
+        .sum::<usize>();
+    println!("Part 1 Answer {}", ans);
+}
+
+fn part2(grid: &Grid<u32>) {
+    let mut ans = 0;
+    for i in 0..grid.rows {
+        for j in 0..grid.cols {
+            let mut scores = [0; 4];
+            let sweeps = grid.sweep_4(i, j);
+            let h = grid.get(i, j).unwrap();
+
+            for (i, sweep) in sweeps.iter().enumerate() {
+                for (ni, nj) in sweep {
+                    let h1 = grid.get(*ni, *nj).unwrap();
+                    scores[i] += 1;
+
+                    if h1 >= h {
+                        break;
+                    }
+                }
+            }
+
+            ans = ans.max(scores.iter().product::<i32>());
+        }
+    }
+    println!("Part 2 Answer {}", ans);
+}
+
+fn main() {
+    for filename in FILES {
+        println!("Input file {filename}");
+        if let Ok(lines) = io::read_lines(filename) {
+            let lines = lines.flatten().collect::<Vec<String>>();
+            let mut grid = Grid::<u32>::new(lines.len(), lines[0].len(), 0);
+
+            for (i, line) in lines.iter().enumerate() {
+                grid.set_row(
+                    i,
+                    line.chars()
+                        .map(|c| c.to_digit(10).unwrap())
+                        .collect::<Vec<u32>>(),
+                );
+            }
+
+            part1(&grid);
+            part2(&grid);
+        }
+    }
+}
