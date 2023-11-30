@@ -1,13 +1,11 @@
-use aoc::io;
-
 use std::collections::HashMap;
 
 #[macro_use]
 extern crate lazy_static;
 
-const FILES: [&str; 2] = [
-    "./src/bin/2022_03/sample_input.txt",
-    "./src/bin/2022_03/input.txt",
+const INPUT: [(&str, &str); 2] = [
+    ("Sample Input", include_str!("sample_input.txt")),
+    ("Input", include_str!("input.txt")),
 ];
 
 lazy_static! {
@@ -25,10 +23,10 @@ lazy_static! {
     };
 }
 
-fn part1(input_lines: &Vec<String>) {
+fn part1(input_lines: &str) {
     let mut priority_sum: usize = 0;
 
-    for line in input_lines {
+    for line in input_lines.split('\n') {
         let rs = line.split_at(line.len() / 2);
         let chars: Vec<_> = rs.0.chars().filter(|c| rs.1.contains(*c)).collect();
         priority_sum += PRIO[&chars[0]];
@@ -37,8 +35,9 @@ fn part1(input_lines: &Vec<String>) {
     println!("Part 1 Answer : {priority_sum}");
 }
 
-fn part2(input_lines: &Vec<String>) {
+fn part2(input: &str) {
     let mut priority_sum: usize = 0;
+    let input_lines = input.split('\n').collect::<Vec<&str>>();
 
     let n = input_lines.len();
     for i in 0..(n / 3) {
@@ -54,12 +53,9 @@ fn part2(input_lines: &Vec<String>) {
 }
 
 fn main() {
-    for filename in FILES {
-        println!("Input file {filename}");
-        if let Ok(lines) = io::read_lines(filename) {
-            let input_lines = lines.flatten().collect::<Vec<String>>();
-            part1(&input_lines);
-            part2(&input_lines);
-        }
+    for input in INPUT {
+        println!("{}", input.0);
+        part1(input.1);
+        part2(input.1);
     }
 }

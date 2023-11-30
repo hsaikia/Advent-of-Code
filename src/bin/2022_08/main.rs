@@ -1,9 +1,8 @@
 use aoc::grid::Grid;
-use aoc::io;
 
-const FILES: [&str; 2] = [
-    "./src/bin/2022_08/sample_input.txt",
-    "./src/bin/2022_08/input.txt",
+const INPUT: [(&str, &str); 2] = [
+    ("Sample Input", include_str!("sample_input.txt")),
+    ("Input", include_str!("input.txt")),
 ];
 
 fn part1(grid: &Grid<u32>) {
@@ -87,24 +86,27 @@ fn part2(grid: &Grid<u32>) {
     println!("Part 2 Answer {}", ans);
 }
 
+fn get_grid(input: &str) -> Grid<u32> {
+    let lines = input.split('\n').collect::<Vec<_>>();
+    let mut grid = Grid::<u32>::new(lines.len(), lines[0].len(), 0);
+
+    for (i, line) in lines.iter().enumerate() {
+        grid.set_row(
+            i,
+            line.chars()
+                .map(|c| c.to_digit(10).unwrap())
+                .collect::<Vec<u32>>(),
+        );
+    }
+
+    grid
+}
+
 fn main() {
-    for filename in FILES {
-        println!("Input file {filename}");
-        if let Ok(lines) = io::read_lines(filename) {
-            let lines = lines.flatten().collect::<Vec<String>>();
-            let mut grid = Grid::<u32>::new(lines.len(), lines[0].len(), 0);
-
-            for (i, line) in lines.iter().enumerate() {
-                grid.set_row(
-                    i,
-                    line.chars()
-                        .map(|c| c.to_digit(10).unwrap())
-                        .collect::<Vec<u32>>(),
-                );
-            }
-
-            part1(&grid);
-            part2(&grid);
-        }
+    for input in INPUT {
+        println!("{}", input.0);
+        let grid = get_grid(input.1);
+        part1(&grid);
+        part2(&grid);
     }
 }

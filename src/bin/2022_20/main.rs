@@ -1,9 +1,8 @@
-use aoc::io;
 use std::{cmp::Ordering, time::Instant};
 
-const FILES: [&str; 2] = [
-    "./src/bin/2022_20/sample_input.txt",
-    "./src/bin/2022_20/input.txt",
+const INPUT: [(&str, &str); 2] = [
+    ("Sample Input", include_str!("sample_input.txt")),
+    ("Input", include_str!("input.txt")),
 ];
 
 const DECRYPTION_KEY: i64 = 811589153;
@@ -74,25 +73,21 @@ fn get_forward_backward_ptrs(l: usize) -> (Vec<usize>, Vec<usize>) {
 }
 
 fn main() {
-    for filename in FILES {
-        println!("Input file {filename}");
-        if let Ok(lines) = io::read_lines(filename) {
-            let input_lines = lines.flatten().collect::<Vec<String>>();
-
-            let mut numbers = Vec::new();
-            for line in input_lines {
-                numbers.push(line.parse::<i64>().unwrap());
-            }
-
-            let start = Instant::now();
-            mix(&numbers, 1, 1);
-            let duration = start.elapsed();
-            println!("Time elapsed in Part 1 is: {:?}", duration);
-
-            let start = Instant::now();
-            mix(&numbers, DECRYPTION_KEY, 10);
-            let duration = start.elapsed();
-            println!("Time elapsed in Part 2 is: {:?}", duration);
+    for input in INPUT {
+        println!("{}", input.0);
+        let mut numbers = Vec::new();
+        for line in input.1.split('\n') {
+            numbers.push(line.parse::<i64>().unwrap());
         }
+
+        let start = Instant::now();
+        mix(&numbers, 1, 1);
+        let duration = start.elapsed();
+        println!("Time elapsed in Part 1 is: {:?}", duration);
+
+        let start = Instant::now();
+        mix(&numbers, DECRYPTION_KEY, 10);
+        let duration = start.elapsed();
+        println!("Time elapsed in Part 2 is: {:?}", duration);
     }
 }

@@ -1,15 +1,15 @@
 use aoc::io;
 use std::cmp::Ordering;
 
-const FILES: [&str; 2] = [
-    "./src/bin/2022_14/sample_input.txt",
-    "./src/bin/2022_14/input.txt",
+const INPUT: [(&str, &str); 2] = [
+    ("Sample Input", include_str!("sample_input.txt")),
+    ("Input", include_str!("input.txt")),
 ];
 
-fn part1(input_lines: &Vec<String>) {
+fn part1(input_lines: &str) {
     let mut blocked: Vec<(i32, i32)> = Vec::new();
     let mut max_depth = 0;
-    for line in input_lines {
+    for line in input_lines.split('\n') {
         let tokens = io::tokenize(line, " -> ");
         let mut opt_prev_coord = None;
         for token in tokens {
@@ -38,16 +38,16 @@ fn part1(input_lines: &Vec<String>) {
         }
     }
 
-    println!("{:?} Max depth {}", blocked, max_depth);
+    //println!("{:?} Max depth {}", blocked, max_depth);
     let rocks = blocked.len();
 
     let dir = [(0, 1), (-1, 1), (1, 1)];
     let mut overflow = false;
     loop {
         let mut sand_pos = (500, 0);
-        println!("New Sand .. {}", blocked.len());
+        //println!("New Sand .. {}", blocked.len());
         loop {
-            println!("Sand moving.. {:?}", sand_pos);
+            //println!("Sand moving.. {:?}", sand_pos);
             let mut settled = true;
             for d in dir {
                 let new_sand_pos = (sand_pos.0 + d.0, sand_pos.1 + d.1);
@@ -75,14 +75,12 @@ fn part1(input_lines: &Vec<String>) {
             break;
         }
     }
-
-    //    println!("Part 1 Answer : {best}");
 }
 
-fn part2(input_lines: &Vec<String>) {
+fn part2(input_lines: &str) {
     let mut blocked: Vec<(i32, i32)> = Vec::new();
     let mut max_depth = 0;
-    for line in input_lines {
+    for line in input_lines.split('\n') {
         let tokens = io::tokenize(line, " -> ");
         let mut opt_prev_coord = None;
         for token in tokens {
@@ -146,12 +144,9 @@ fn part2(input_lines: &Vec<String>) {
 }
 
 fn main() {
-    for filename in FILES {
-        println!("Input file {filename}");
-        if let Ok(lines) = io::read_lines(filename) {
-            let input_lines = lines.flatten().collect::<Vec<String>>();
-            part1(&input_lines);
-            part2(&input_lines);
-        }
+    for input in INPUT {
+        println!("{}", input.0);
+        part1(input.1);
+        part2(input.1);
     }
 }

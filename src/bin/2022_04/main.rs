@@ -1,14 +1,12 @@
-use aoc::io;
-
-const FILES: [&str; 2] = [
-    "./src/bin/2022_04/sample_input.txt",
-    "./src/bin/2022_04/input.txt",
+const INPUT: [(&str, &str); 2] = [
+    ("Sample Input", include_str!("sample_input.txt")),
+    ("Input", include_str!("input.txt")),
 ];
 
-fn part1(input_lines: &Vec<String>) {
+fn part1(input_lines: &str) {
     let mut ans: usize = 0;
 
-    for line in input_lines {
+    for line in input_lines.split('\n') {
         let ranges: Vec<_> = line.split(',').collect();
         let idx1: Vec<_> = ranges[0]
             .split('-')
@@ -28,10 +26,10 @@ fn part1(input_lines: &Vec<String>) {
     println!("Part 1 Answer : {ans}");
 }
 
-fn part2(input_lines: &Vec<String>) {
+fn part2(input_lines: &str) {
     let mut ans: usize = 0;
 
-    for line in input_lines {
+    for line in input_lines.split('\n') {
         let ranges: Vec<_> = line.split(',').collect();
         let idx1: Vec<_> = ranges[0]
             .split('-')
@@ -54,12 +52,9 @@ fn part2(input_lines: &Vec<String>) {
 }
 
 fn main() {
-    for filename in FILES {
-        println!("Input file {filename}");
-        if let Ok(lines) = io::read_lines(filename) {
-            let input_lines = lines.flatten().collect::<Vec<String>>();
-            part1(&input_lines);
-            part2(&input_lines);
-        }
+    for input in INPUT {
+        println!("{}", input.0);
+        part1(input.1);
+        part2(input.1);
     }
 }

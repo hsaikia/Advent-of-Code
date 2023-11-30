@@ -1,10 +1,9 @@
-use aoc::io;
 use itertools::Itertools;
 
-const FILES: [&str; 3] = [
-    "./src/bin/2022_09/sample_input.txt",
-    "./src/bin/2022_09/sample_input_2.txt",
-    "./src/bin/2022_09/input.txt",
+const INPUT: [(&str, &str); 3] = [
+    ("Sample Input 1", include_str!("sample_input.txt")),
+    ("Sample Input 2", include_str!("sample_input_2.txt")),
+    ("Input", include_str!("input.txt")),
 ];
 
 fn follow_knot(head_new: (i32, i32), tail_old: (i32, i32)) -> (i32, i32) {
@@ -27,10 +26,10 @@ fn follow_knot(head_new: (i32, i32), tail_old: (i32, i32)) -> (i32, i32) {
     (tail_old.0 + dx, tail_old.1 + dy)
 }
 
-fn solve<const ROPE_SIZE: usize>(input_lines: &Vec<String>) {
+fn solve<const ROPE_SIZE: usize>(input_lines: &str) {
     let mut rope: [(i32, i32); ROPE_SIZE] = [(0, 0); ROPE_SIZE];
     let mut tail_history = Vec::new();
-    for line in input_lines {
+    for line in input_lines.split('\n') {
         let command = line.split(' ').collect::<Vec<&str>>();
         let steps = command[1].parse::<i32>().unwrap();
         let mut dx = 0;
@@ -60,12 +59,9 @@ fn solve<const ROPE_SIZE: usize>(input_lines: &Vec<String>) {
 }
 
 fn main() {
-    for filename in FILES {
-        println!("Input file {filename}");
-        if let Ok(lines) = io::read_lines(filename) {
-            let input_lines = lines.flatten().collect::<Vec<String>>();
-            solve::<2>(&input_lines);
-            solve::<10>(&input_lines);
-        }
+    for input in INPUT {
+        println!("{}", input.0);
+        solve::<2>(input.1);
+        solve::<10>(input.1);
     }
 }

@@ -1,9 +1,9 @@
 use aoc::io;
 use std::{cmp::Ordering, collections::HashMap};
 
-const FILES: [&str; 2] = [
-    "./src/bin/2022_21/sample_input.txt",
-    "./src/bin/2022_21/input.txt",
+const INPUT: [(&str, &str); 2] = [
+    ("Sample Input", include_str!("sample_input.txt")),
+    ("Input", include_str!("input.txt")),
 ];
 
 #[derive(Debug)]
@@ -47,10 +47,10 @@ fn find<'a>(
     panic!("Should not reach here! {} Monkey not found!", monkey_name);
 }
 
-fn part1(input_lines: &Vec<String>) {
+fn part1(input_lines: &str) {
     let mut ops: HashMap<&str, Yell> = HashMap::new();
 
-    for line in input_lines {
+    for line in input_lines.split('\n') {
         let tokens = io::tokenize(line, " ");
 
         match tokens.len().cmp(&2) {
@@ -91,12 +91,9 @@ fn part1(input_lines: &Vec<String>) {
 }
 
 fn main() {
-    for filename in FILES {
-        println!("Input file {filename}");
-        if let Ok(lines) = io::read_lines(filename) {
-            let input_lines = lines.flatten().collect::<Vec<String>>();
-            part1(&input_lines);
-            //part2(&input_lines);
-        }
+    for input in INPUT {
+        println!("{}", input.0);
+        part1(input.1);
+        //part2(input.1);
     }
 }

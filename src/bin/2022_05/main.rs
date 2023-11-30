@@ -1,8 +1,6 @@
-use aoc::io;
-
-const FILES: [&str; 2] = [
-    "./src/bin/2022_05/sample_input.txt",
-    "./src/bin/2022_05/input.txt",
+const INPUT: [(&str, &str); 2] = [
+    ("Sample Input", include_str!("sample_input.txt")),
+    ("Input", include_str!("input.txt")),
 ];
 
 fn part1(stacks: &[Vec<char>], instructions: &Vec<Vec<usize>>) {
@@ -34,58 +32,59 @@ fn part2(stacks: &[Vec<char>], instructions: &Vec<Vec<usize>>) {
     println!("Part 2 Answer {}", ans);
 }
 
-fn main() {
-    for filename in FILES {
-        println!("Input file {filename}");
-        if let Ok(lines) = io::read_lines(filename) {
-            let input_lines = lines.flatten().collect::<Vec<String>>();
+fn pre_process(input: &str) -> (Vec<Vec<char>>, Vec<Vec<usize>>) {
+    let mut reading_config = true;
+    let mut stacks: Vec<Vec<char>> = Vec::new();
+    let mut instructions: Vec<Vec<usize>> = Vec::new();
 
-            let mut reading_config = true;
-            let mut stacks: Vec<Vec<char>> = Vec::new();
-            let mut instructions: Vec<Vec<usize>> = Vec::new();
-
-            for line in input_lines {
-                if line.is_empty() {
-                    reading_config = false;
-                    continue;
-                }
-
-                if reading_config && !line.contains('[') {
-                    continue;
-                }
-
-                if reading_config {
-                    let chars = line.chars().collect::<Vec<char>>();
-                    //println!("{:?}", chars);
-                    let mut pos = 1;
-                    let mut stack_idx = 0;
-                    while pos < chars.len() {
-                        if stack_idx == stacks.len() {
-                            stacks.push(vec![]);
-                        }
-
-                        if chars[pos] != ' ' {
-                            stacks[stack_idx].push(chars[pos]);
-                        }
-                        stack_idx += 1;
-                        pos += 4;
-                    }
-                } else {
-                    instructions.push(
-                        line.split(' ')
-                            .flat_map(|s| s.parse::<usize>())
-                            .collect::<Vec<usize>>(),
-                    );
-                }
-            }
-
-            // Reverse stack elements
-            for stack in &mut stacks {
-                stack.reverse();
-            }
-
-            part1(&stacks, &instructions);
-            part2(&stacks, &instructions);
+    for line in input.split('\n') {
+        if line.is_empty() {
+            reading_config = false;
+            continue;
         }
+
+        if reading_config && !line.contains('[') {
+            continue;
+        }
+
+        if reading_config {
+            let chars = line.chars().collect::<Vec<char>>();
+            //println!("{:?}", chars);
+            let mut pos = 1;
+            let mut stack_idx = 0;
+            while pos < chars.len() {
+                if stack_idx == stacks.len() {
+                    stacks.push(vec![]);
+                }
+
+                if chars[pos] != ' ' {
+                    stacks[stack_idx].push(chars[pos]);
+                }
+                stack_idx += 1;
+                pos += 4;
+            }
+        } else {
+            instructions.push(
+                line.split(' ')
+                    .flat_map(|s| s.parse::<usize>())
+                    .collect::<Vec<usize>>(),
+            );
+        }
+    }
+
+    // Reverse stack elements
+    for stack in &mut stacks {
+        stack.reverse();
+    }
+
+    (stacks, instructions)
+}
+
+fn main() {
+    for input in INPUT {
+        println!("{}", input.0);
+        let (stacks, instructions) = pre_process(input.1);
+        part1(&stacks, &instructions);
+        part2(&stacks, &instructions);
     }
 }

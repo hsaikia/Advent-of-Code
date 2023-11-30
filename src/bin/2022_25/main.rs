@@ -1,8 +1,6 @@
-use aoc::io;
-
-const FILES: [&str; 2] = [
-    "./src/bin/2022_25/sample_input.txt",
-    "./src/bin/2022_25/input.txt",
+const INPUT: [(&str, &str); 2] = [
+    ("Sample Input", include_str!("sample_input.txt")),
+    ("Input", include_str!("input.txt")),
 ];
 
 fn encode(num: i64) -> String {
@@ -44,10 +42,10 @@ fn decode(num_snafu: &str) -> i64 {
     num
 }
 
-fn part1(input_lines: &Vec<String>) {
+fn part1(input_lines: &str) {
     let mut sum: i64 = 0;
 
-    for line in input_lines {
+    for line in input_lines.split('\n') {
         sum += decode(line);
     }
 
@@ -56,12 +54,9 @@ fn part1(input_lines: &Vec<String>) {
 }
 
 fn main() {
-    for filename in FILES {
-        println!("Input file {filename}");
-        if let Ok(lines) = io::read_lines(filename) {
-            let input_lines = lines.flatten().collect::<Vec<String>>();
-            part1(&input_lines);
-            //part2(&input_lines);
-        }
+    for input in INPUT {
+        println!("{}", input.0);
+        part1(input.1);
+        //part2(input.1);
     }
 }

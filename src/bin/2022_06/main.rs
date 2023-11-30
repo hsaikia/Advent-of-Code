@@ -1,12 +1,10 @@
-use aoc::io;
-
-const FILES: [&str; 2] = [
-    "./src/bin/2022_06/sample_input.txt",
-    "./src/bin/2022_06/input.txt",
+const INPUT: [(&str, &str); 2] = [
+    ("Sample Input", include_str!("sample_input.txt")),
+    ("Input", include_str!("input.txt")),
 ];
 
-fn solve(input_lines: &Vec<String>, marker_size: usize) {
-    for line in input_lines {
+fn solve(input_lines: &str, marker_size: usize) {
+    for line in input_lines.split('\n') {
         for (i, marker) in line
             .chars()
             .collect::<Vec<char>>()
@@ -28,12 +26,9 @@ fn solve(input_lines: &Vec<String>, marker_size: usize) {
 }
 
 fn main() {
-    for filename in FILES {
-        println!("Input file {filename}");
-        if let Ok(lines) = io::read_lines(filename) {
-            let input_lines = lines.flatten().collect::<Vec<String>>();
-            solve(&input_lines, 4);
-            solve(&input_lines, 14);
-        }
+    for input in INPUT {
+        println!("{}", input.0);
+        solve(input.1, 4);
+        solve(input.1, 14);
     }
 }

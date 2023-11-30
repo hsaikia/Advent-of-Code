@@ -1,14 +1,12 @@
-use aoc::io;
-
-const FILES: [&str; 2] = [
-    "./src/bin/2022_10/sample_input.txt",
-    "./src/bin/2022_10/input.txt",
+const INPUT: [(&str, &str); 2] = [
+    ("Sample Input", include_str!("sample_input.txt")),
+    ("Input", include_str!("input.txt")),
 ];
 
-fn register_history(input_lines: &Vec<String>) -> Vec<i32> {
+fn register_history(input_lines: &str) -> Vec<i32> {
     let mut register: Vec<i32> = vec![1];
 
-    for line in input_lines {
+    for line in input_lines.split('\n') {
         let instr = line.split(' ').collect::<Vec<&str>>();
         let val = *register.last().unwrap();
         if instr[0] == "noop" {
@@ -22,21 +20,20 @@ fn register_history(input_lines: &Vec<String>) -> Vec<i32> {
     register
 }
 
-fn part1(input_lines: &Vec<String>) {
+fn part1(input_lines: &str) {
     let mut ans = 0;
     let register = register_history(input_lines);
 
     const CYCLES: [usize; 6] = [20, 60, 100, 140, 180, 220];
 
     for cycle in CYCLES {
-        //println!("Cycle {} has X {}", cycle, register[cycle - 1]);
         ans += cycle as i32 * register[cycle - 1];
     }
 
     println!("Part 1 Answer : {ans}");
 }
 
-fn part2(input_lines: &Vec<String>) {
+fn part2(input_lines: &str) {
     let mut ans: Vec<String> = Vec::new();
     let register = register_history(input_lines);
 
@@ -65,12 +62,9 @@ fn part2(input_lines: &Vec<String>) {
 }
 
 fn main() {
-    for filename in FILES {
-        println!("Input file {filename}");
-        if let Ok(lines) = io::read_lines(filename) {
-            let input_lines = lines.flatten().collect::<Vec<String>>();
-            part1(&input_lines);
-            part2(&input_lines);
-        }
+    for input in INPUT {
+        println!("{}", input.0);
+        part1(input.1);
+        part2(input.1);
     }
 }

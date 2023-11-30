@@ -1,7 +1,6 @@
-use aoc::io;
-const FILES: [&str; 1] = [
-    "./src/bin/2022_13/sample_input.txt",
-    //"./src/bin/2022_13/input.txt",
+const INPUT: [(&str, &str); 1] = [
+    ("Sample Input", include_str!("sample_input.txt")),
+    //("Input", include_str!("input.txt")),
 ];
 
 fn check(str1: &str, str2: &str) -> bool {
@@ -54,12 +53,13 @@ fn check(str1: &str, str2: &str) -> bool {
     true
 }
 
-fn part1(input_lines: &Vec<String>) {
+fn part1(input: &str) {
     let mut idx = 0;
     let mut ans = 0;
+    let input_lines = input.split('\n').collect::<Vec<_>>();
     while idx < input_lines.len() {
         println!("Checking Pair {}", idx / 2 + 1);
-        if check(&input_lines[idx], &input_lines[idx + 1]) {
+        if check(input_lines[idx], input_lines[idx + 1]) {
             println!("Correct Order");
             ans += 1;
         }
@@ -69,13 +69,9 @@ fn part1(input_lines: &Vec<String>) {
 }
 
 fn main() {
-    for filename in FILES {
-        println!("Input file {filename}");
-        if let Ok(lines) = io::read_lines(filename) {
-            let input_lines = lines.flatten().collect::<Vec<String>>();
-            println!("{:?}", &input_lines);
-            part1(&input_lines);
-            //part2(&input_lines);
-        }
+    for input in INPUT {
+        println!("{}", input.0);
+        part1(input.1);
+        //part2(input.1);
     }
 }

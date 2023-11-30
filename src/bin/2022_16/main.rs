@@ -3,9 +3,9 @@ use aoc::io;
 
 use std::collections::VecDeque;
 
-const FILES: [&str; 1] = [
-    "./src/bin/2022_16/sample_input.txt",
-    //"./src/bin/2022_16/input.txt",
+const INPUT: [(&str, &str); 1] = [
+    ("Sample Input", include_str!("sample_input.txt")),
+    //("Input", include_str!("input.txt")),
 ];
 
 fn part1(graph: &Graph<&str, u64>) {
@@ -39,26 +39,26 @@ fn part1(graph: &Graph<&str, u64>) {
     println!("Maximum pressure released in 30 minutes : {}", max);
 }
 
-fn main() {
-    for filename in FILES {
-        println!("Input file {filename}");
-        if let Ok(lines) = io::read_lines(filename) {
-            let input_lines = lines.flatten().collect::<Vec<String>>();
-            let mut graph = Graph::<&str, u64>::new();
-            for line in &input_lines {
-                let tokens = io::tokenize(line, " ");
-                //println!("{:?}", &tokens);
-                let flow_rate = io::parse_num::<u64>(tokens[4]).unwrap();
-                //println!("{}", flow_rate);
-                graph.add_node_weight(tokens[1], flow_rate);
-                for i in 9..tokens.len() {
-                    graph.add_bidirectional_edge(tokens[1], tokens[i], 1);
-                }
-            }
-
-            println!("{:?}", graph);
-
-            part1(&graph);
+fn construct_graph(input: &str) -> Graph<&str, u64> {
+    let mut graph = Graph::<&str, u64>::new();
+    for line in input.split('\n') {
+        let tokens = io::tokenize(line, " ");
+        //println!("{:?}", &tokens);
+        let flow_rate = io::parse_num::<u64>(tokens[4]).unwrap();
+        //println!("{}", flow_rate);
+        graph.add_node_weight(tokens[1], flow_rate);
+        for i in 9..tokens.len() {
+            graph.add_bidirectional_edge(tokens[1], tokens[i], 1);
         }
+    }
+    graph
+}
+
+fn main() {
+    for input in INPUT {
+        println!("{}", input.0);
+        let graph = construct_graph(input.1);
+        println!("{:?}", graph);
+        part1(&graph);
     }
 }

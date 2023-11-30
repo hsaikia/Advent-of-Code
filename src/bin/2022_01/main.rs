@@ -1,15 +1,13 @@
-use aoc::io;
-
-const FILES: [&str; 2] = [
-    "./src/bin/2022_01/sample_input.txt",
-    "./src/bin/2022_01/input.txt",
+const INPUT: [(&str, &str); 2] = [
+    ("Sample Input", include_str!("sample_input.txt")),
+    ("Input", include_str!("input.txt")),
 ];
 
-fn part1(input_lines: &Vec<String>) {
+fn part1(input: &str) {
     let mut curr: usize = 0;
     let mut best: usize = 0;
 
-    for line in input_lines {
+    for line in input.split('\n') {
         if line.is_empty() {
             best = best.max(curr);
             curr = 0;
@@ -21,11 +19,11 @@ fn part1(input_lines: &Vec<String>) {
     println!("Part 1 Answer : {best}");
 }
 
-fn part2(input_lines: &Vec<String>) {
+fn part2(input: &str) {
     let mut curr: usize = 0;
     let mut best: Vec<usize> = Vec::new();
 
-    for line in input_lines {
+    for line in input.split('\n') {
         if line.is_empty() {
             best.push(curr);
             best.sort_by(|a, b| b.cmp(a));
@@ -40,12 +38,9 @@ fn part2(input_lines: &Vec<String>) {
 }
 
 fn main() {
-    for filename in FILES {
-        println!("Input file {filename}");
-        if let Ok(lines) = io::read_lines(filename) {
-            let input_lines = lines.flatten().collect::<Vec<String>>();
-            part1(&input_lines);
-            part2(&input_lines);
-        }
+    for input in INPUT {
+        println!("{}", input.0);
+        part1(input.1);
+        part2(input.1);
     }
 }

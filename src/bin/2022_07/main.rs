@@ -1,12 +1,11 @@
-use aoc::io;
 use std::collections::HashMap;
 
-const FILES: [&str; 2] = [
-    "./src/bin/2022_07/sample_input.txt",
-    "./src/bin/2022_07/input.txt",
+const INPUT: [(&str, &str); 2] = [
+    ("Sample Input", include_str!("sample_input.txt")),
+    ("Input", include_str!("input.txt")),
 ];
 
-fn process_commands(input_lines: &Vec<String>) -> HashMap<String, usize> {
+fn process_commands(input_lines: &str) -> HashMap<String, usize> {
     let mut curr_dir_path: Vec<String> = Vec::new();
     let mut curr_total_filesizes: usize = 0;
     let mut dir_size_map: HashMap<String, usize> = HashMap::new();
@@ -14,7 +13,7 @@ fn process_commands(input_lines: &Vec<String>) -> HashMap<String, usize> {
 
     const DIR_SEP: &str = "/";
 
-    for line in input_lines {
+    for line in input_lines.split('\n') {
         let tokens = line
             .split(' ')
             .map(|s| s.to_string())
@@ -91,13 +90,10 @@ fn part2(dir_size_map: &HashMap<String, usize>) {
 }
 
 fn main() {
-    for filename in FILES {
-        println!("Input file {filename}");
-        if let Ok(lines) = io::read_lines(filename) {
-            let input_lines = lines.flatten().collect::<Vec<String>>();
-            let dir_size_map = process_commands(&input_lines);
-            part1(&dir_size_map);
-            part2(&dir_size_map);
-        }
+    for input in INPUT {
+        println!("{}", input.0);
+        let dir_size_map = process_commands(input.1);
+        part1(&dir_size_map);
+        part2(&dir_size_map);
     }
 }

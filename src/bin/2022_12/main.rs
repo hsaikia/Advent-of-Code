@@ -1,14 +1,13 @@
 use aoc::grid::Grid;
-use aoc::io;
 
 use std::collections::{HashMap, VecDeque};
 
 #[macro_use]
 extern crate lazy_static;
 
-const FILES: [&str; 2] = [
-    "./src/bin/2022_12/sample_input.txt",
-    "./src/bin/2022_12/input.txt",
+const INPUT: [(&str, &str); 2] = [
+    ("Sample Input", include_str!("sample_input.txt")),
+    ("Input", include_str!("input.txt")),
 ];
 
 lazy_static! {
@@ -77,35 +76,39 @@ fn part2(grid: &Grid<usize>, end: (usize, usize)) {
     println!("Part 2 : Fewest possible steps {}", best);
 }
 
-fn main() {
-    for filename in FILES {
-        println!("Input file {filename}");
-        if let Ok(lines) = io::read_lines(filename) {
-            let input_lines = lines.flatten().collect::<Vec<String>>();
+fn get_grid(input: &str) -> (Grid<usize>, (usize, usize), (usize, usize)) {
+    let input_lines = input.split('\n').collect::<Vec<_>>();
 
-            let mut grid = Grid::<usize>::new(input_lines.len(), input_lines[0].len(), 0);
-            let mut start: (usize, usize) = (0, 0);
-            let mut end: (usize, usize) = (0, 0);
+    let mut grid = Grid::<usize>::new(input_lines.len(), input_lines[0].len(), 0);
+    let mut start: (usize, usize) = (0, 0);
+    let mut end: (usize, usize) = (0, 0);
 
-            for (i, line) in input_lines.iter().enumerate() {
-                let si = line.chars().position(|c| c == 'S');
-                if si.is_some() {
-                    start = (i, si.unwrap());
-                }
-                let ei = line.chars().position(|c| c == 'E');
-                if ei.is_some() {
-                    end = (i, ei.unwrap());
-                }
-                grid.set_row(
-                    i,
-                    line.chars()
-                        .map(|c| *ELEV.get(&c).unwrap())
-                        .collect::<Vec<usize>>(),
-                );
-            }
-
-            part1(&grid, start, end);
-            part2(&grid, end);
+    for (i, line) in input_lines.iter().enumerate() {
+        let si = line.chars().position(|c| c == 'S');
+        if si.is_some() {
+            start = (i, si.unwrap());
         }
+        let ei = line.chars().position(|c| c == 'E');
+        if ei.is_some() {
+            end = (i, ei.unwrap());
+        }
+        grid.set_row(
+            i,
+            line.chars()
+                .map(|c| *ELEV.get(&c).unwrap())
+                .collect::<Vec<usize>>(),
+        );
+    }
+
+    (grid, start, end)
+}
+
+fn main() {
+    for input in INPUT {
+        println!("{}", input.0);
+
+        let (grid, start, end) = get_grid(input.1);
+        part1(&grid, start, end);
+        part2(&grid, end);
     }
 }

@@ -1,8 +1,6 @@
-use aoc::io;
-
-const FILES: [&str; 2] = [
-    "./src/bin/2022_18/sample_input.txt",
-    "./src/bin/2022_18/input.txt",
+const INPUT: [(&str, &str); 2] = [
+    ("Sample Input", include_str!("sample_input.txt")),
+    ("Input", include_str!("input.txt")),
 ];
 
 const RANDOM_PRIME1: i32 = 22283;
@@ -12,7 +10,7 @@ fn index(coord: &[i32]) -> i32 {
     RANDOM_PRIME1 * coord[0] + RANDOM_PRIME2 * coord[1] + coord[2]
 }
 
-fn part1(input_lines: &Vec<String>) {
+fn part1(input_lines: &str) {
     const SIDES: [(i32, i32, i32); 6] = [
         (0, 0, 1),
         (0, 0, -1),
@@ -23,7 +21,7 @@ fn part1(input_lines: &Vec<String>) {
     ];
     let mut ans = 0;
     let mut cube_indices: Vec<i32> = Vec::new();
-    for line in input_lines {
+    for line in input_lines.split('\n') {
         let coords = line
             .split(',')
             .map(|s| s.parse::<i32>().unwrap())
@@ -50,12 +48,9 @@ fn part1(input_lines: &Vec<String>) {
 }
 
 fn main() {
-    for filename in FILES {
-        println!("Input file {filename}");
-        if let Ok(lines) = io::read_lines(filename) {
-            let input_lines = lines.flatten().collect::<Vec<String>>();
-            part1(&input_lines);
-            //part2(&input_lines);
-        }
+    for input in INPUT {
+        println!("{}", input.0);
+        part1(input.1);
+        //part2(input.1);
     }
 }

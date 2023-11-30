@@ -1,8 +1,5 @@
-use aoc::io;
-
-const FILES: [(&str, i32); 1] = [
-    ("./src/bin/2022_15/sample_input.txt", 10),
-    //("./src/bin/2022_15/input.txt", 2000000),
+const INPUT: [(&str, &str, i32); 1] = [
+    ("Sample Input", include_str!("sample_input.txt"), 10), //("Input", include_str!("input.txt"), 2000000),
 ];
 
 #[derive(Debug)]
@@ -44,9 +41,9 @@ impl RangeUnion {
     }
 }
 
-fn part1(input_lines: &Vec<String>, y: i32) {
+fn part1(input_lines: &str, y: i32) {
     let mut coords: Vec<(i32, i32, i32, i32)> = Vec::new();
-    for line in input_lines {
+    for line in input_lines.split('\n') {
         let tokens = line
             .split(' ')
             .filter(|&s| s.contains('='))
@@ -97,12 +94,9 @@ fn part1(input_lines: &Vec<String>, y: i32) {
 }
 
 fn main() {
-    for filename in FILES {
-        println!("Input file {}", filename.0);
-        if let Ok(lines) = io::read_lines(filename.0) {
-            let input_lines = lines.flatten().collect::<Vec<String>>();
-            part1(&input_lines, filename.1);
-            //part2(&input_lines);
-        }
+    for input in INPUT {
+        println!("{}", input.0);
+        part1(input.1, input.2);
+        //part2(input.1);
     }
 }
