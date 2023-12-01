@@ -8,10 +8,9 @@ const INPUT: [(&str, &str); 3] = [
     ("Input", include_str!("input.txt")),
 ];
 
-fn solve(input: &str, all : bool) {
+fn solve(input: &str, all: bool) {
     let mut ans: usize = 0;
-
-    let mut digit_map : Vec<(String, usize)> = Vec::new();
+    let mut digit_map: Vec<(String, usize)> = Vec::new();
     for i in 1..=9 {
         let s = i.to_string();
         digit_map.push((s, i));
@@ -24,36 +23,37 @@ fn solve(input: &str, all : bool) {
     }
 
     for line in input.split('\n') {
-        let mut first = (input.len(), None);
-        let mut last = (0, None);
-
-        for (x, i) in &digit_map {
-            if let Some(idx) = line.find(x) {
-                if first.0 >= idx {
-                    first.0 = idx;
-                    first.1 = Some(i);
+        let mut digit1 = digit_map
+            .iter()
+            .filter_map(|(x, i)| {
+                if let Some(idx) = line.find(x) {
+                    Some((idx, i))
+                } else {
+                    None
                 }
-            }
-        }
+            })
+            .collect::<Vec<_>>();
+        digit1.sort_by(|a, b| a.0.cmp(&b.0));
 
-        for (x, i) in &digit_map {
-            if let Some(idx) = line.rfind(x) {
-                if last.0 <= idx {
-                    last.0 = idx;
-                    last.1 = Some(i);
+        let mut digit2 = digit_map
+            .iter()
+            .filter_map(|(x, i)| {
+                if let Some(idx) = line.rfind(x) {
+                    Some((idx, i))
+                } else {
+                    None
                 }
-            }
+            })
+            .collect::<Vec<_>>();
+        digit2.sort_by(|a, b| b.0.cmp(&a.0));
+
+        if digit1.is_empty() || digit2.is_empty() {
+            println!("Input doesn't match algorithm.");
+            return;
         }
 
-        if first.1.is_none() || last.1.is_none() {
-            println!("Some Inputs Invalid..");
-            continue;
-        }
-
-        //println!("{} => {} and {}", line, first.1.unwrap(), last.1.unwrap());
-
-        ans += 10 * first.1.unwrap();
-        ans += last.1.unwrap();
+        ans += 10 * digit1[0].1;
+        ans += digit2[0].1;
     }
 
     println!("Answer with all digits ({}) : {}", all, ans);
