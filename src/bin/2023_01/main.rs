@@ -25,25 +25,13 @@ fn solve(input: &str, all: bool) {
     for line in input.split('\n') {
         let mut digit1 = digit_map
             .iter()
-            .filter_map(|(x, i)| {
-                if let Some(idx) = line.find(x) {
-                    Some((idx, i))
-                } else {
-                    None
-                }
-            })
+            .filter_map(|(x, i)| line.find(x).map(|idx| (idx, i)))
             .collect::<Vec<_>>();
         digit1.sort_by(|a, b| a.0.cmp(&b.0));
 
         let mut digit2 = digit_map
             .iter()
-            .filter_map(|(x, i)| {
-                if let Some(idx) = line.rfind(x) {
-                    Some((idx, i))
-                } else {
-                    None
-                }
-            })
+            .filter_map(|(x, i)| line.rfind(x).map(|idx| (idx, i)))
             .collect::<Vec<_>>();
         digit2.sort_by(|a, b| b.0.cmp(&a.0));
 

@@ -87,14 +87,14 @@ impl FromStr for Game {
     }
 }
 
-fn part2(games: &Vec<Game>) {
+fn part2(games: &[Game]) {
     println!(
         "Part2 Answer : {}",
         games.iter().map(|g| g.power()).sum::<usize>()
     );
 }
 
-fn part1(games: &Vec<Game>) {
+fn part1(games: &[Game]) {
     const MIN_GRAB: Grab = Grab {
         red: 12,
         green: 13,
