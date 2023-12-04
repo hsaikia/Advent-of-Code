@@ -1,4 +1,3 @@
-
 use std::collections::HashSet;
 
 use aoc::io;
@@ -8,23 +7,23 @@ const INPUT: [(&str, &str); 2] = [
     ("Input", include_str!("input.txt")),
 ];
 
-fn hash_set_from_str(strs : &Vec<&str>) -> HashSet<usize> {
-    let mut ret : HashSet<usize> = HashSet::new();
+fn hash_set_from_str(strs: &Vec<&str>) -> HashSet<usize> {
+    let mut ret: HashSet<usize> = HashSet::new();
     for str in strs {
         ret.insert(io::parse_num::<usize>(str).unwrap());
     }
     ret
 }
 
-fn val(sz : usize) -> usize {
+fn val(sz: usize) -> usize {
     if sz < 2 {
         return sz;
     }
     2_usize.pow(sz as u32 - 1)
 }
 
-fn matching_cards(input : &str) -> Vec<Vec<usize>> {
-    let mut ret : Vec<Vec<usize>> = Vec::new();
+fn matching_cards(input: &str) -> Vec<Vec<usize>> {
+    let mut ret: Vec<Vec<usize>> = Vec::new();
     for line in input.split('\n') {
         let cards = line.split(" | ").collect::<Vec<_>>();
         let segment1 = cards[0].split(": ").collect::<Vec<_>>();
@@ -39,7 +38,7 @@ fn matching_cards(input : &str) -> Vec<Vec<usize>> {
     ret
 }
 
-fn solve(matches : &Vec<Vec<usize>>) {
+fn solve(matches: &Vec<Vec<usize>>) {
     let mut ans: usize = 0;
     for m in matches {
         ans += val(m.len());
@@ -47,10 +46,8 @@ fn solve(matches : &Vec<Vec<usize>>) {
     println!("Answer Part 1 : {}", ans);
 }
 
-fn solve2(matching_cards : &Vec<Vec<usize>>) {
-    let mut ans: usize = 0;
+fn solve2(matching_cards: &Vec<Vec<usize>>) {
     let n = matching_cards.len();
-    
     let mut number_of_cards = Vec::with_capacity(n);
     number_of_cards.resize(n, 1);
 
@@ -61,12 +58,7 @@ fn solve2(matching_cards : &Vec<Vec<usize>>) {
             }
         }
     }
-
-    for i in 0..n {
-        ans += number_of_cards[i];
-    }
-
-    println!("Answer Part 2: {}", ans);
+    println!("Answer Part 2: {}", number_of_cards.iter().sum::<usize>());
 }
 
 fn main() {

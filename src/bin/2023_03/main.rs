@@ -69,8 +69,19 @@ fn solve(input: &str) {
                 parsed_line.push(' ');
             }
         }
-        let parsed_line = (0..grid.cols).map(|j| if let Some(true) = candidates.get(i, j) { grid.get(i, j).unwrap() } else {' '}).collect::<String>();
-        ans += io::tokenize(&parsed_line, " ").iter().flat_map(|token| io::parse_num::<usize>(token)).sum::<usize>();
+        let parsed_line = (0..grid.cols)
+            .map(|j| {
+                if let Some(true) = candidates.get(i, j) {
+                    grid.get(i, j).unwrap()
+                } else {
+                    ' '
+                }
+            })
+            .collect::<String>();
+        ans += io::tokenize(&parsed_line, " ")
+            .iter()
+            .flat_map(|token| io::parse_num::<usize>(token))
+            .sum::<usize>();
     }
 
     println!("Part1 Answer : {}", ans);
@@ -92,7 +103,8 @@ fn solve2(input: &str) {
                 if val == '*' {
                     let mut seeds: VecDeque<(usize, usize)> = VecDeque::new();
                     let neighbors = grid.adjacent_8(i, j);
-                    let mut candidates: Grid<bool> = Grid::<bool>::new(lines.len(), lines[0].len(), false);
+                    let mut candidates: Grid<bool> =
+                        Grid::<bool>::new(lines.len(), lines[0].len(), false);
                     for (x, y) in &neighbors {
                         if grid.get(*x, *y).unwrap().is_ascii_digit() {
                             seeds.push_back((*x, *y));
@@ -104,7 +116,9 @@ fn solve2(input: &str) {
                         let seed = seeds.pop_front().unwrap();
                         let sides = grid.adjacent_2_row(seed.0, seed.1);
                         for (i, j) in sides {
-                            if !candidates.get(i, j).unwrap() && grid.get(i, j).unwrap().is_ascii_digit() {
+                            if !candidates.get(i, j).unwrap()
+                                && grid.get(i, j).unwrap().is_ascii_digit()
+                            {
                                 candidates.set(i, j, true);
                                 seeds.push_back((i, j));
                             }
@@ -123,15 +137,17 @@ fn solve2(input: &str) {
                             }
                         }
 
-                        nums.extend(io::tokenize(&parsed_line, " ").iter().flat_map(|token| io::parse_num::<usize>(token)));
+                        nums.extend(
+                            io::tokenize(&parsed_line, " ")
+                                .iter()
+                                .flat_map(|token| io::parse_num::<usize>(token)),
+                        );
                     }
 
                     if nums.len() == 2 {
                         //println!("{:?}", nums);
                         ans += nums[0] * nums[1];
                     }
-
-                    
                 }
             }
         }
