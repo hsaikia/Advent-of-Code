@@ -36,7 +36,7 @@ fn matching_cards(input: &str) -> Vec<Vec<usize>> {
     ret
 }
 
-fn solve(matches: &Vec<Vec<usize>>) {
+fn part1(matches: &Vec<Vec<usize>>) {
     let mut ans: usize = 0;
     for m in matches {
         ans += val(m.len());
@@ -44,7 +44,7 @@ fn solve(matches: &Vec<Vec<usize>>) {
     println!("Answer Part 1 : {}", ans);
 }
 
-fn solve2(matching_cards: &Vec<Vec<usize>>) {
+fn part2(matching_cards: &Vec<Vec<usize>>) {
     let n = matching_cards.len();
     let mut number_of_cards = Vec::with_capacity(n);
     number_of_cards.resize(n, 1);
@@ -63,7 +63,7 @@ fn main() {
     for (file, input) in INPUT {
         println!("{}", file);
         let matching_cards = matching_cards(input);
-        solve(&matching_cards);
-        solve2(&matching_cards);
+        part1(&matching_cards);
+        part2(&matching_cards);
     }
 }
