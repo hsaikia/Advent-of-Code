@@ -15,6 +15,14 @@ impl<T: Copy> Grid<T> {
         }
     }
 
+    pub fn to_flat_idx(&self, i: usize, j: usize) -> usize {
+        i * self.cols + j
+    }
+
+    pub fn from_flat_idx(&self, idx: usize) -> (usize, usize) {
+        (idx / self.cols, idx % self.cols)
+    }
+
     pub fn get(&self, i: usize, j: usize) -> Option<T> {
         if i < self.rows && j < self.cols {
             return Some(self.values[i][j]);

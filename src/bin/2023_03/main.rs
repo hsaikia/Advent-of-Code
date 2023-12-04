@@ -1,165 +1,108 @@
-use std::collections::VecDeque;
+use std::collections::HashMap;
 
-use aoc::{grid::Grid, io};
+use aoc::{common::HashMapVector, grid::Grid};
+use itertools::Itertools;
 
 const INPUT: [(&str, &str); 2] = [
     ("Sample Input", include_str!("sample_input.txt")),
     ("Input", include_str!("input.txt")),
 ];
 
-fn solve(input: &str) {
-    let mut ans: usize = 0;
-    let lines = input.split('\n').collect::<Vec<_>>();
-
-    let mut special = Vec::new();
-    for line in &lines {
-        for ch in line.chars() {
-            if !ch.is_ascii_digit() && ch != '.' {
-                special.push(ch);
-            }
-        }
-    }
-
-    let mut grid = Grid::<char>::new(lines.len(), lines[0].len(), '.');
-
-    for (i, line) in lines.iter().enumerate() {
-        grid.set_row(i, line.chars().collect::<Vec<_>>());
-    }
-
-    let mut candidates: Grid<bool> = Grid::<bool>::new(lines.len(), lines[0].len(), false);
-
-    let mut seeds: VecDeque<(usize, usize)> = VecDeque::new();
-
-    for i in 0..grid.rows {
-        for j in 0..grid.cols {
-            if let Some(val) = grid.get(i, j) {
-                if val.is_ascii_digit() {
-                    let ns = grid.adjacent_8(i, j);
-                    for (x, y) in ns {
-                        if let Some(val1) = grid.get(x, y) {
-                            if special.contains(&val1) {
-                                seeds.push_back((i, j));
-                                candidates.set(i, j, true);
-                                break;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    while !seeds.is_empty() {
-        let x = seeds.pop_front().unwrap();
-        let sides = grid.adjacent_2_row(x.0, x.1);
-        for (i, j) in sides {
-            if !candidates.get(i, j).unwrap() && grid.get(i, j).unwrap().is_ascii_digit() {
-                candidates.set(i, j, true);
-                seeds.push_back((i, j));
-            }
-        }
-    }
-
-    for i in 0..grid.rows {
-        let mut parsed_line = String::new();
-        for j in 0..grid.cols {
-            if candidates.get(i, j).unwrap() {
-                parsed_line.push(grid.get(i, j).unwrap());
-            } else {
-                parsed_line.push(' ');
-            }
-        }
-        let parsed_line = (0..grid.cols)
-            .map(|j| {
-                if let Some(true) = candidates.get(i, j) {
-                    grid.get(i, j).unwrap()
-                } else {
-                    ' '
-                }
-            })
-            .collect::<String>();
-        ans += io::tokenize(&parsed_line, " ")
-            .iter()
-            .flat_map(|token| io::parse_num::<usize>(token))
-            .sum::<usize>();
-    }
-
-    println!("Part1 Answer : {}", ans);
+fn get_symbols(input: &str) -> Vec<char> {
+    input
+        .split('\n')
+        .map(|l| {
+            l.chars()
+                .filter(|ch| !ch.is_ascii_digit() && *ch != '.')
+                .collect::<Vec<_>>()
+        })
+        .concat()
+        .into_iter()
+        .unique()
+        .collect()
 }
 
-fn solve2(input: &str) {
-    let mut ans: usize = 0;
+fn get_input_as_grid(input: &str) -> Grid<char> {
     let lines = input.split('\n').collect::<Vec<_>>();
-
     let mut grid = Grid::<char>::new(lines.len(), lines[0].len(), '.');
-
     for (i, line) in lines.iter().enumerate() {
         grid.set_row(i, line.chars().collect::<Vec<_>>());
     }
+    grid
+}
 
+fn solve(input: &str) {
+    let grid = get_input_as_grid(input);
+    let symbols = get_symbols(input);
+
+    let mut ans1 = 0;
+    // Map of each symbol to all part numbers surrounding it
+    let mut part_numbers_map: HashMap<usize, Vec<u32>> = HashMap::new();
     for i in 0..grid.rows {
+        let mut num = 0;
+        let mut neighboring_symbols: Vec<(char, usize)> = Vec::new();
+
         for j in 0..grid.cols {
-            if let Some(val) = grid.get(i, j) {
-                if val == '*' {
-                    let mut seeds: VecDeque<(usize, usize)> = VecDeque::new();
-                    let neighbors = grid.adjacent_8(i, j);
-                    let mut candidates: Grid<bool> =
-                        Grid::<bool>::new(lines.len(), lines[0].len(), false);
-                    for (x, y) in &neighbors {
-                        if grid.get(*x, *y).unwrap().is_ascii_digit() {
-                            seeds.push_back((*x, *y));
-                            candidates.set(*x, *y, true);
-                        }
-                    }
-
-                    while !seeds.is_empty() {
-                        let seed = seeds.pop_front().unwrap();
-                        let sides = grid.adjacent_2_row(seed.0, seed.1);
-                        for (i, j) in sides {
-                            if !candidates.get(i, j).unwrap()
-                                && grid.get(i, j).unwrap().is_ascii_digit()
-                            {
-                                candidates.set(i, j, true);
-                                seeds.push_back((i, j));
+            if let Some(ch) = grid.get(i, j) {
+                if ch.is_ascii_digit() {
+                    num = 10 * num + ch.to_digit(10).unwrap();
+                    let ncells = grid.adjacent_8(i, j);
+                    for (x, y) in &ncells {
+                        if let Some(ch) = grid.get(*x, *y) {
+                            if symbols.contains(&ch) {
+                                neighboring_symbols.push((ch, grid.to_flat_idx(*x, *y)));
                             }
                         }
                     }
+                } else if num > 0 {
+                    if !neighboring_symbols.is_empty() {
+                        ans1 += num;
 
-                    let mut nums = Vec::new();
+                        neighboring_symbols =
+                            neighboring_symbols.into_iter().unique().collect::<Vec<_>>();
 
-                    for i in 0..grid.rows {
-                        let mut parsed_line = String::new();
-                        for j in 0..grid.cols {
-                            if candidates.get(i, j).unwrap() {
-                                parsed_line.push(grid.get(i, j).unwrap());
-                            } else {
-                                parsed_line.push(' ');
+                        for (ch, idx) in &neighboring_symbols {
+                            if *ch == '*' {
+                                part_numbers_map.add_to_vector_hashmap(idx, num);
                             }
                         }
 
-                        nums.extend(
-                            io::tokenize(&parsed_line, " ")
-                                .iter()
-                                .flat_map(|token| io::parse_num::<usize>(token)),
-                        );
+                        neighboring_symbols.clear();
                     }
-
-                    if nums.len() == 2 {
-                        //println!("{:?}", nums);
-                        ans += nums[0] * nums[1];
-                    }
+                    num = 0;
                 }
             }
         }
+
+        if num > 0 && !neighboring_symbols.is_empty() {
+            for (ch, idx) in &neighboring_symbols {
+                if *ch == '*' {
+                    part_numbers_map.add_to_vector_hashmap(idx, num);
+                }
+            }
+
+            ans1 += num;
+        }
     }
 
-    println!("Part2 Answer : {}", ans);
+    let ans2 = part_numbers_map
+        .values()
+        .filter_map(|vals| {
+            if vals.len() == 2 {
+                Some(vals[0] * vals[1])
+            } else {
+                None
+            }
+        })
+        .sum::<u32>();
+
+    println!("Part 1 Answer : {}", ans1);
+    println!("Part 2 Answer : {}", ans2);
 }
 
 fn main() {
-    for input in INPUT {
-        println!("{}", input.0);
-        solve(input.1);
-        solve2(input.1);
+    for (file, input) in INPUT {
+        println!("{}", file);
+        solve(input);
     }
 }

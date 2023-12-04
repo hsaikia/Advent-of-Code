@@ -7,12 +7,10 @@ const INPUT: [(&str, &str); 2] = [
     ("Input", include_str!("input.txt")),
 ];
 
-fn hash_set_from_str(strs: &Vec<&str>) -> HashSet<usize> {
-    let mut ret: HashSet<usize> = HashSet::new();
-    for str in strs {
-        ret.insert(io::parse_num::<usize>(str).unwrap());
-    }
-    ret
+fn hash_set_from_str(strs: &[&str]) -> HashSet<usize> {
+    strs.iter()
+        .map(|s| io::parse_num::<usize>(s).unwrap())
+        .collect::<HashSet<_>>()
 }
 
 fn val(sz: usize) -> usize {
@@ -24,7 +22,7 @@ fn val(sz: usize) -> usize {
 
 fn matching_cards(input: &str) -> Vec<Vec<usize>> {
     let mut ret: Vec<Vec<usize>> = Vec::new();
-    for line in input.split('\n') {
+    for line in input.lines() {
         let cards = line.split(" | ").collect::<Vec<_>>();
         let segment1 = cards[0].split(": ").collect::<Vec<_>>();
         let winning = io::tokenize(segment1[1], " ");
