@@ -1,0 +1,79 @@
+
+use std::collections::HashSet;
+
+use aoc::io;
+
+const INPUT: [(&str, &str); 2] = [
+    ("Sample Input", include_str!("sample_input.txt")),
+    ("Input", include_str!("input.txt")),
+];
+
+fn hash_set_from_str(strs : &Vec<&str>) -> HashSet<usize> {
+    let mut ret : HashSet<usize> = HashSet::new();
+    for str in strs {
+        ret.insert(io::parse_num::<usize>(str).unwrap());
+    }
+    ret
+}
+
+fn val(sz : usize) -> usize {
+    if sz < 2 {
+        return sz;
+    }
+    2_usize.pow(sz as u32 - 1)
+}
+
+fn matching_cards(input : &str) -> Vec<Vec<usize>> {
+    let mut ret : Vec<Vec<usize>> = Vec::new();
+    for line in input.split('\n') {
+        let cards = line.split(" | ").collect::<Vec<_>>();
+        let segment1 = cards[0].split(": ").collect::<Vec<_>>();
+        let winning = io::tokenize(segment1[1], " ");
+        let in_hand = io::tokenize(cards[1], " ");
+
+        let l1 = hash_set_from_str(&winning);
+        let l2 = hash_set_from_str(&in_hand);
+
+        ret.push(l1.intersection(&l2).cloned().collect::<Vec<usize>>());
+    }
+    ret
+}
+
+fn solve(matches : &Vec<Vec<usize>>) {
+    let mut ans: usize = 0;
+    for m in matches {
+        ans += val(m.len());
+    }
+    println!("Answer Part 1 : {}", ans);
+}
+
+fn solve2(matching_cards : &Vec<Vec<usize>>) {
+    let mut ans: usize = 0;
+    let n = matching_cards.len();
+    
+    let mut number_of_cards = Vec::with_capacity(n);
+    number_of_cards.resize(n, 1);
+
+    for (i, m) in matching_cards.iter().enumerate() {
+        for idx in i + 1..i + 1 + m.len() {
+            if idx < n {
+                number_of_cards[idx] += number_of_cards[i];
+            }
+        }
+    }
+
+    for i in 0..n {
+        ans += number_of_cards[i];
+    }
+
+    println!("Answer Part 2: {}", ans);
+}
+
+fn main() {
+    for (file, input) in INPUT {
+        println!("{}", file);
+        let matching_cards = matching_cards(input);
+        solve(&matching_cards);
+        solve2(&matching_cards);
+    }
+}

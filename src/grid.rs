@@ -56,9 +56,42 @@ impl<T: Copy> Grid<T> {
         None
     }
 
+    pub fn adjacent_2_row(&self, i: usize, j: usize) -> Vec<(usize, usize)> {
+        let mut ret = Vec::new();
+        let dir = [(0, 1), (0, -1)];
+        for d in dir {
+            let opt_cell = self.cell_in_direction(i, j, d.0, d.1);
+            if let Some(cell) = opt_cell {
+                ret.push(cell);
+            }
+        }
+        ret
+    }
+
     pub fn adjacent_4(&self, i: usize, j: usize) -> Vec<(usize, usize)> {
         let mut ret = Vec::new();
         let dir = [(-1, 0), (0, -1), (1, 0), (0, 1)];
+        for d in dir {
+            let opt_cell = self.cell_in_direction(i, j, d.0, d.1);
+            if let Some(cell) = opt_cell {
+                ret.push(cell);
+            }
+        }
+        ret
+    }
+
+    pub fn adjacent_8(&self, i: usize, j: usize) -> Vec<(usize, usize)> {
+        let mut ret = Vec::new();
+        let dir = [
+            (-1, 0),
+            (0, -1),
+            (1, 0),
+            (0, 1),
+            (-1, 1),
+            (1, -1),
+            (1, 1),
+            (-1, -1),
+        ];
         for d in dir {
             let opt_cell = self.cell_in_direction(i, j, d.0, d.1);
             if let Some(cell) = opt_cell {

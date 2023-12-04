@@ -4,7 +4,7 @@ use std::str::FromStr;
 pub struct AOCError;
 
 pub fn tokenize<'a>(line: &'a str, separator: &str) -> Vec<&'a str> {
-    line.split(separator).collect::<_>()
+    line.split(separator).filter(|s| !s.trim().is_empty()).collect::<_>()
 }
 
 pub fn parse_num<T: FromStr>(token: &str) -> Result<T, AOCError> {
