@@ -1,74 +1,11 @@
-use std::time::Instant;
-
-use aoc::io;
+use aoc::{io, range::Range};
 use itertools::Itertools;
+use std::time::Instant;
 
 const INPUT: [(&str, &str); 1] = [
     //("Sample Input", include_str!("sample_input.txt")),
     ("Input", include_str!("input.txt")),
 ];
-
-// [a. b)
-#[derive(PartialEq, Eq, Debug, Clone, Hash)]
-struct Range {
-    a: usize,
-    b: usize,
-}
-
-impl Range {
-    fn new(a: usize, b: usize) -> Self {
-        Range { a, b }
-    }
-
-    fn contains(&self, x: usize) -> bool {
-        x >= self.a && x < self.b
-    }
-
-    fn idx_in(&self, x: usize) -> Option<usize> {
-        if self.contains(x) {
-            return Some(x - self.a);
-        }
-        None
-    }
-
-    fn idx_from(&self, idx: usize) -> usize {
-        self.a + idx
-    }
-
-    fn intersect(&self, other: &Range) -> Option<Range> {
-        let max_a = self.a.max(other.a);
-        let min_b = self.b.min(other.b);
-        if max_a < min_b {
-            return Some(Range { a: max_a, b: min_b });
-        }
-        None
-    }
-
-    fn difference(&self, other: &Range) -> Vec<Range> {
-        let mut ret = Vec::new();
-        if let Some(intersection) = self.intersect(other) {
-            if self.a < intersection.a {
-                ret.push(Range {
-                    a: self.a,
-                    b: intersection.a,
-                });
-            }
-
-            if intersection.b < self.b {
-                ret.push(Range {
-                    a: intersection.b,
-                    b: self.b,
-                });
-            }
-        }
-        ret
-    }
-
-    fn remap(&mut self, current_a: usize, mapped_a: usize) {
-        self.b = self.b + mapped_a - current_a;
-        self.a = self.a + mapped_a - current_a;
-    }
-}
 
 fn part1(input: &str) {
     let mut v: Vec<Option<usize>> = Vec::new();
@@ -158,7 +95,7 @@ fn part2(input: &str) {
             let rd_a = range[0];
 
             // Check intersection of current ranges with rs
-            // Remap the intersections to rd
+            // Remap the intersections to rd after batch is processed
             // Push the differences back in
 
             let mut new_ranges: Vec<(Range, Option<(usize, usize)>)> = Vec::new();
@@ -207,6 +144,6 @@ fn main() {
         let start = Instant::now();
         part2(input);
         let duration = start.elapsed();
-        println!("Time elapsed in Part 1 is: {:?}", duration);
+        println!("Time elapsed in Part 2 is: {:?}", duration);
     }
 }
