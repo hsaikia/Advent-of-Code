@@ -26,22 +26,18 @@ enum HandType {
     HighCard = 6,
 }
 
-fn compare(hand1: HandType, hand2: HandType) -> Ordering {
-    (hand1 as usize).cmp(&(hand2 as usize))
-}
-
-fn hand_type_from_sizes(unique_cards: usize, largest_set_size: usize) -> HandType {
-    if unique_cards == 5 {
+fn hand_type_from_sizes(num_unique_cards: usize, largest_set_size: usize) -> HandType {
+    if num_unique_cards == 5 {
         return HandType::HighCard;
-    } else if unique_cards == 4 {
+    } else if num_unique_cards == 4 {
         return HandType::OnePair;
-    } else if unique_cards == 3 {
+    } else if num_unique_cards == 3 {
         if largest_set_size == 3 {
             return HandType::ThreeOfAKind;
         } else {
             return HandType::TwoPair;
         }
-    } else if unique_cards == 2 {
+    } else if num_unique_cards == 2 {
         if largest_set_size == 4 {
             return HandType::FourOfAKind;
         } else {
@@ -53,13 +49,13 @@ fn hand_type_from_sizes(unique_cards: usize, largest_set_size: usize) -> HandTyp
 }
 
 fn get_hand_type(hand: &str, joker: bool) -> HandType {
-    let (unique_cards, largest_set_size) = if joker {
-        let u = hand
+    let (num_unique_cards, largest_set_size) = if joker {
+        let unique_cards = hand
             .chars()
             .filter(|c| *c != 'J')
             .unique()
             .collect::<Vec<_>>();
-        let mut counts = u
+        let mut counts = unique_cards
             .iter()
             .map(|x| hand.chars().filter(|y| y == x).count())
             .collect::<Vec<_>>();
@@ -68,36 +64,38 @@ fn get_hand_type(hand: &str, joker: bool) -> HandType {
         if counts.is_empty() {
             (1, joker_counts)
         } else {
-            (u.len(), counts[0] + joker_counts)
+            (unique_cards.len(), counts[0] + joker_counts)
         }
     } else {
-        let u = hand.chars().unique().collect::<Vec<_>>();
-        let mut counts = u
+        let unique_cards = hand.chars().unique().collect::<Vec<_>>();
+        let mut counts = unique_cards
             .iter()
             .map(|x| hand.chars().filter(|y| y == x).count())
             .collect::<Vec<_>>();
         counts.sort_by(|a, b| b.cmp(a));
-        (u.len(), counts[0])
+        (unique_cards.len(), counts[0])
     };
 
-    hand_type_from_sizes(unique_cards, largest_set_size)
+    hand_type_from_sizes(num_unique_cards, largest_set_size)
 }
 
 fn compare_hands(hand1: &str, hand2: &str, part1: bool) -> Ordering {
-    let t1 = get_hand_type(hand1, !part1);
-    let t2 = get_hand_type(hand2, !part1);
+    let t1 = get_hand_type(hand1, !part1) as usize;
+    let t2 = get_hand_type(hand2, !part1) as usize;
 
-    let c = compare(t1, t2);
-    if c == Ordering::Equal {
-        let c1 = hand1.chars().collect::<Vec<_>>();
-        let c2 = hand2.chars().collect::<Vec<_>>();
-        for i in 0..5 {
-            if c1[i] == c2[i] {
+    let order: Ordering = t1.cmp(&t2);
+
+    if order == Ordering::Equal {
+        let cards1 = hand1.chars().collect::<Vec<_>>();
+        let cards2 = hand2.chars().collect::<Vec<_>>();
+
+        for (c1, c2) in cards1.iter().zip(&cards2) {
+            if c1 == c2 {
                 continue;
             }
-            let order = if part1 { ORDER_1 } else { ORDER_2 };
-            let idx1 = order.iter().position(|c| *c == c1[i]).unwrap();
-            let idx2 = order.iter().position(|c| *c == c2[i]).unwrap();
+            let card_order = if part1 { ORDER_1 } else { ORDER_2 };
+            let idx1 = card_order.iter().position(|c| c == c1).unwrap();
+            let idx2 = card_order.iter().position(|c| c == c2).unwrap();
 
             if idx1 == idx2 {
                 continue;
@@ -106,7 +104,7 @@ fn compare_hands(hand1: &str, hand2: &str, part1: bool) -> Ordering {
             return idx1.cmp(&idx2);
         }
     }
-    c
+    order
 }
 
 fn solve(input: &str, part1: bool) {
@@ -118,24 +116,17 @@ fn solve(input: &str, part1: bool) {
     }
 
     cards.sort_by(|c1, c2| compare_hands(c2.0, c1.0, part1));
+
+    let ans = cards
+        .iter()
+        .enumerate()
+        .map(|(i, e)| (i + 1) * e.1)
+        .sum::<usize>();
+
     if part1 {
-        println!(
-            "Answer Part 1 {}",
-            cards
-                .iter()
-                .enumerate()
-                .map(|(i, e)| (i + 1) * e.1)
-                .sum::<usize>()
-        );
+        println!("Answer Part 1 {}", ans);
     } else {
-        println!(
-            "Answer Part 2 {}",
-            cards
-                .iter()
-                .enumerate()
-                .map(|(i, e)| (i + 1) * e.1)
-                .sum::<usize>()
-        );
+        println!("Answer Part 2 {}", ans);
     }
 }
 
