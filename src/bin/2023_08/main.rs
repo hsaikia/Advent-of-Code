@@ -3,12 +3,15 @@ use std::{collections::HashMap, time::Instant};
 use aoc::io;
 use num::Integer;
 
-const INPUT: [(&str, &str); 1] = [("Input", include_str!("input.txt"))];
+const INPUT: [(&str, &str); 2] = [
+    ("Input", include_str!("sample_input.txt")),
+    ("Input", include_str!("input.txt")),
+];
 
-fn solve_for_one(
+fn solve(
     start: &str,
-    ins: &[char],
     dst: &[&str],
+    ins: &[char],
     lm: &HashMap<&str, &str>,
     rm: &HashMap<&str, &str>,
 ) -> usize {
@@ -34,26 +37,27 @@ fn solve_for_one(
 }
 
 fn part1(ins: &[char], lm: &HashMap<&str, &str>, rm: &HashMap<&str, &str>) {
-    let sol = solve_for_one("AAA", ins, &["ZZZ"], lm, rm);
+    let sol = solve("AAA", &["ZZZ"], ins, lm, rm);
     println!("Part1 answer : {}", sol);
 }
 
 fn part2(ins: &[char], lm: &HashMap<&str, &str>, rm: &HashMap<&str, &str>) {
-    let mut curr: Vec<&str> = Vec::new();
+    let mut starts: Vec<&str> = Vec::new();
     let mut dst: Vec<&str> = Vec::new();
 
     for k in lm.keys() {
-        if k.chars().collect::<Vec<_>>()[2] == 'A' {
-            curr.push(k);
+        if k.ends_with('A') {
+            starts.push(k);
         }
-        if k.chars().collect::<Vec<_>>()[2] == 'Z' {
+
+        if k.ends_with('Z') {
             dst.push(k);
         }
     }
 
     let mut ans: usize = 1;
-    for x in curr {
-        let sol = solve_for_one(x, ins, &dst, lm, rm);
+    for start in starts {
+        let sol = solve(start, &dst, ins, lm, rm);
         //println!("{} = {}", x, sol);
         ans = ans.lcm(&sol);
     }
@@ -67,19 +71,24 @@ fn main() {
 
         let mut lm: HashMap<&str, &str> = HashMap::new();
         let mut rm: HashMap<&str, &str> = HashMap::new();
-        let lines = input.lines().collect::<Vec<&str>>();
-        let ins = lines[0].chars().collect::<Vec<_>>();
+        let line_batches = io::line_batches(input);
+        let ins = line_batches[0][0].chars().collect::<Vec<_>>();
 
-        for line in &lines[2..] {
-            let tokens = io::tokenize(line, " = ");
-            lm.insert(tokens[0], &tokens[1][1..4]);
-            rm.insert(tokens[0], &tokens[1][6..9]);
+        for line in &line_batches[1] {
+            let (from, left_right) = line.split_once(" = ").unwrap();
+            let (left, right) = left_right[1..left_right.len() - 1]
+                .split_once(", ")
+                .unwrap();
+
+            lm.insert(from, left);
+            rm.insert(from, right);
         }
 
         let start = Instant::now();
         part1(&ins, &lm, &rm);
         let duration = start.elapsed();
         println!("Time elapsed in Part 1 is: {:?}", duration);
+
         let start = Instant::now();
         part2(&ins, &lm, &rm);
         let duration = start.elapsed();

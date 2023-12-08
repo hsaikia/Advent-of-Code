@@ -77,13 +77,11 @@ fn part2(grid: &Grid<usize>, end: (usize, usize)) {
 }
 
 fn get_grid(input: &str) -> (Grid<usize>, (usize, usize), (usize, usize)) {
-    let input_lines = input.split('\n').collect::<Vec<_>>();
-
-    let mut grid = Grid::<usize>::new(input_lines.len(), input_lines[0].len(), 0);
+    let grid = Grid::from_str(input, |c| *ELEV.get(&c).unwrap());
     let mut start: (usize, usize) = (0, 0);
     let mut end: (usize, usize) = (0, 0);
 
-    for (i, line) in input_lines.iter().enumerate() {
+    for (i, line) in input.lines().enumerate() {
         let si = line.chars().position(|c| c == 'S');
         if si.is_some() {
             start = (i, si.unwrap());
@@ -92,12 +90,6 @@ fn get_grid(input: &str) -> (Grid<usize>, (usize, usize), (usize, usize)) {
         if ei.is_some() {
             end = (i, ei.unwrap());
         }
-        grid.set_row(
-            i,
-            line.chars()
-                .map(|c| *ELEV.get(&c).unwrap())
-                .collect::<Vec<usize>>(),
-        );
     }
 
     (grid, start, end)

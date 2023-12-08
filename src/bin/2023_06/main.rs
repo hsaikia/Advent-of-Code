@@ -13,6 +13,7 @@ const INPUT: [(&str, &str, (usize, usize)); 2] = [
     ),
 ];
 
+#[allow(dead_code)]
 enum Solution {
     BruteForce1,
     BruteForce2,

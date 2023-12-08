@@ -1,3 +1,14 @@
+/// A collection of ranges that dynamically maintain mutual exclusivity
+#[allow(dead_code)]
+pub struct RangeUnion {
+    ranges: Vec<Range>,
+}
+
+impl RangeUnion {
+    #[allow(unused)]
+    pub fn add_range(&mut self, range: &Range) {}
+}
+
 // [a. b)
 #[derive(PartialEq, Eq, Debug, Clone, Hash)]
 pub struct Range {

@@ -22,17 +22,8 @@ fn get_symbols(input: &str) -> Vec<char> {
         .collect()
 }
 
-fn get_input_as_grid(input: &str) -> Grid<char> {
-    let lines = input.split('\n').collect::<Vec<_>>();
-    let mut grid = Grid::<char>::new(lines.len(), lines[0].len(), '.');
-    for (i, line) in lines.iter().enumerate() {
-        grid.set_row(i, line.chars().collect::<Vec<_>>());
-    }
-    grid
-}
-
 fn solve(input: &str) {
-    let grid = get_input_as_grid(input);
+    let grid = Grid::from_str(input, |c| c);
     let symbols = get_symbols(input);
 
     let mut ans1 = 0;

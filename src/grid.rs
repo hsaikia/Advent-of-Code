@@ -1,18 +1,31 @@
 // A Generic Grid of items of type T
 #[derive(Debug, Clone)]
-pub struct Grid<T: Copy> {
+pub struct Grid<T: Copy + Default> {
     pub values: Vec<Vec<T>>,
     pub rows: usize,
     pub cols: usize,
 }
 
-impl<T: Copy> Grid<T> {
+impl<T: Copy + Default> Grid<T> {
     pub fn new(n: usize, m: usize, val: T) -> Self {
         Grid {
             values: vec![vec![val; m]; n],
             rows: n,
             cols: m,
         }
+    }
+
+    pub fn from_str(input: &str, f: fn(char) -> T) -> Self {
+        let lines = input
+            .split('\n')
+            .filter(|l| !l.is_empty())
+            .collect::<Vec<_>>();
+        let mut grid = Grid::<T>::new(lines.len(), lines[0].len(), T::default());
+        for (i, line) in lines.iter().enumerate() {
+            let row = line.chars().map(f).collect::<Vec<_>>();
+            grid.set_row(i, row);
+        }
+        grid
     }
 
     pub fn to_flat_idx(&self, i: usize, j: usize) -> usize {

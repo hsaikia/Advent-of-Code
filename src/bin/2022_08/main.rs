@@ -86,26 +86,10 @@ fn part2(grid: &Grid<u32>) {
     println!("Part 2 Answer {}", ans);
 }
 
-fn get_grid(input: &str) -> Grid<u32> {
-    let lines = input.split('\n').collect::<Vec<_>>();
-    let mut grid = Grid::<u32>::new(lines.len(), lines[0].len(), 0);
-
-    for (i, line) in lines.iter().enumerate() {
-        grid.set_row(
-            i,
-            line.chars()
-                .map(|c| c.to_digit(10).unwrap())
-                .collect::<Vec<u32>>(),
-        );
-    }
-
-    grid
-}
-
 fn main() {
-    for input in INPUT {
-        println!("{}", input.0);
-        let grid = get_grid(input.1);
+    for (file, input) in INPUT {
+        println!("{}", file);
+        let grid = Grid::from_str(input, |c| c.to_digit(10).unwrap());
         part1(&grid);
         part2(&grid);
     }
