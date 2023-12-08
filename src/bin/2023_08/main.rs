@@ -13,18 +13,16 @@ fn solve_for_one(
     rm: &HashMap<&str, &str>,
 ) -> usize {
     let mut steps = 0;
-    let mut idx = 0;
     let mut curr = start;
 
     loop {
-        let is = ins[idx];
+        let is = ins[steps % ins.len()];
         if is == 'L' {
             curr = lm.get(curr).unwrap();
         }
         if is == 'R' {
             curr = rm.get(curr).unwrap();
         }
-        idx = (idx + 1) % ins.len();
         steps += 1;
 
         if dst.contains(&curr) {
@@ -73,9 +71,6 @@ fn main() {
         let ins = lines[0].chars().collect::<Vec<_>>();
 
         for line in &lines[2..] {
-            if line.is_empty() {
-                continue;
-            }
             let tokens = io::tokenize(line, " = ");
             lm.insert(tokens[0], &tokens[1][1..4]);
             rm.insert(tokens[0], &tokens[1][6..9]);
