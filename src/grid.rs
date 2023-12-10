@@ -1,12 +1,18 @@
+use std::collections::VecDeque;
+
 // A Generic Grid of items of type T
+
+pub type CellIndex = (usize, usize);
+pub type CellDir = (i32, i32);
+
 #[derive(Debug, Clone)]
-pub struct Grid<T: std::fmt::Debug + Clone + Default> {
+pub struct Grid<T: std::fmt::Debug + Clone + Default + PartialEq> {
     pub values: Vec<Vec<T>>,
     pub rows: usize,
     pub cols: usize,
 }
 
-impl<T: std::fmt::Debug + Clone + Default> Grid<T> {
+impl<T: std::fmt::Debug + Clone + Default + PartialEq> Grid<T> {
     pub fn new(n: usize, m: usize, val: T) -> Self {
         Grid {
             values: vec![vec![val; m]; n],
@@ -26,6 +32,13 @@ impl<T: std::fmt::Debug + Clone + Default> Grid<T> {
             grid.set_row(i, row);
         }
         grid
+    }
+
+    pub fn count(&self, x: &T) -> usize {
+        self.values
+            .iter()
+            .map(|row| row.iter().filter(|&cell| cell == x).count())
+            .sum::<usize>()
     }
 
     pub fn print(&self) {
@@ -147,6 +160,38 @@ impl<T: std::fmt::Debug + Clone + Default> Grid<T> {
             }
         }
         ret
+    }
+
+    // Fill all cells where value = replace_id 4_neighboring the ones where value = cluster_id
+    pub fn flood_fill(&mut self, cluster_id: T, replace_id: T) {
+        let mut q = VecDeque::new();
+
+        for i in 0..self.rows {
+            for j in 0..self.cols {
+                if self.get(i, j).unwrap() == cluster_id.clone() {
+                    q.push_back((i, j));
+                }
+            }
+        }
+
+        let mut visited = Grid::<bool>::new(self.rows, self.cols, false);
+        while !q.is_empty() {
+            let x = q.pop_front().unwrap();
+
+            if visited.get(x.0, x.1).unwrap() {
+                continue;
+            }
+
+            visited.set(x.0, x.1, true);
+
+            self.set(x.0, x.1, cluster_id.clone());
+
+            for n in self.adjacent_4(x.0, x.1) {
+                if self.get(n.0, n.1).unwrap() == replace_id.clone() {
+                    q.push_back(n);
+                }
+            }
+        }
     }
 }
 

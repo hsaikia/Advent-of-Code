@@ -6,6 +6,12 @@ pub struct RangeUnion<T: Default + Ord + Num + NumAssign + Copy + std::fmt::Debu
     ranges: Vec<Range<T>>,
 }
 
+impl<T: Default + Ord + Num + NumAssign + Copy + std::fmt::Debug> Default for RangeUnion<T> {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl<T: Default + Ord + Num + NumAssign + Copy + std::fmt::Debug> RangeUnion<T> {
     pub fn new() -> Self {
         Self { ranges: Vec::new() }

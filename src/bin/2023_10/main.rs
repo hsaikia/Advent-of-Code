@@ -1,6 +1,6 @@
 use std::collections::VecDeque;
 
-use aoc::grid::Grid;
+use aoc::grid::{CellDir, CellIndex, Grid};
 
 const INPUT: [(&str, &str); 4] = [
     ("Sample Input 1", include_str!("sample_input.txt")),
@@ -17,7 +17,16 @@ enum Dir {
     NY,
 }
 
-fn lr_classification(ch: char, dir: &Dir) -> (Vec<(i32, i32)>, Vec<(i32, i32)>) {
+#[derive(Clone, Default, Debug, PartialEq)]
+enum Cluster {
+    #[default]
+    Empty,
+    Path,
+    Side1,
+    Side2,
+}
+
+fn lr_classification(ch: char, dir: &Dir) -> (Vec<CellDir>, Vec<CellDir>) {
     let mut l = Vec::new();
     let mut r = Vec::new();
 
@@ -94,7 +103,27 @@ fn lr_classification(ch: char, dir: &Dir) -> (Vec<(i32, i32)>, Vec<(i32, i32)>) 
     (l, r)
 }
 
-fn directed_path(path: &Vec<(usize, usize)>) -> Vec<Dir> {
+fn is_cluster_id_at_border(cluster: &mut Grid<Cluster>, cluster_id: Cluster) -> bool {
+    for i in 0..cluster.rows {
+        for j in [0, cluster.cols - 1] {
+            if cluster.get(i, j).unwrap() == cluster_id {
+                return true;
+            }
+        }
+    }
+
+    for i in [0, cluster.rows - 1] {
+        for j in 0..cluster.cols {
+            if cluster.get(i, j).unwrap() == cluster_id {
+                return true;
+            }
+        }
+    }
+
+    false
+}
+
+fn directed_path(path: &Vec<CellIndex>) -> Vec<Dir> {
     let mut ret: Vec<Dir> = Vec::new();
 
     for i in 0..path.len() {
@@ -117,43 +146,9 @@ fn directed_path(path: &Vec<(usize, usize)>) -> Vec<Dir> {
     ret
 }
 
-fn grow(cluster: &mut Grid<i32>, cluster_id: i32, replace_id: i32) {
-    let mut q = VecDeque::new();
-
-    for i in 0..cluster.rows {
-        for j in 0..cluster.cols {
-            if cluster.get(i, j).unwrap() == cluster_id {
-                q.push_back((i, j));
-            }
-        }
-    }
-
-    let mut visited = Grid::<bool>::new(cluster.rows, cluster.cols, false);
-    while !q.is_empty() {
-        let x = q.pop_front().unwrap();
-
-        if visited.get(x.0, x.1).unwrap() {
-            continue;
-        }
-
-        visited.set(x.0, x.1, true);
-
-        cluster.set(x.0, x.1, cluster_id);
-
-        for n in cluster.adjacent_4(x.0, x.1) {
-            if cluster.get(n.0, n.1).unwrap() == replace_id {
-                q.push_back(n);
-            }
-        }
-    }
-}
-
 fn solve(input: &str) {
-    let mut ans: usize = 0;
-
     let original = Grid::from_str(input, |c| c);
-
-    let grid = Grid::<Vec<(i32, i32)>>::from_str(input, |c| match c {
+    let grid = Grid::<Vec<CellDir>>::from_str(input, |c| match c {
         'F' => vec![(1, 0), (0, 1)],
         'L' => vec![(-1, 0), (0, 1)],
         'J' => vec![(-1, 0), (0, -1)],
@@ -165,133 +160,95 @@ fn solve(input: &str) {
     });
 
     let mut visited = Grid::<bool>::new(grid.rows, grid.cols, false);
-    let mut distances = Grid::<usize>::new(grid.rows, grid.cols, 0);
-    //let mut path = Grid::<char>::new(grid.rows, grid.cols, '.');
+    let mut d = true;
 
-    let mut d = 0;
-
-    let mut half_path1 = Vec::new();
+    let mut path = Vec::new();
     let mut half_path2 = Vec::new();
 
     for i in 0..grid.rows {
         for j in 0..grid.cols {
             if grid.get(i, j).unwrap().len() == 4 {
-                half_path1.push((i, j));
+                // Add start to path
+                path.push((i, j));
 
-                println!("Start ({},{})", i, j);
-                let mut queue = VecDeque::<(usize, usize, usize, usize)>::new();
+                let mut queue = VecDeque::<(usize, usize, bool)>::new();
                 let nbs = grid.adjacent_4(i, j);
-                for nb in nbs {
-                    let ndirs = grid.get(nb.0, nb.1).unwrap();
-                    let nns = grid.adjacent_in_dir(nb.0, nb.1, &ndirs);
-                    //println!("{:?} is connected in dir {:?}", nb, ndirs);
-
-                    let is_connected = nns.contains(&(i, j));
-
-                    if is_connected {
-                        //println!("Adding {:?}", nb);
-                        queue.push_back((nb.0, nb.1, 1, d));
-                        d = 1 - d;
+                for (nx, ny) in nbs {
+                    let ndirs = grid.get(nx, ny).unwrap();
+                    let nns = grid.adjacent_in_dir(nx, ny, &ndirs);
+                    if nns.contains(&(i, j)) {
+                        queue.push_back((nx, ny, d));
+                        d = !d;
                     }
                 }
-
-                //println!("{:?}", queue);
 
                 assert!(queue.len() == 2);
 
                 visited.set(i, j, true);
-
                 while !queue.is_empty() {
-                    let c = queue.pop_front().unwrap();
-                    if c.3 == 0 {
-                        half_path1.push((c.0, c.1));
+                    let (x, y, lr) = queue.pop_front().unwrap();
+                    if lr {
+                        path.push((x, y));
                     } else {
-                        half_path2.push((c.0, c.1));
+                        half_path2.push((x, y));
                     }
+                    visited.set(x, y, true);
 
-                    ans = ans.max(c.2);
-                    distances.set(c.0, c.1, c.2);
-
-                    // if visited.get(c.0, c.1).unwrap() {
-                    //     continue;
-                    // }
-
-                    visited.set(c.0, c.1, true);
-
-                    //println!("Visiting node {:?}", c);
-
-                    let dirs = grid.get(c.0, c.1).unwrap();
-                    let nc = grid.adjacent_in_dir(c.0, c.1, &dirs);
-
-                    for n in nc {
-                        if !visited.get(n.0, n.1).unwrap() {
-                            // Path
-                            //path.set(n.0, n.1, dir_ch(dir));
-                            queue.push_back((n.0, n.1, c.2 + 1, c.3));
+                    let dirs = grid.get(x, y).unwrap();
+                    let nc = grid.adjacent_in_dir(x, y, &dirs);
+                    for (nx, ny) in nc {
+                        if !visited.get(nx, ny).unwrap() {
+                            queue.push_back((nx, ny, lr));
                         }
                     }
                 }
-                distances.set(i, j, 1);
-                break;
             }
         }
     }
 
-    let mut cluster = Grid::new(grid.rows, grid.cols, 0);
+    // Since we added the start position to the first half path
+    assert!(path.len() == half_path2.len() + 1);
 
-    cluster.print();
+    println!("Answer Part1 {}", half_path2.len());
 
-    half_path1.extend(half_path2.iter().rev().skip(1));
-    let directed_path = directed_path(&half_path1);
-    // println!("HP1 {:?}", half_path1);
+    let mut cluster = Grid::new(grid.rows, grid.cols, Cluster::Empty);
 
-    for i in 0..grid.rows {
-        for j in 0..grid.cols {
-            if distances.get(i, j).unwrap() > 0 {
-                cluster.set(i, j, 1)
-            }
-        }
+    path.extend(half_path2.iter().rev().skip(1));
+    let directed_path = directed_path(&path);
+
+    for (cx, cy) in &path {
+        cluster.set(*cx, *cy, Cluster::Path);
     }
 
-    cluster.print();
-
-    for (dir, p) in directed_path.iter().zip(half_path1.iter()) {
+    for (dir, p) in directed_path.iter().zip(path.iter()) {
         let (l, r) = lr_classification(original.get(p.0, p.1).unwrap(), dir);
         for (a, b) in cluster.adjacent_in_dir(p.0, p.1, &l) {
-            if cluster.get(a, b).unwrap() == 0 {
-                cluster.set(a, b, 2);
+            if cluster.get(a, b).unwrap() == Cluster::Empty {
+                cluster.set(a, b, Cluster::Side1);
             }
         }
         for (a, b) in cluster.adjacent_in_dir(p.0, p.1, &r) {
-            if cluster.get(a, b).unwrap() == 0 {
-                cluster.set(a, b, 3);
+            if cluster.get(a, b).unwrap() == Cluster::Empty {
+                cluster.set(a, b, Cluster::Side2);
             }
         }
     }
 
-    cluster.print();
+    cluster.flood_fill(Cluster::Side1, Cluster::Empty);
+    cluster.flood_fill(Cluster::Side2, Cluster::Empty);
 
-    grow(&mut cluster, 2, 0);
-    grow(&mut cluster, 3, 0);
-
-    original.print();
-    cluster.print();
-
-    let mut cnts: [usize; 4] = [0; 4];
-
-    for i in 0..grid.rows {
-        for j in 0..grid.cols {
-            cnts[cluster.get(i, j).unwrap() as usize] += 1;
-        }
+    // Find out which cluster is at the border
+    // The other one is basically the inner one
+    if is_cluster_id_at_border(&mut cluster, Cluster::Side1) {
+        println!("Answer Part2 {}", cluster.count(&Cluster::Side2));
+    } else {
+        println!("Answer Part2 {}", cluster.count(&Cluster::Side1));
     }
-
-    // Find out from the visualization
-    println!("{:?}", cnts);
 }
 
 fn main() {
-    for input in INPUT {
-        println!("{}", input.0);
-        solve(input.1);
+    for (file, input) in INPUT {
+        println!("{}", file);
+        solve(input);
     }
 }
