@@ -1,42 +1,84 @@
+use num::{traits::NumAssign, Num};
+
 /// A collection of ranges that dynamically maintain mutual exclusivity
-#[allow(dead_code)]
-pub struct RangeUnion {
-    ranges: Vec<Range>,
+#[derive(Debug)]
+pub struct RangeUnion<T: Default + Ord + Num + NumAssign + Copy + std::fmt::Debug> {
+    ranges: Vec<Range<T>>,
 }
 
-impl RangeUnion {
-    #[allow(unused)]
-    pub fn add_range(&mut self, range: &Range) {}
+impl<T: Default + Ord + Num + NumAssign + Copy + std::fmt::Debug> RangeUnion<T> {
+    pub fn new() -> Self {
+        Self { ranges: Vec::new() }
+    }
+
+    pub fn merge(&mut self) {
+        self.ranges.sort_by(|r1, r2| r1.a.cmp(&r2.a));
+        let mut new_ranges = vec![*self.ranges.first().unwrap()];
+        for range in self.ranges.iter().skip(1) {
+            if let Some(last) = new_ranges.last_mut() {
+                if last.b < range.a {
+                    new_ranges.push(*range);
+                } else {
+                    last.b = last.b.max(range.b);
+                }
+            }
+        }
+        self.ranges = new_ranges;
+    }
+
+    pub fn add_range(&mut self, range: Range<T>) {
+        self.ranges.push(range);
+        self.merge();
+    }
+
+    pub fn spread(&self) -> T {
+        let mut ans: T = T::default();
+        for r in &self.ranges {
+            ans += r.b - r.a;
+        }
+        ans
+    }
+
+    pub fn contains(&self, x: T) -> bool {
+        for r in &self.ranges {
+            if r.contains(x) {
+                return true;
+            }
+        }
+        false
+    }
 }
 
+// Range Struct
+// Inclusive at the front, exclusive at the back
 // [a. b)
-#[derive(PartialEq, Eq, Debug, Clone, Hash)]
-pub struct Range {
-    pub a: usize,
-    pub b: usize,
+#[derive(PartialEq, Eq, Debug, Clone, Hash, Copy)]
+pub struct Range<T: Default + Ord + Num + NumAssign + Copy> {
+    pub a: T,
+    pub b: T,
 }
 
-impl Range {
-    pub fn new(a: usize, b: usize) -> Self {
+impl<T: Default + Ord + Num + NumAssign + Copy> Range<T> {
+    pub fn new(a: T, b: T) -> Self {
         Range { a, b }
     }
 
-    pub fn contains(&self, x: usize) -> bool {
+    pub fn contains(&self, x: T) -> bool {
         x >= self.a && x < self.b
     }
 
-    pub fn idx_in(&self, x: usize) -> Option<usize> {
+    pub fn idx_in(&self, x: T) -> Option<T> {
         if self.contains(x) {
             return Some(x - self.a);
         }
         None
     }
 
-    pub fn idx_from(&self, idx: usize) -> usize {
+    pub fn idx_from(&self, idx: T) -> T {
         self.a + idx
     }
 
-    pub fn intersect(&self, other: &Range) -> Option<Range> {
+    pub fn intersect(&self, other: &Range<T>) -> Option<Range<T>> {
         let max_a = self.a.max(other.a);
         let min_b = self.b.min(other.b);
         if max_a < min_b {
@@ -45,7 +87,7 @@ impl Range {
         None
     }
 
-    pub fn difference(&self, other: &Range) -> Vec<Range> {
+    pub fn difference(&self, other: &Range<T>) -> Vec<Range<T>> {
         let mut ret = Vec::new();
         if let Some(intersection) = self.intersect(other) {
             if self.a < intersection.a {
@@ -65,7 +107,7 @@ impl Range {
         ret
     }
 
-    pub fn remap(&mut self, current_a: usize, mapped_a: usize) {
+    pub fn remap(&mut self, current_a: T, mapped_a: T) {
         self.b = self.b + mapped_a - current_a;
         self.a = self.a + mapped_a - current_a;
     }

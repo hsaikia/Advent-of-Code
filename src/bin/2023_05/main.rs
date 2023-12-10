@@ -60,7 +60,8 @@ fn part1(input: &str) {
 }
 
 fn part2(input: &str) {
-    let mut ranges: Vec<(Range, Option<(usize, usize)>)> = Vec::new();
+    type Remap = Option<(usize, usize)>;
+    let mut ranges: Vec<(Range<usize>, Remap)> = Vec::new();
 
     for line in input.lines() {
         if line.is_empty() {
@@ -98,7 +99,7 @@ fn part2(input: &str) {
             // Remap the intersections to rd after batch is processed
             // Push the differences back in
 
-            let mut new_ranges: Vec<(Range, Option<(usize, usize)>)> = Vec::new();
+            let mut new_ranges: Vec<(Range<usize>, Remap)> = Vec::new();
 
             for elem in &ranges {
                 let r = &elem.0;
@@ -108,7 +109,7 @@ fn part2(input: &str) {
                     }
                     new_ranges.push((x, Some((rs.a, rd_a))));
                 } else {
-                    new_ranges.push(elem.clone());
+                    new_ranges.push(*elem);
                 }
             }
 

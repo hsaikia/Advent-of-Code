@@ -1,12 +1,12 @@
 // A Generic Grid of items of type T
 #[derive(Debug, Clone)]
-pub struct Grid<T: Copy + Default> {
+pub struct Grid<T: std::fmt::Debug + Clone + Default> {
     pub values: Vec<Vec<T>>,
     pub rows: usize,
     pub cols: usize,
 }
 
-impl<T: Copy + Default> Grid<T> {
+impl<T: std::fmt::Debug + Clone + Default> Grid<T> {
     pub fn new(n: usize, m: usize, val: T) -> Self {
         Grid {
             values: vec![vec![val; m]; n],
@@ -28,6 +28,17 @@ impl<T: Copy + Default> Grid<T> {
         grid
     }
 
+    pub fn print(&self) {
+        for row in &self.values {
+            for cell in row {
+                print!("{:?}", &cell);
+            }
+            println!();
+        }
+
+        println!();
+    }
+
     pub fn to_flat_idx(&self, i: usize, j: usize) -> usize {
         i * self.cols + j
     }
@@ -38,7 +49,7 @@ impl<T: Copy + Default> Grid<T> {
 
     pub fn get(&self, i: usize, j: usize) -> Option<T> {
         if i < self.rows && j < self.cols {
-            return Some(self.values[i][j]);
+            return Some(self.values[i][j].clone());
         }
         None
     }
@@ -61,11 +72,10 @@ impl<T: Copy + Default> Grid<T> {
         let mut x = i as i32;
         let mut y = j as i32;
         let mut found = false;
-        if (di < 0 && x + di >= 0) || (di > 0 && x + di < self.rows as i32) {
+        if ((di < 0 && x + di >= 0) || (di >= 0 && x + di < self.rows as i32))
+            && ((dj < 0 && y + dj >= 0) || (dj >= 0 && y + dj < self.cols as i32))
+        {
             x += di;
-            found = true;
-        }
-        if (dj < 0 && y + dj >= 0) || (dj > 0 && y + dj < self.cols as i32) {
             y += dj;
             found = true;
         }
@@ -169,5 +179,8 @@ mod tests {
         assert!(sxy[1] == vec![(2, 3), (2, 2), (2, 1), (2, 0)]);
         assert!(sxy[2] == vec![(3, 4), (4, 4), (5, 4), (6, 4), (7, 4), (8, 4), (9, 4)]);
         assert!(sxy[3] == vec![(2, 5)]);
+
+        let nxy = grid.adjacent_8(0, 0);
+        assert!(nxy == vec![(1, 0), (0, 1), (1, 1)]);
     }
 }

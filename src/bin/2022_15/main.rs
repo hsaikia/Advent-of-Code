@@ -1,102 +1,93 @@
-const INPUT: [(&str, &str, i32); 1] = [
-    ("Sample Input", include_str!("sample_input.txt"), 10), //("Input", include_str!("input.txt"), 2000000),
+use aoc::range::{Range, RangeUnion};
+use itertools::Itertools;
+
+const INPUT: [(&str, &str, i64, i64); 2] = [
+    ("Sample Input", include_str!("sample_input.txt"), 10, 20),
+    ("Input", include_str!("input.txt"), 2000000, 4000000),
 ];
 
-#[derive(Debug)]
-struct RangeUnion {
-    ranges: Vec<(i32, i32)>,
-}
-
-impl RangeUnion {
-    fn new() -> Self {
-        RangeUnion { ranges: Vec::new() }
-    }
-
-    fn add_range(&mut self, range: (i32, i32)) {
-        let contains_l = self
-            .ranges
-            .clone()
-            .into_iter()
-            .enumerate()
-            .filter(|(_, r)| r.0 >= range.0 && r.1 <= range.0)
-            .collect::<Vec<_>>();
-        let contains_r = self
-            .ranges
-            .clone()
-            .into_iter()
-            .enumerate()
-            .filter(|(_, r)| r.0 >= range.1 && r.1 <= range.1)
-            .collect::<Vec<_>>();
-
-        if contains_l.is_empty() && contains_r.is_empty() {
-            self.ranges.push(range);
-        } else if !contains_l.is_empty() && contains_r.is_empty() {
-            self.ranges[contains_l[0].0].1 = range.1;
-        } else if contains_l.is_empty() && !contains_r.is_empty() {
-            self.ranges[contains_r[0].0].0 = range.0;
-        } else if contains_l[0].0 != contains_r[0].0 {
-            self.ranges[contains_l[0].0].1 = self.ranges[contains_r[0].0].1;
-            self.ranges.remove(contains_r[0].0);
-        }
-    }
-}
-
-fn part1(input_lines: &str, y: i32) {
-    let mut coords: Vec<(i32, i32, i32, i32)> = Vec::new();
-    for line in input_lines.split('\n') {
-        let tokens = line
-            .split(' ')
-            .filter(|&s| s.contains('='))
-            .collect::<Vec<_>>();
-        //println!("{:?}", tokens);
-        coords.push((
-            tokens[0][2..tokens[0].len() - 1].parse::<i32>().unwrap(),
-            tokens[1][2..tokens[1].len() - 1].parse::<i32>().unwrap(),
-            tokens[2][2..tokens[2].len() - 1].parse::<i32>().unwrap(),
-            tokens[3][2..tokens[3].len()].parse::<i32>().unwrap(),
-        ));
-    }
-
-    let _known_beacon_positions = coords
+fn part1(coords: &[(i64, i64, i64, i64)], y: i64) {
+    let known_beacon_positions = coords
         .iter()
         .filter_map(|coord| if y == coord.3 { Some(coord.2) } else { None })
+        .unique()
         .collect::<Vec<_>>();
-    //println!("{:?}", known_beacon_positions);
 
-    //let mut no_beacon_pos = Vec::new();
+    let mut range_union = RangeUnion::<i64>::new();
 
-    let mut range_union = RangeUnion::new();
-
-    for coord in &coords {
+    for coord in coords {
         let d = coord.0.abs_diff(coord.2) + coord.1.abs_diff(coord.3);
         let yd = y.abs_diff(coord.1);
-
         if yd > d {
             continue;
         }
 
-        let xd = d as i32 - yd as i32;
-        //println!("X Range for Sensor at ({},{}) is {}", coord.0, coord.1, xd);
-
-        range_union.add_range((coord.0 - xd, coord.0 + xd));
-
-        // for x in coord.0 - xd..=coord.0 + xd {
-        //     if !no_beacon_pos.contains(&x) && !known_beacon_positions.contains(&x){
-        //         no_beacon_pos.push(x);
-        //     }
-        // }
+        let xd = d as i64 - yd as i64;
+        range_union.add_range(Range::<i64>::new(coord.0 - xd, coord.0 + xd + 1));
     }
 
-    println!("{:?}", range_union);
-    //println!("At y={}, a beacon cannot be present at {:?} locations", y, no_beacon_pos.len());
+    let pos_cannot_exist = range_union.spread()
+        - known_beacon_positions
+            .iter()
+            .filter(|&x| range_union.contains(*x))
+            .count() as i64;
+    println!("Answer Part 1 {}", pos_cannot_exist);
+}
 
-    //    println!("Part 1 Answer : {best}");
+fn part2(coords: &[(i64, i64, i64, i64)], xy_max: i64) {
+    let range_limit = Range::<i64>::new(0, xy_max);
+
+    for y in 0..=xy_max {
+        let mut range_union = RangeUnion::<i64>::new();
+
+        for coord in coords {
+            let d = coord.0.abs_diff(coord.2) + coord.1.abs_diff(coord.3);
+            let yd = y.abs_diff(coord.1);
+            if yd > d {
+                continue;
+            }
+
+            let xd = d as i64 - yd as i64;
+            let range = Range::<i64>::new(coord.0 - xd, coord.0 + xd + 1);
+
+            if let Some(r) = range.intersect(&range_limit) {
+                range_union.add_range(r);
+            }
+            //println!("{:?}", range_union);
+        }
+
+        if range_union.spread() < xy_max {
+            for x in 0..=xy_max {
+                if range_union.contains(x) {
+                    continue;
+                }
+                println!("X = {} Y = {}. Ans Part 2 {}", x, y, 4000000 * x + y);
+                break;
+            }
+        }
+    }
 }
 
 fn main() {
-    for input in INPUT {
-        println!("{}", input.0);
-        part1(input.1, input.2);
-        //part2(input.1);
+    for (file, input, y, y_max) in INPUT {
+        println!("{}", file);
+
+        let mut coords: Vec<(i64, i64, i64, i64)> = Vec::new();
+        for line in input.split('\n') {
+            let tokens = line
+                .split(' ')
+                .filter(|&s| s.contains('='))
+                .collect::<Vec<_>>();
+            //println!("{:?}", tokens);
+            coords.push((
+                tokens[0][2..tokens[0].len() - 1].parse::<i64>().unwrap(),
+                tokens[1][2..tokens[1].len() - 1].parse::<i64>().unwrap(),
+                tokens[2][2..tokens[2].len() - 1].parse::<i64>().unwrap(),
+                tokens[3][2..tokens[3].len()].parse::<i64>().unwrap(),
+            ));
+        }
+
+        part1(&coords, y);
+        part2(&coords, y_max);
     }
 }
