@@ -53,18 +53,18 @@ impl<T: std::fmt::Debug + Clone + Default + PartialEq> Grid<T> {
             .sum::<usize>()
     }
 
-    pub fn find_in_row(&self, row: usize, x: &T) -> Vec<CellIndex> {
+    pub fn find_in_row(&self, row: usize, x: T) -> Vec<CellIndex> {
         self.values[row]
             .iter()
             .enumerate()
-            .filter_map(|(col, c)| if c == x { Some((row, col)) } else { None })
+            .filter_map(|(col, c)| if *c == x { Some((row, col)) } else { None })
             .collect::<Vec<_>>()
     }
 
-    pub fn find_in_col(&self, col: usize, x: &T) -> Vec<CellIndex> {
+    pub fn find_in_col(&self, col: usize, x: T) -> Vec<CellIndex> {
         let mut ret = Vec::new();
         for row in 0..self.rows {
-            if self.values[row][col] == *x {
+            if self.values[row][col] == x {
                 ret.push((row, col));
             }
         }
