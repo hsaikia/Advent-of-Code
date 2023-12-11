@@ -1,14 +1,12 @@
 use aoc::{common, grid::Grid};
 
-const INPUT: [(&str, &str); 2] = [
-    ("Sample Input", include_str!("sample_input.txt")),
-    ("Input", include_str!("input.txt")),
-];
-
-fn solve(input: &str, galaxy_expansion: usize) {
+fn solve(input: &str, galaxy_expansion: usize) -> usize {
     let mut ans: usize = 0;
 
     let grid = Grid::<char>::from_str(input, |c| c);
+
+    grid.print();
+
     let empty_rows = (0..grid.rows)
         .filter(|r| grid.find_in_row(*r, '#').is_empty())
         .collect::<Vec<_>>();
@@ -31,13 +29,25 @@ fn solve(input: &str, galaxy_expansion: usize) {
         }
     }
 
-    println!("Answer : {}", ans);
+    ans
 }
 
 fn main() {
-    for (file, input) in INPUT {
-        println!("{}", file);
-        solve(input, 2);
-        solve(input, 1000000);
+    let input = include_str!("sample_input.txt");
+    println!("Part1 Answer {}", solve(input, 2));
+    println!("Part2 Answer {}", solve(input, 1000000));
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_sample() {
+        let sample_input = "...#......\n.......#..\n#.........\n..........\n......#...\n.#........\n.........#\n..........\n.......#..\n#...#.....";
+        assert_eq!(solve(sample_input, 2), 374);
+        assert_eq!(solve(sample_input, 10), 1030);
+        assert_eq!(solve(sample_input, 100), 8410);
+        assert_eq!(solve(sample_input, 1000000), 82000210);
     }
 }

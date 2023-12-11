@@ -62,13 +62,15 @@ impl<T: std::fmt::Debug + Clone + Default + PartialEq> Grid<T> {
     }
 
     pub fn find_in_col(&self, col: usize, x: T) -> Vec<CellIndex> {
-        let mut ret = Vec::new();
-        for row in 0..self.rows {
-            if self.values[row][col] == x {
-                ret.push((row, col));
-            }
-        }
-        ret
+        (0..self.rows)
+            .filter_map(|row| {
+                if self.values[row][col] == x {
+                    Some((row, col))
+                } else {
+                    None
+                }
+            })
+            .collect::<Vec<_>>()
     }
 
     pub fn print(&self) {
