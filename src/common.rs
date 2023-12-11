@@ -21,3 +21,7 @@ impl<K: Copy + Hash + Eq + PartialEq, V, S: BuildHasher> HashMapVector<K, V>
         }
     }
 }
+
+pub fn minmax<T: Ord + Copy>(x: &T, y: &T) -> (T, T) {
+    (*x.min(y), *x.max(y))
+}

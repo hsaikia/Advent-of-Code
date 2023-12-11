@@ -1,4 +1,4 @@
-use aoc::grid::Grid;
+use aoc::{common, grid::Grid};
 
 const INPUT: [(&str, &str); 2] = [
     ("Sample Input", include_str!("sample_input.txt")),
@@ -20,25 +20,12 @@ fn solve(input: &str, galaxy_expansion: usize) {
 
     for i in 0..star_positions.len() {
         for j in i + 1..star_positions.len() {
-            let mut d = star_positions[i].0.abs_diff(star_positions[j].0)
-                + star_positions[i].1.abs_diff(star_positions[j].1);
+            let (r1, r2) = common::minmax(&star_positions[i].0, &star_positions[j].0);
+            let (c1, c2) = common::minmax(&star_positions[i].1, &star_positions[j].1);
+            let mut d = r2 + c2 - r1 - c1;
 
-            let r1 = star_positions[i].0.min(star_positions[j].0);
-            let r2 = star_positions[i].0.max(star_positions[j].0);
-            let c1 = star_positions[i].1.min(star_positions[j].1);
-            let c2 = star_positions[i].1.max(star_positions[j].1);
-
-            for row in r1 + 1..r2 {
-                if empty_rows.contains(&row) {
-                    d += galaxy_expansion - 1;
-                }
-            }
-
-            for col in c1 + 1..c2 {
-                if empty_cols.contains(&col) {
-                    d += galaxy_expansion - 1;
-                }
-            }
+            d += (r1 + 1..r2).filter(|r| empty_rows.contains(r)).count() * (galaxy_expansion - 1);
+            d += (c1 + 1..c2).filter(|c| empty_cols.contains(c)).count() * (galaxy_expansion - 1);
 
             ans += d;
         }
