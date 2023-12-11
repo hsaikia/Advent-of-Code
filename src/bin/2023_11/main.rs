@@ -18,10 +18,10 @@ fn solve(input: &str, galaxy_expansion: usize) {
 
     let star_positions = grid.positions('#');
 
-    for i in 0..star_positions.len() {
-        for j in i + 1..star_positions.len() {
-            let (r1, r2) = common::minmax(&star_positions[i].0, &star_positions[j].0);
-            let (c1, c2) = common::minmax(&star_positions[i].1, &star_positions[j].1);
+    for (i, (r1, c1)) in star_positions.iter().enumerate() {
+        for (r2, c2) in star_positions.iter().skip(i + 1) {
+            let (r1, r2) = common::minmax(r1, r2);
+            let (c1, c2) = common::minmax(c1, c2);
             let mut d = r2 + c2 - r1 - c1;
 
             d += (r1 + 1..r2).filter(|r| empty_rows.contains(r)).count() * (galaxy_expansion - 1);
