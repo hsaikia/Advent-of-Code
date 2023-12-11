@@ -5,8 +5,6 @@ fn solve(input: &str, galaxy_expansion: usize) -> usize {
 
     let grid = Grid::<char>::from_str(input, |c| c);
 
-    grid.print();
-
     let empty_rows = (0..grid.rows)
         .filter(|r| grid.find_in_row(*r, '#').is_empty())
         .collect::<Vec<_>>();
@@ -33,7 +31,7 @@ fn solve(input: &str, galaxy_expansion: usize) -> usize {
 }
 
 fn main() {
-    let input = include_str!("sample_input.txt");
+    let input = include_str!("input.txt");
     println!("Part1 Answer {}", solve(input, 2));
     println!("Part2 Answer {}", solve(input, 1000000));
 }
