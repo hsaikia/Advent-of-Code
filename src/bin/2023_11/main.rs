@@ -5,12 +5,16 @@ const INPUT: [(&str, &str); 2] = [
     ("Input", include_str!("input.txt")),
 ];
 
-fn solve(input: &str, galaxy_expansion : usize) {
+fn solve(input: &str, galaxy_expansion: usize) {
     let mut ans: usize = 0;
 
     let grid = Grid::<char>::from_str(input, |c| c);
-    let empty_rows = (0..grid.rows).filter(|r| grid.find_in_row(*r, &'#').is_empty()).collect::<Vec<_>>();
-    let empty_cols = (0..grid.cols).filter(|r| grid.find_in_col(*r, &'#').is_empty()).collect::<Vec<_>>();
+    let empty_rows = (0..grid.rows)
+        .filter(|r| grid.find_in_row(*r, &'#').is_empty())
+        .collect::<Vec<_>>();
+    let empty_cols = (0..grid.cols)
+        .filter(|r| grid.find_in_col(*r, &'#').is_empty())
+        .collect::<Vec<_>>();
     let stars = grid.positions('#');
 
     for i in 0..stars.len() {
@@ -24,14 +28,14 @@ fn solve(input: &str, galaxy_expansion : usize) {
             for row in r1 + 1..r2 {
                 if empty_rows.contains(&row) {
                     d += galaxy_expansion - 1;
-                } 
+                }
             }
             for col in c1 + 1..c2 {
                 if empty_cols.contains(&col) {
                     d += galaxy_expansion - 1;
-                } 
+                }
             }
-            ans += d ;
+            ans += d;
         }
     }
 
