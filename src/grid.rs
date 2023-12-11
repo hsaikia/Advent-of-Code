@@ -34,11 +34,41 @@ impl<T: std::fmt::Debug + Clone + Default + PartialEq> Grid<T> {
         grid
     }
 
+    pub fn positions(&self, x: T) -> Vec<CellIndex> {
+        let mut ret = Vec::new();
+        for r in 0..self.rows {
+            for c in 0..self.cols {
+                if self.values[r][c] == x {
+                    ret.push((r, c));
+                }
+            }
+        }
+        ret
+    }
+
     pub fn count(&self, x: &T) -> usize {
         self.values
             .iter()
             .map(|row| row.iter().filter(|&cell| cell == x).count())
             .sum::<usize>()
+    }
+
+    pub fn find_in_row(&self, row: usize, x: &T) -> Vec<CellIndex> {
+        self.values[row]
+            .iter()
+            .enumerate()
+            .filter_map(|(col, c)| if c == x { Some((row, col)) } else { None })
+            .collect::<Vec<_>>()
+    }
+
+    pub fn find_in_col(&self, col: usize, x: &T) -> Vec<CellIndex> {
+        let mut ret = Vec::new();
+        for row in 0..self.rows {
+            if self.values[row][col] == *x {
+                ret.push((row, col));
+            }
+        }
+        ret
     }
 
     pub fn print(&self) {
