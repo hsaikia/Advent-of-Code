@@ -1,4 +1,7 @@
-use std::{collections::{HashMap, HashSet}, hash::Hash};
+use std::{
+    collections::{HashMap, HashSet},
+    hash::Hash,
+};
 
 use aoc::io;
 use itertools::Itertools;
@@ -90,79 +93,62 @@ fn cnt(s: &[char], ch: char) -> usize {
     s.iter().filter(|&c| *c == ch).count()
 }
 
-fn append_front(s : &[char]) -> Vec<char> {
-    let mut ret : Vec<char> = Vec::new();
+fn append_front(s: &[char]) -> Vec<char> {
+    let mut ret: Vec<char> = Vec::new();
     ret.push('?');
     ret.extend(s);
     ret
 }
 
-fn append_back(s : &[char]) -> Vec<char> {
-    let mut ret : Vec<char> = Vec::new();
+fn append_back(s: &[char]) -> Vec<char> {
+    let mut ret: Vec<char> = Vec::new();
     ret.extend(s);
     ret.push('?');
     ret
 }
 
-#[derive(PartialEq, Eq, Hash)]
-struct DpIdx {
-    si : usize,
-    ni : usize,
-    hashes_seen_so_far : usize
-}
+fn dp_solve(s: Vec<char>, mut n: Vec<usize>, mut hashes: usize) -> usize {
+    //println!("Calling DP solve on {:?} with {:?} and hashes {}", s, n, hashes);
 
-fn dp_solve(s : &Vec<char>, n : &Vec<usize>, idx : DpIdx, seen : &HashSet<DpIdx>) -> usize {
-    println!("Calling DP solve on {:?} with {:?}", s, n);
+    if n.is_empty() {
+        //println!("FOUND MATCH!");
+        return 1;
+    }
 
-    if seen.contains(&idx) {
+    if s.is_empty() && n[0] == hashes {
+        return 1;
+    }
+
+    if s.is_empty() {
         return 0;
     }
 
-    if idx.hashes_seen_so_far == n[idx.ni]{
-        return 1; 
-    }
-    
-    if idx.si == s.len() {
-        return 0;
-    }
+    if s[0] == '#' {
 
-    if idx.hashes_seen_so_far == n[idx.ni] && s[idx.si] == '#' {
-        return 0;
-    }
-
-    if s[idx.si] == '#' {
-        let mut idx_next = idx;
-        idx_next.hashes_seen_so_far += 1;
-        idx_next.si += 1;
-        let mut seen1 = seen.clone();
-        seen1.insert(idx_next);
-        return dp_solve(s, n, idx_next, seen1);
-    } else if s[0] == '.' {
-        if n[0] == 0 {
-            let mut nn = n.clone();
-            nn.remove(0);
-            return dp_solve(s[1..].to_vec(), nn);    
+        if n[0] == hashes {
+            return 0;
         }
-        return dp_solve(s[1..].to_vec(), n);
+
+        return dp_solve(s[1..].to_vec(), n, hashes + 1);
+    } else if s[0] == '.' {
+
+        if n[0] == hashes {
+            n.remove(0);
+        }
+
+        return dp_solve(s[1..].to_vec(), n, 0);
     } else if s[0] == '?' {
-        if n[0] > 0 {
-            let mut nn = n.clone();
-            nn[0] -= 1;
-            let dph = dp_solve(s[1..].to_vec(), nn.clone());
-            let dpd = dp_solve(s[1..].to_vec(), n);
-            // if dph == 0 {
-            //     return dpd;
-            // }
-            // if dpd == 0 {
-            //     return dph;
-            // }
-            // return dpd * dph;
+
+        if n[0] == hashes {
+            n.remove(0);
+            return dp_solve(s[1..].to_vec(), n, 0);
+        } else if hashes == 0 {
+            let dph = dp_solve(s[1..].to_vec(), n.clone(), 1);
+            let dpd = dp_solve(s[1..].to_vec(), n, 0);
             return dpd + dph;
         } else {
-            let mut nn = n.clone();
-            nn.remove(0);
-            return dp_solve(s[1..].to_vec(), nn);    
-        }
+            return dp_solve(s[1..].to_vec(), n.clone(), hashes + 1);
+        }   
     }
 
     0
@@ -224,8 +210,7 @@ fn solve(input: &str) {
             })
             .collect::<Vec<_>>();
 
-        let seen : HashMap<DpIdx, usize> = HashMap::new();
-        let dp_sol = dp_solve(arr.clone(), nums.clone(), &seen);
+        let dp_sol = dp_solve(arr.clone(), nums.clone(), 0);
 
         println!(
             "{:?} | {:?} | {} combos to check | Good {} | DP {}\n{:?}\n",
