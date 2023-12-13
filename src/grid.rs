@@ -73,6 +73,34 @@ impl<T: std::fmt::Debug + Clone + Default + PartialEq> Grid<T> {
             .collect::<Vec<_>>()
     }
 
+    pub fn common_elements_in_rows(&self, r1: usize, r2: usize) -> usize {
+        let mut ans = 0;
+        for i in 0..self.cols {
+            if self.values[r1][i] == self.values[r2][i] {
+                ans += 1
+            }
+        }
+        ans
+    }
+
+    pub fn common_elements_in_cols(&self, c1: usize, c2: usize) -> usize {
+        let mut ans = 0;
+        for i in 0..self.rows {
+            if self.values[i][c1] == self.values[i][c2] {
+                ans += 1
+            }
+        }
+        ans
+    }
+
+    pub fn are_rows_equal(&self, r1: usize, r2: usize) -> bool {
+        self.common_elements_in_rows(r1, r2) == self.cols
+    }
+
+    pub fn are_cols_equal(&self, c1: usize, c2: usize) -> bool {
+        self.common_elements_in_cols(c1, c2) == self.rows
+    }
+
     pub fn print(&self) {
         for row in &self.values {
             for cell in row {
