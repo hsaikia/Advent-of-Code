@@ -1,5 +1,5 @@
 use aoc::grid::Grid;
-use std::collections::HashMap;
+use std::{collections::HashMap, time::Instant};
 
 const INPUT: [(&str, &str); 2] = [
     ("Sample Input", include_str!("sample_input.txt")),
@@ -147,7 +147,15 @@ fn main() {
     for (file, input) in INPUT {
         println!("{}", file);
         let grid = Grid::from_str(input, |c| c);
+
+        let start = Instant::now();
         part1(&grid);
+        let duration = start.elapsed();
+        println!("Time elapsed in Part 1 is: {:?}", duration);
+
+        let start = Instant::now();
         part2(&grid);
+        let duration = start.elapsed();
+        println!("Time elapsed in Part 2 is: {:?}", duration);
     }
 }
