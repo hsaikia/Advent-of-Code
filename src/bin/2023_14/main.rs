@@ -144,10 +144,10 @@ fn part1(grid: &Grid<char>) {
 }
 
 fn part2(grid: &Grid<char>) {
-    let (period, offset) = period_and_offset(grid);
-    let times = (1000000000 - offset) % period;
+    let (period, offset_front) = period_and_offset(grid);
+    let offset_back = (1000000000 - offset_front) % period;
     let mut grid = grid.clone();
-    simulate(&mut grid, period + offset + times);
+    simulate(&mut grid, period + offset_front + offset_back);
     println!(
         "North Load after simulating 1000000000 times {}",
         north_load(&grid)
