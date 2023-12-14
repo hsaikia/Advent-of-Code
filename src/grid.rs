@@ -1,5 +1,6 @@
+use std::collections::hash_map::DefaultHasher;
 use std::collections::VecDeque;
-use std::hash::Hash;
+use std::hash::{Hash, Hasher};
 
 // A Generic Grid of items of type T
 
@@ -7,19 +8,25 @@ pub type CellIndex = (usize, usize);
 pub type CellDir = (i32, i32);
 
 #[derive(Debug, Clone, Hash, Eq, PartialEq)]
-pub struct Grid<T: std::fmt::Debug + Clone + Default + PartialEq> {
+pub struct Grid<T: std::fmt::Debug + Clone + Default + PartialEq + Hash> {
     pub values: Vec<Vec<T>>,
     pub rows: usize,
     pub cols: usize,
 }
 
-impl<T: std::fmt::Debug + Clone + Default + PartialEq> Grid<T> {
+impl<T: std::fmt::Debug + Clone + Default + PartialEq + Hash> Grid<T> {
     pub fn new(n: usize, m: usize, val: T) -> Self {
         Grid {
             values: vec![vec![val; m]; n],
             rows: n,
             cols: m,
         }
+    }
+
+    pub fn get_hash(&self) -> u64 {
+        let mut h = DefaultHasher::new();
+        self.hash(&mut h);
+        h.finish()
     }
 
     pub fn from_str(input: &str, f: fn(char) -> T) -> Self {

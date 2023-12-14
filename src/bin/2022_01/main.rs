@@ -1,7 +1,4 @@
-const INPUT: [(&str, &str); 2] = [
-    ("Sample Input", include_str!("sample_input.txt")),
-    ("Input", include_str!("input.txt")),
-];
+use std::env;
 
 fn part1(input: &str) {
     let mut curr: usize = 0;
@@ -38,9 +35,9 @@ fn part2(input: &str) {
 }
 
 fn main() {
-    for input in INPUT {
-        println!("{}", input.0);
-        part1(input.1);
-        part2(input.1);
-    }
+    let args: Vec<String> = env::args().collect();
+    let filepath = &args[1];
+    let input = std::fs::read_to_string(filepath).unwrap();
+    part1(&input);
+    part2(&input);
 }

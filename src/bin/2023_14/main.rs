@@ -1,9 +1,5 @@
-use std::{
-    collections::hash_map::DefaultHasher,
-    hash::{Hash, Hasher},
-};
-
 use aoc::grid::Grid;
+use std::collections::HashMap;
 
 const INPUT: [(&str, &str); 2] = [
     ("Sample Input", include_str!("sample_input.txt")),
@@ -88,30 +84,23 @@ fn simulate(grid: &mut Grid<char>, cycles: usize) {
 }
 
 fn period_and_offset(grid_original: &Grid<char>) -> (usize, usize) {
-    let mut hashes = Vec::new();
+    let mut map: HashMap<u64, usize> = HashMap::new();
     let mut cycles = 0;
     let mut grid = grid_original.clone();
 
-    let mut h = DefaultHasher::new();
-    grid.hash(&mut h);
-    hashes.push(h.finish());
     loop {
+        map.insert(grid.get_hash(), cycles);
         let mut grid_new = grid.clone();
         simulate(&mut grid_new, 1);
         cycles += 1;
 
-        h = DefaultHasher::new();
-        grid_new.hash(&mut h);
-        let hsh = h.finish();
-
-        for (i, hash) in hashes.iter().enumerate() {
-            if *hash == hsh {
-                return (cycles - i, i);
-            }
+        let hsh = grid_new.get_hash();
+        if map.contains_key(&hsh) {
+            let idx = map.get(&hsh).unwrap();
+            return (cycles - idx, *idx);
         }
 
         grid = grid_new;
-        hashes.push(hsh);
     }
 }
 
