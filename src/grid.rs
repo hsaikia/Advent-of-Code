@@ -1,11 +1,12 @@
 use std::collections::VecDeque;
+use std::hash::Hash;
 
 // A Generic Grid of items of type T
 
 pub type CellIndex = (usize, usize);
 pub type CellDir = (i32, i32);
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Hash, Eq, PartialEq)]
 pub struct Grid<T: std::fmt::Debug + Clone + Default + PartialEq> {
     pub values: Vec<Vec<T>>,
     pub rows: usize,
