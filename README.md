@@ -4,7 +4,9 @@ This repo contains my solutions to [Advent of Code](https://adventofcode.com/) p
 
 ## How to run
 
-Currently the file structure assumes that all input files are contained in the respective binary folder for each day. Once that is setup, we need to run the command
+You need to have rustc (and cargo) installed. Instructions [here](https://www.rust-lang.org/tools/install).
+
+Currently the file structure assumes that a certain number of input files are contained in the respective binary folder for each day. Once those are set up, we need to run the command from the root directory
 
 ```
 cargo run --release --bin <binary_name>
