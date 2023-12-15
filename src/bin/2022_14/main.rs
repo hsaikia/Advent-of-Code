@@ -1,12 +1,7 @@
-use aoc::io;
+use aoc::{common, io};
 use std::cmp::Ordering;
 
-const INPUT: [(&str, &str); 2] = [
-    ("Sample Input", include_str!("sample_input.txt")),
-    ("Input", include_str!("input.txt")),
-];
-
-fn part1(input_lines: &str) {
+fn part1(input_lines: &str) -> usize {
     let mut blocked: Vec<(i32, i32)> = Vec::new();
     let mut max_depth = 0;
     for line in input_lines.split('\n') {
@@ -42,7 +37,6 @@ fn part1(input_lines: &str) {
     let rocks = blocked.len();
 
     let dir = [(0, 1), (-1, 1), (1, 1)];
-    let mut overflow = false;
     loop {
         let mut sand_pos = (500, 0);
         //println!("New Sand .. {}", blocked.len());
@@ -65,19 +59,13 @@ fn part1(input_lines: &str) {
             }
 
             if sand_pos.1 > max_depth {
-                println!("Sand deposited {}", blocked.len() - rocks);
-                overflow = true;
-                break;
+                return blocked.len() - rocks;
             }
-        }
-
-        if overflow {
-            break;
         }
     }
 }
 
-fn part2(input_lines: &str) {
+fn part2(input_lines: &str) -> usize {
     let mut blocked: Vec<(i32, i32)> = Vec::new();
     let mut max_depth = 0;
     for line in input_lines.split('\n') {
@@ -109,7 +97,7 @@ fn part2(input_lines: &str) {
         }
     }
 
-    println!("{:?} Max depth {}", blocked, max_depth);
+    //println!("{:?} Max depth {}", blocked, max_depth);
     let rocks = blocked.len();
 
     let dir = [(0, 1), (-1, 1), (1, 1)];
@@ -117,13 +105,12 @@ fn part2(input_lines: &str) {
         let mut sand_pos = (500, 0);
 
         if blocked.contains(&sand_pos) {
-            println!("Sand deposited {}", blocked.len() - rocks);
-            break;
+            return blocked.len() - rocks;
         }
 
-        println!("New Sand .. {}", blocked.len());
+        //println!("New Sand .. {}", blocked.len());
         loop {
-            println!("Sand moving.. {:?}", sand_pos);
+            //println!("Sand moving.. {:?}", sand_pos);
             let mut settled = true;
             for d in dir {
                 let new_sand_pos = (sand_pos.0 + d.0, sand_pos.1 + d.1);
@@ -144,9 +131,7 @@ fn part2(input_lines: &str) {
 }
 
 fn main() {
-    for input in INPUT {
-        println!("{}", input.0);
-        part1(input.1);
-        part2(input.1);
-    }
+    let input = common::get_input();
+    common::timed(&input, part1, true);
+    common::timed(&input, part2, false);
 }

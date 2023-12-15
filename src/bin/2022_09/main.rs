@@ -1,10 +1,5 @@
+use aoc::common;
 use itertools::Itertools;
-
-const INPUT: [(&str, &str); 3] = [
-    ("Sample Input 1", include_str!("sample_input.txt")),
-    ("Sample Input 2", include_str!("sample_input_2.txt")),
-    ("Input", include_str!("input.txt")),
-];
 
 fn follow_knot(head_new: (i32, i32), tail_old: (i32, i32)) -> (i32, i32) {
     let mut dx = head_new.0 - tail_old.0;
@@ -26,15 +21,15 @@ fn follow_knot(head_new: (i32, i32), tail_old: (i32, i32)) -> (i32, i32) {
     (tail_old.0 + dx, tail_old.1 + dy)
 }
 
-fn solve<const ROPE_SIZE: usize>(input_lines: &str) {
+fn solve<const ROPE_SIZE: usize>(input: &str) -> usize {
     let mut rope: [(i32, i32); ROPE_SIZE] = [(0, 0); ROPE_SIZE];
     let mut tail_history = Vec::new();
-    for line in input_lines.split('\n') {
-        let command = line.split(' ').collect::<Vec<&str>>();
-        let steps = command[1].parse::<i32>().unwrap();
+    for line in input.lines() {
+        let (command, steps) = line.split_once(' ').unwrap();
+        let steps = steps.parse::<i32>().unwrap();
         let mut dx = 0;
         let mut dy = 0;
-        match command[0] {
+        match command {
             "R" => dy = 1,
             "L" => dy = -1,
             "U" => dx = -1,
@@ -50,18 +45,18 @@ fn solve<const ROPE_SIZE: usize>(input_lines: &str) {
             }
         }
     }
-    tail_history = tail_history.into_iter().unique().collect::<Vec<_>>();
-    println!(
-        "Answer with Rope of size {} : {}",
-        ROPE_SIZE,
-        tail_history.len()
-    );
+    tail_history.into_iter().unique().count()
 }
 
+fn part1(input: &str) -> usize {
+    solve::<2>(input)
+}
+
+fn part2(input: &str) -> usize {
+    solve::<10>(input)
+}
 fn main() {
-    for input in INPUT {
-        println!("{}", input.0);
-        solve::<2>(input.1);
-        solve::<10>(input.1);
-    }
+    let input = common::get_input();
+    common::timed(&input, part1, true);
+    common::timed(&input, part2, false);
 }

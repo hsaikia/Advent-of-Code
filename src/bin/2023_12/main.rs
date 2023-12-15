@@ -1,11 +1,5 @@
+use aoc::{common, io};
 use std::{collections::HashMap, hash::Hash};
-
-use aoc::io;
-
-const INPUT: [(&str, &str); 2] = [
-    ("Sample Input", include_str!("sample_input.txt")),
-    ("Input", include_str!("input.txt")),
-];
 
 fn expand(arr: &[char], nums: &[usize]) -> (Vec<char>, Vec<usize>) {
     let mut arr5 = arr.to_owned();
@@ -96,7 +90,7 @@ fn solve(s: Vec<char>, mut n: Vec<usize>, hashes: usize, mp: &mut HashMap<Id, us
     0
 }
 
-fn process(input: &str, part1: bool) {
+fn process(input: &str, part1: bool) -> usize {
     let mut ans: usize = 0;
 
     for line in input.split('\n') {
@@ -118,13 +112,19 @@ fn process(input: &str, part1: bool) {
         ans += dp_sol;
     }
 
-    println!("Answer Part {} : {}", if part1 { 1 } else { 2 }, ans);
+    ans
+}
+
+fn part1(input: &str) -> usize {
+    process(input, true)
+}
+
+fn part2(input: &str) -> usize {
+    process(input, false)
 }
 
 fn main() {
-    for (file, input) in INPUT {
-        println!("{}", file);
-        process(input, true);
-        process(input, false);
-    }
+    let input = common::get_input();
+    common::timed(&input, part1, true);
+    common::timed(&input, part2, false);
 }

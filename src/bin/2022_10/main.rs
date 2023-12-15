@@ -1,7 +1,4 @@
-const INPUT: [(&str, &str); 2] = [
-    ("Sample Input", include_str!("sample_input.txt")),
-    ("Input", include_str!("input.txt")),
-];
+use aoc::common;
 
 fn register_history(input_lines: &str) -> Vec<i32> {
     let mut register: Vec<i32> = vec![1];
@@ -20,7 +17,7 @@ fn register_history(input_lines: &str) -> Vec<i32> {
     register
 }
 
-fn part1(input_lines: &str) {
+fn part1(input_lines: &str) -> i32 {
     let mut ans = 0;
     let register = register_history(input_lines);
 
@@ -30,11 +27,11 @@ fn part1(input_lines: &str) {
         ans += cycle as i32 * register[cycle - 1];
     }
 
-    println!("Part 1 Answer : {ans}");
+    ans
 }
 
-fn part2(input_lines: &str) {
-    let mut ans: Vec<String> = Vec::new();
+fn part2(input_lines: &str) -> common::GridDisplay {
+    let mut ans = common::GridDisplay { rows: Vec::new() };
     let register = register_history(input_lines);
 
     const W: usize = 40;
@@ -53,18 +50,14 @@ fn part2(input_lines: &str) {
                 crt_row.push('.');
             }
         }
-        ans.push(crt_row);
+        ans.rows.push(crt_row);
     }
 
-    for s in &ans {
-        println!("{s}");
-    }
+    ans
 }
 
 fn main() {
-    for input in INPUT {
-        println!("{}", input.0);
-        part1(input.1);
-        part2(input.1);
-    }
+    let input = common::get_input();
+    common::timed(&input, part1, true);
+    common::timed(&input, part2, false);
 }

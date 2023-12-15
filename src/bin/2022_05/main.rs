@@ -1,7 +1,4 @@
-const INPUT: [(&str, &str); 2] = [
-    ("Sample Input", include_str!("sample_input.txt")),
-    ("Input", include_str!("input.txt")),
-];
+use aoc::common;
 
 fn part1(stacks: &[Vec<char>], instructions: &Vec<Vec<usize>>) {
     let mut stacks = stacks.to_owned();
@@ -81,10 +78,8 @@ fn pre_process(input: &str) -> (Vec<Vec<char>>, Vec<Vec<usize>>) {
 }
 
 fn main() {
-    for input in INPUT {
-        println!("{}", input.0);
-        let (stacks, instructions) = pre_process(input.1);
-        part1(&stacks, &instructions);
-        part2(&stacks, &instructions);
-    }
+    let input = common::get_input();
+    let (stacks, instructions) = pre_process(&input);
+    part1(&stacks, &instructions);
+    part2(&stacks, &instructions);
 }

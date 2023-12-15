@@ -1,14 +1,9 @@
-use aoc::grid::Grid;
+use aoc::{common, grid::Grid};
 
 use std::collections::{HashMap, VecDeque};
 
 #[macro_use]
 extern crate lazy_static;
-
-const INPUT: [(&str, &str); 2] = [
-    ("Sample Input", include_str!("sample_input.txt")),
-    ("Input", include_str!("input.txt")),
-];
 
 lazy_static! {
     static ref ELEV: HashMap<char, usize> = {
@@ -96,11 +91,8 @@ fn get_grid(input: &str) -> (Grid<usize>, (usize, usize), (usize, usize)) {
 }
 
 fn main() {
-    for input in INPUT {
-        println!("{}", input.0);
-
-        let (grid, start, end) = get_grid(input.1);
-        part1(&grid, start, end);
-        part2(&grid, end);
-    }
+    let input = common::get_input();
+    let (grid, start, end) = get_grid(&input);
+    part1(&grid, start, end);
+    part2(&grid, end);
 }

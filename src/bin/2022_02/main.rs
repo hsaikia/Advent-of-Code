@@ -1,7 +1,4 @@
-const INPUT: [(&str, &str); 2] = [
-    ("Sample Input", include_str!("sample_input.txt")),
-    ("Input", include_str!("input.txt")),
-];
+use aoc::common;
 
 fn idx(x: &str) -> i32 {
     match x {
@@ -12,7 +9,7 @@ fn idx(x: &str) -> i32 {
     }
 }
 
-fn part1(input_lines: &str) {
+fn part1(input_lines: &str) -> i32 {
     let mut score = 0;
 
     for line in input_lines.split('\n') {
@@ -24,11 +21,10 @@ fn part1(input_lines: &str) {
             score += 3;
         }
     }
-
-    println!("Part 1 Answer : {score}");
+    score
 }
 
-fn part2(input_lines: &str) {
+fn part2(input_lines: &str) -> i32 {
     let mut score = 0;
 
     for line in input_lines.split('\n') {
@@ -43,14 +39,11 @@ fn part2(input_lines: &str) {
             score += (idx[0] + 2) % 3 + 1;
         }
     }
-
-    println!("Part 2 Answer : {score}");
+    score
 }
 
 fn main() {
-    for input in INPUT {
-        println!("{}", input.0);
-        part1(input.1);
-        part2(input.1);
-    }
+    let input = common::get_input();
+    common::timed(&input, part1, true);
+    common::timed(&input, part2, false);
 }

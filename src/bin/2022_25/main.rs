@@ -1,7 +1,4 @@
-const INPUT: [(&str, &str); 2] = [
-    ("Sample Input", include_str!("sample_input.txt")),
-    ("Input", include_str!("input.txt")),
-];
+use aoc::common;
 
 fn encode(num: i64) -> String {
     let mut num_snafu: String = String::new();
@@ -42,21 +39,18 @@ fn decode(num_snafu: &str) -> i64 {
     num
 }
 
-fn part1(input_lines: &str) {
+fn part1(input_lines: &str) -> String {
     let mut sum: i64 = 0;
 
     for line in input_lines.split('\n') {
         sum += decode(line);
     }
 
-    println!("Decoded Sum : {}", sum);
-    println!("Part 1 Answer : {}", encode(sum))
+    // println!("Decoded Sum : {}", sum);
+    encode(sum)
 }
 
 fn main() {
-    for input in INPUT {
-        println!("{}", input.0);
-        part1(input.1);
-        //part2(input.1);
-    }
+    let input = common::get_input();
+    common::timed(&input, part1, true);
 }

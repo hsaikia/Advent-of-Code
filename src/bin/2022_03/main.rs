@@ -1,12 +1,8 @@
+use aoc::common;
 use std::collections::HashMap;
 
 #[macro_use]
 extern crate lazy_static;
-
-const INPUT: [(&str, &str); 2] = [
-    ("Sample Input", include_str!("sample_input.txt")),
-    ("Input", include_str!("input.txt")),
-];
 
 lazy_static! {
     static ref PRIO: HashMap<char, usize> = {
@@ -23,7 +19,7 @@ lazy_static! {
     };
 }
 
-fn part1(input_lines: &str) {
+fn part1(input_lines: &str) -> usize {
     let mut priority_sum: usize = 0;
 
     for line in input_lines.split('\n') {
@@ -31,11 +27,10 @@ fn part1(input_lines: &str) {
         let chars: Vec<_> = rs.0.chars().filter(|c| rs.1.contains(*c)).collect();
         priority_sum += PRIO[&chars[0]];
     }
-
-    println!("Part 1 Answer : {priority_sum}");
+    priority_sum
 }
 
-fn part2(input: &str) {
+fn part2(input: &str) -> usize {
     let mut priority_sum: usize = 0;
     let input_lines = input.split('\n').collect::<Vec<&str>>();
 
@@ -48,14 +43,11 @@ fn part2(input: &str) {
             .collect();
         priority_sum += PRIO[&chars[0]];
     }
-
-    println!("Part 2 Answer : {priority_sum}");
+    priority_sum
 }
 
 fn main() {
-    for input in INPUT {
-        println!("{}", input.0);
-        part1(input.1);
-        part2(input.1);
-    }
+    let input = common::get_input();
+    common::timed(&input, part1, true);
+    common::timed(&input, part2, false);
 }

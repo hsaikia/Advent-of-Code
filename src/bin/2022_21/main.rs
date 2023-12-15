@@ -1,10 +1,5 @@
-use aoc::io;
+use aoc::{common, io};
 use std::{cmp::Ordering, collections::HashMap};
-
-const INPUT: [(&str, &str); 2] = [
-    ("Sample Input", include_str!("sample_input.txt")),
-    ("Input", include_str!("input.txt")),
-];
 
 #[derive(Debug)]
 enum Operator {
@@ -47,7 +42,7 @@ fn find<'a>(
     panic!("Should not reach here! {} Monkey not found!", monkey_name);
 }
 
-fn part1(input_lines: &str) {
+fn part1(input_lines: &str) -> i64 {
     let mut ops: HashMap<&str, Yell> = HashMap::new();
 
     for line in input_lines.split('\n') {
@@ -87,13 +82,10 @@ fn part1(input_lines: &str) {
 
     //println!("{:?}", ops);
     let mut values: HashMap<&str, Option<i64>> = HashMap::new();
-    println!("Part 1 Answer : {}", find("root", &ops, &mut values));
+    find("root", &ops, &mut values)
 }
 
 fn main() {
-    for input in INPUT {
-        println!("{}", input.0);
-        part1(input.1);
-        //part2(input.1);
-    }
+    let input = common::get_input();
+    common::timed(&input, part1, true);
 }

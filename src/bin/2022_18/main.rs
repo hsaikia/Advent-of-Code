@@ -1,7 +1,4 @@
-const INPUT: [(&str, &str); 2] = [
-    ("Sample Input", include_str!("sample_input.txt")),
-    ("Input", include_str!("input.txt")),
-];
+use aoc::common;
 
 const RANDOM_PRIME1: i32 = 22283;
 const RANDOM_PRIME2: i32 = 1783;
@@ -10,7 +7,7 @@ fn index(coord: &[i32]) -> i32 {
     RANDOM_PRIME1 * coord[0] + RANDOM_PRIME2 * coord[1] + coord[2]
 }
 
-fn part1(input_lines: &str) {
+fn part1(input: &str) -> usize {
     const SIDES: [(i32, i32, i32); 6] = [
         (0, 0, 1),
         (0, 0, -1),
@@ -21,7 +18,7 @@ fn part1(input_lines: &str) {
     ];
     let mut ans = 0;
     let mut cube_indices: Vec<i32> = Vec::new();
-    for line in input_lines.split('\n') {
+    for line in input.split('\n') {
         let coords = line
             .split(',')
             .map(|s| s.parse::<i32>().unwrap())
@@ -44,13 +41,10 @@ fn part1(input_lines: &str) {
         cube_indices.push(idx)
     }
 
-    println!("Part 1 Answer : {ans}");
+    ans
 }
 
 fn main() {
-    for input in INPUT {
-        println!("{}", input.0);
-        part1(input.1);
-        //part2(input.1);
-    }
+    let input = common::get_input();
+    common::timed(&input, part1, true);
 }

@@ -1,6 +1,6 @@
-use std::{env, time::Instant};
+use std::env;
 
-use aoc::io;
+use aoc::{common, io};
 
 fn hash(s: &str) -> u32 {
     s.chars()
@@ -57,15 +57,8 @@ fn main() {
     let filepath = &args[1];
     let input = std::fs::read_to_string(filepath).unwrap();
 
-    let start = Instant::now();
-    println!("Part1 Answer {}", part1(&input));
-    let duration = start.elapsed();
-    println!("Time elapsed in Part 1 is: {:?}", duration);
-
-    let start = Instant::now();
-    println!("Part2 Answer {}", part2(&input));
-    let duration = start.elapsed();
-    println!("Time elapsed in Part 2 is: {:?}", duration);
+    common::timed(&input, part1, true);
+    common::timed(&input, part2, false);
 }
 
 #[cfg(test)]

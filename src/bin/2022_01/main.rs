@@ -1,6 +1,6 @@
-use std::env;
+use aoc::common;
 
-fn part1(input: &str) {
+fn part1(input: &str) -> usize {
     let mut curr: usize = 0;
     let mut best: usize = 0;
 
@@ -12,11 +12,10 @@ fn part1(input: &str) {
             curr += line.parse::<usize>().unwrap();
         }
     }
-
-    println!("Part 1 Answer : {best}");
+    best
 }
 
-fn part2(input: &str) {
+fn part2(input: &str) -> usize {
     let mut curr: usize = 0;
     let mut best: Vec<usize> = Vec::new();
 
@@ -30,14 +29,11 @@ fn part2(input: &str) {
             curr += line.parse::<usize>().unwrap();
         }
     }
-
-    println!("Part 2 Answer : {}", best.iter().sum::<usize>());
+    best.iter().sum::<usize>()
 }
 
 fn main() {
-    let args: Vec<String> = env::args().collect();
-    let filepath = &args[1];
-    let input = std::fs::read_to_string(filepath).unwrap();
-    part1(&input);
-    part2(&input);
+    let input = common::get_input();
+    common::timed(&input, part1, true);
+    common::timed(&input, part2, false);
 }

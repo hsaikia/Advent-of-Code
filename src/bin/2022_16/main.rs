@@ -1,12 +1,7 @@
 use aoc::graph::Graph;
-use aoc::io;
+use aoc::{common, io};
 
 use std::collections::VecDeque;
-
-const INPUT: [(&str, &str); 1] = [
-    ("Sample Input", include_str!("sample_input.txt")),
-    //("Input", include_str!("input.txt")),
-];
 
 fn part1(graph: &Graph<&str, u64>) {
     let mut max = 0;
@@ -55,10 +50,8 @@ fn construct_graph(input: &str) -> Graph<&str, u64> {
 }
 
 fn main() {
-    for input in INPUT {
-        println!("{}", input.0);
-        let graph = construct_graph(input.1);
-        println!("{:?}", graph);
-        part1(&graph);
-    }
+    let input = common::get_input();
+    let graph = construct_graph(&input);
+    println!("{:?}", graph);
+    part1(&graph);
 }

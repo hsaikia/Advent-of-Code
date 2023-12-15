@@ -1,10 +1,8 @@
-use aoc::range::{Range, RangeUnion};
+use aoc::{
+    common,
+    range::{Range, RangeUnion},
+};
 use itertools::Itertools;
-
-const INPUT: [(&str, &str, i64, i64); 2] = [
-    ("Sample Input", include_str!("sample_input.txt"), 10, 20),
-    ("Input", include_str!("input.txt"), 2000000, 4000000),
-];
 
 fn part1(coords: &[(i64, i64, i64, i64)], y: i64) {
     let known_beacon_positions = coords
@@ -69,25 +67,23 @@ fn part2(coords: &[(i64, i64, i64, i64)], xy_max: i64) {
 }
 
 fn main() {
-    for (file, input, y, y_max) in INPUT {
-        println!("{}", file);
+    let input = common::get_input();
 
-        let mut coords: Vec<(i64, i64, i64, i64)> = Vec::new();
-        for line in input.split('\n') {
-            let tokens = line
-                .split(' ')
-                .filter(|&s| s.contains('='))
-                .collect::<Vec<_>>();
-            //println!("{:?}", tokens);
-            coords.push((
-                tokens[0][2..tokens[0].len() - 1].parse::<i64>().unwrap(),
-                tokens[1][2..tokens[1].len() - 1].parse::<i64>().unwrap(),
-                tokens[2][2..tokens[2].len() - 1].parse::<i64>().unwrap(),
-                tokens[3][2..tokens[3].len()].parse::<i64>().unwrap(),
-            ));
-        }
-
-        part1(&coords, y);
-        part2(&coords, y_max);
+    let mut coords: Vec<(i64, i64, i64, i64)> = Vec::new();
+    for line in input.split('\n') {
+        let tokens = line
+            .split(' ')
+            .filter(|&s| s.contains('='))
+            .collect::<Vec<_>>();
+        //println!("{:?}", tokens);
+        coords.push((
+            tokens[0][2..tokens[0].len() - 1].parse::<i64>().unwrap(),
+            tokens[1][2..tokens[1].len() - 1].parse::<i64>().unwrap(),
+            tokens[2][2..tokens[2].len() - 1].parse::<i64>().unwrap(),
+            tokens[3][2..tokens[3].len()].parse::<i64>().unwrap(),
+        ));
     }
+
+    part1(&coords, 2000000);
+    part2(&coords, 4000000);
 }

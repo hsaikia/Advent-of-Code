@@ -1,9 +1,6 @@
-const INPUT: [(&str, &str); 2] = [
-    ("Sample Input", include_str!("sample_input.txt")),
-    ("Input", include_str!("input.txt")),
-];
+use aoc::common;
 
-fn solve(input_lines: &str, marker_size: usize) {
+fn solve(input_lines: &str, marker_size: usize) -> usize {
     for line in input_lines.split('\n') {
         for (i, marker) in line
             .chars()
@@ -15,20 +12,23 @@ fn solve(input_lines: &str, marker_size: usize) {
             if (1..marker_size).any(|j| marker[j..].contains(&marker[j - 1])) {
                 continue;
             }
-            println!(
-                "Answer for Marker Size {} : {}",
-                marker_size,
-                i + marker_size
-            );
-            break;
+
+            return i + marker_size;
         }
     }
+    0
+}
+
+fn part1(input: &str) -> usize {
+    solve(input, 4)
+}
+
+fn part2(input: &str) -> usize {
+    solve(input, 14)
 }
 
 fn main() {
-    for input in INPUT {
-        println!("{}", input.0);
-        solve(input.1, 4);
-        solve(input.1, 14);
-    }
+    let input = common::get_input();
+    common::timed(&input, part1, true);
+    common::timed(&input, part2, false);
 }

@@ -1,9 +1,4 @@
-use aoc::grid::Grid;
-
-const INPUT: [(&str, &str); 2] = [
-    ("Sample Input", include_str!("sample_input.txt")),
-    ("Input", include_str!("input.txt")),
-];
+use aoc::{common, grid::Grid};
 
 fn part1(grid: &Grid<u32>) {
     // Check visibility for each internal tree
@@ -87,10 +82,8 @@ fn part2(grid: &Grid<u32>) {
 }
 
 fn main() {
-    for (file, input) in INPUT {
-        println!("{}", file);
-        let grid = Grid::from_str(input, |c| c.to_digit(10).unwrap());
-        part1(&grid);
-        part2(&grid);
-    }
+    let input = common::get_input();
+    let grid = Grid::from_str(&input, |c| c.to_digit(10).unwrap());
+    part1(&grid);
+    part2(&grid);
 }

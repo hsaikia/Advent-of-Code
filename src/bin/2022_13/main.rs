@@ -1,11 +1,6 @@
 use std::cmp::Ordering;
 
-use aoc::io;
-
-const INPUT: [(&str, &str); 2] = [
-    ("Sample Input", include_str!("sample_input.txt")),
-    ("Input", include_str!("input.txt")),
-];
+use aoc::{common, io};
 
 #[derive(Debug, Clone)]
 enum Packet {
@@ -117,18 +112,15 @@ fn part2(packet_pairs: &[(Packet, Packet)]) {
 }
 
 fn main() {
-    for (file, input) in INPUT {
-        println!("{}", file);
-
-        let packet_str_pairs = io::line_batches(input);
-        let mut packet_pairs: Vec<(Packet, Packet)> = Vec::new();
-        for packet_str_pair in packet_str_pairs {
-            let p1 = parse_packet(packet_str_pair[0]);
-            let p2 = parse_packet(packet_str_pair[1]);
-            packet_pairs.push((p1, p2));
-        }
-
-        part1(&packet_pairs);
-        part2(&packet_pairs);
+    let input = common::get_input();
+    let packet_str_pairs = io::line_batches(&input);
+    let mut packet_pairs: Vec<(Packet, Packet)> = Vec::new();
+    for packet_str_pair in packet_str_pairs {
+        let p1 = parse_packet(packet_str_pair[0]);
+        let p2 = parse_packet(packet_str_pair[1]);
+        packet_pairs.push((p1, p2));
     }
+
+    part1(&packet_pairs);
+    part2(&packet_pairs);
 }

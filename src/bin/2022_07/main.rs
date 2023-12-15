@@ -1,9 +1,5 @@
+use aoc::common;
 use std::collections::HashMap;
-
-const INPUT: [(&str, &str); 2] = [
-    ("Sample Input", include_str!("sample_input.txt")),
-    ("Input", include_str!("input.txt")),
-];
 
 fn process_commands(input_lines: &str) -> HashMap<String, usize> {
     let mut curr_dir_path: Vec<String> = Vec::new();
@@ -90,10 +86,8 @@ fn part2(dir_size_map: &HashMap<String, usize>) {
 }
 
 fn main() {
-    for input in INPUT {
-        println!("{}", input.0);
-        let dir_size_map = process_commands(input.1);
-        part1(&dir_size_map);
-        part2(&dir_size_map);
-    }
+    let input = common::get_input();
+    let dir_size_map = process_commands(&input);
+    part1(&dir_size_map);
+    part2(&dir_size_map);
 }
