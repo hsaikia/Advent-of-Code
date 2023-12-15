@@ -30,7 +30,6 @@ fn solve2(input: &str) {
                 let val : u32 = io::parse_num(val).unwrap();
                 let idx = hash(id) as usize;
                 let mut found = false;
-            let val = io::parse_num(&seq[3..]).unwrap();
             for (id1, val1) in &mut map[idx] {
                 if id == *id1 {
                     *val1 = val;
