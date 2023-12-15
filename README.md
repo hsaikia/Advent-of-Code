@@ -40,11 +40,11 @@ cargo run --release --bin 2022_01 sample_input.txt
 which outputs the answers for both parts
 
 ```
-Part#1 Answer 24000
-Time elapsed in Part#1 is: 75µs
+Part #1 Answer 24000
+Time elapsed in Part #1 is: 75µs
 
-Part#2 Answer 41000
-Time elapsed in Part#2 is: 5.042µs
+Part #2 Answer 41000
+Time elapsed in Part #2 is: 5.042µs
 ```
 
 
