@@ -74,8 +74,8 @@ fn parse_packet(packet_str: &str) -> Packet {
     Packet::List(packets)
 }
 
-fn part1(packet_pairs: &[(Packet, Packet)]) {
-    let ans = packet_pairs
+fn part1(packet_pairs: &[(Packet, Packet)]) -> usize {
+    packet_pairs
         .iter()
         .enumerate()
         .filter_map(|(i, (p1, p2))| {
@@ -85,12 +85,10 @@ fn part1(packet_pairs: &[(Packet, Packet)]) {
                 None
             }
         })
-        .sum::<usize>();
-
-    println!("Part 1 Answer is {}", ans);
+        .sum::<usize>()
 }
 
-fn part2(packet_pairs: &[(Packet, Packet)]) {
+fn part2(packet_pairs: &[(Packet, Packet)]) -> usize {
     let mut packets = Vec::new();
     for (a, b) in packet_pairs {
         packets.push((a.clone(), 0));
@@ -108,12 +106,11 @@ fn part2(packet_pairs: &[(Packet, Packet)]) {
         .map(|(i, p)| (i + 1) * p.1)
         .filter(|x| *x > 0)
         .collect::<Vec<_>>();
-    println!("Part 2 Answer is {}", ans[0] * ans[1]);
+    ans[0] * ans[1]
 }
 
-fn main() {
-    let input = common::get_input();
-    let packet_str_pairs = io::line_batches(&input);
+fn process_and_solve<const PART1: bool>(input: &str) -> usize {
+    let packet_str_pairs = io::line_batches(input);
     let mut packet_pairs: Vec<(Packet, Packet)> = Vec::new();
     for packet_str_pair in packet_str_pairs {
         let p1 = parse_packet(packet_str_pair[0]);
@@ -121,6 +118,15 @@ fn main() {
         packet_pairs.push((p1, p2));
     }
 
-    part1(&packet_pairs);
-    part2(&packet_pairs);
+    if PART1 {
+        return part1(&packet_pairs);
+    }
+
+    part2(&packet_pairs)
+}
+
+fn main() {
+    let input = common::get_input();
+    common::timed(&input, process_and_solve::<true>, true);
+    common::timed(&input, process_and_solve::<false>, false);
 }

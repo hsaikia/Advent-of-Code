@@ -1,5 +1,5 @@
 use aoc::common;
-use std::{cmp::Ordering, time::Instant};
+use std::cmp::Ordering;
 
 const DECRYPTION_KEY: i64 = 811589153;
 
@@ -17,7 +17,7 @@ fn sum_grove(numbers: &[i64], order: &[usize], key: i64) -> i64 {
     ans
 }
 
-fn mix(numbers: &Vec<i64>, key: i64, times: usize) {
+fn mix(numbers: &Vec<i64>, key: i64, times: usize) -> i64 {
     let l = numbers.len();
     let mut ptrs = get_forward_backward_ptrs(numbers.len());
 
@@ -53,7 +53,7 @@ fn mix(numbers: &Vec<i64>, key: i64, times: usize) {
         }
     }
 
-    println!("Answer : {}", sum_grove(numbers, &ptrs.0, key));
+    sum_grove(numbers, &ptrs.0, key)
 }
 
 fn get_forward_backward_ptrs(l: usize) -> (Vec<usize>, Vec<usize>) {
@@ -68,21 +68,21 @@ fn get_forward_backward_ptrs(l: usize) -> (Vec<usize>, Vec<usize>) {
     (forward_ptrs, backward_ptrs)
 }
 
-fn main() {
-    let input = common::get_input();
-
+fn process_and_mix<const PART1: bool>(input: &str) -> i64 {
     let mut numbers = Vec::new();
     for line in input.split('\n') {
         numbers.push(line.parse::<i64>().unwrap());
     }
 
-    let start = Instant::now();
-    mix(&numbers, 1, 1);
-    let duration = start.elapsed();
-    println!("Time elapsed in Part 1 is: {:?}", duration);
+    if PART1 {
+        return mix(&numbers, 1, 1);
+    }
 
-    let start = Instant::now();
-    mix(&numbers, DECRYPTION_KEY, 10);
-    let duration = start.elapsed();
-    println!("Time elapsed in Part 2 is: {:?}", duration);
+    mix(&numbers, DECRYPTION_KEY, 10)
+}
+
+fn main() {
+    let input = common::get_input();
+    common::timed(&input, process_and_mix::<true>, true);
+    common::timed(&input, process_and_mix::<false>, false);
 }

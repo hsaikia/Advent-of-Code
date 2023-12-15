@@ -31,7 +31,11 @@ pub fn minmax<T: Ord + Copy>(x: &T, y: &T) -> (T, T) {
 
 pub fn timed<T: core::fmt::Debug>(input: &str, f: fn(&str) -> T, part1: bool) {
     let start = Instant::now();
-    println!("\nPart #{} Answer {:?}", if part1 { 1 } else { 2 }, f(input));
+    println!(
+        "\nPart #{} Answer {:?}",
+        if part1 { 1 } else { 2 },
+        f(input)
+    );
     let duration = start.elapsed();
     println!(
         "Time elapsed in Part #{} is: {:?}",
@@ -51,6 +55,13 @@ pub struct GridDisplay {
 }
 
 impl fmt::Display for GridDisplay {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let s = self.rows.join("\n");
+        write!(f, "\n{}\n", s)
+    }
+}
+
+impl fmt::Debug for GridDisplay {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let s = self.rows.join("\n");
         write!(f, "\n{}\n", s)

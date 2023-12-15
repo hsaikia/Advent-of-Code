@@ -1,7 +1,7 @@
 use aoc::common;
 use std::collections::HashMap;
 
-fn process_commands(input_lines: &str) -> HashMap<String, usize> {
+fn process_and_solve<const PART1: bool>(input_lines: &str) -> usize {
     let mut curr_dir_path: Vec<String> = Vec::new();
     let mut curr_total_filesizes: usize = 0;
     let mut dir_size_map: HashMap<String, usize> = HashMap::new();
@@ -54,10 +54,14 @@ fn process_commands(input_lines: &str) -> HashMap<String, usize> {
         }
     }
 
-    dir_size_map
+    if PART1 {
+        return part1(&dir_size_map);
+    }
+
+    part2(&dir_size_map)
 }
 
-fn part1(dir_size_map: &HashMap<String, usize>) {
+fn part1(dir_size_map: &HashMap<String, usize>) -> usize {
     let mut sum = 0;
     for v in dir_size_map.values() {
         if *v <= 100000 {
@@ -65,10 +69,10 @@ fn part1(dir_size_map: &HashMap<String, usize>) {
         }
     }
 
-    println!("Part 1 Answer : {}", sum);
+    sum
 }
 
-fn part2(dir_size_map: &HashMap<String, usize>) {
+fn part2(dir_size_map: &HashMap<String, usize>) -> usize {
     const TOTAL_DISK_SPACE: usize = 70000000;
     const UNUSED_SPACE_REQUIRED: usize = 30000000;
 
@@ -82,12 +86,11 @@ fn part2(dir_size_map: &HashMap<String, usize>) {
         }
     }
 
-    println!("Part 2 Answer : {}", minimimum_space_to_free + diff);
+    minimimum_space_to_free + diff
 }
 
 fn main() {
     let input = common::get_input();
-    let dir_size_map = process_commands(&input);
-    part1(&dir_size_map);
-    part2(&dir_size_map);
+    common::timed(&input, process_and_solve::<true>, true);
+    common::timed(&input, process_and_solve::<false>, false);
 }

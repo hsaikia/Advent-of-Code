@@ -4,7 +4,7 @@ const DIGITS: [&str; 9] = [
     "one", "two", "three", "four", "five", "six", "seven", "eight", "nine",
 ];
 
-fn solve(input: &str, all: bool) -> usize {
+fn solve<const WORDS: bool>(input: &str) -> usize {
     let mut ans: usize = 0;
     let mut digit_map: Vec<(String, usize)> = Vec::new();
     for i in 1..=9 {
@@ -12,7 +12,7 @@ fn solve(input: &str, all: bool) -> usize {
         digit_map.push((s, i));
     }
 
-    if all {
+    if WORDS {
         for (i, digit) in DIGITS.iter().enumerate() {
             digit_map.push((digit.to_string(), i + 1));
         }
@@ -43,16 +43,8 @@ fn solve(input: &str, all: bool) -> usize {
     ans
 }
 
-fn part1(input: &str) -> usize {
-    solve(input, false)
-}
-
-fn part2(input: &str) -> usize {
-    solve(input, true)
-}
-
 fn main() {
     let input = common::get_input();
-    common::timed(&input, part1, true);
-    common::timed(&input, part2, false);
+    common::timed(&input, solve::<false>, true);
+    common::timed(&input, solve::<true>, false);
 }

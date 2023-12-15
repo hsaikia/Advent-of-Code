@@ -20,7 +20,7 @@ fn get_symbols(input: &str) -> Vec<char> {
         .collect()
 }
 
-fn solve(input: &str, part1: bool) -> u32 {
+fn solve<const PART1: bool>(input: &str) -> u32 {
     let grid = Grid::from_str(input, |c| c);
     let symbols = get_symbols(input);
 
@@ -74,7 +74,7 @@ fn solve(input: &str, part1: bool) -> u32 {
         }
     }
 
-    if part1 {
+    if PART1 {
         return ans1;
     }
 
@@ -90,16 +90,8 @@ fn solve(input: &str, part1: bool) -> u32 {
         .sum::<u32>()
 }
 
-fn part1(input: &str) -> u32 {
-    solve(input, true)
-}
-
-fn part2(input: &str) -> u32 {
-    solve(input, false)
-}
-
 fn main() {
     let input = common::get_input();
-    common::timed(&input, part1, true);
-    common::timed(&input, part2, false);
+    common::timed(&input, solve::<true>, true);
+    common::timed(&input, solve::<false>, false);
 }

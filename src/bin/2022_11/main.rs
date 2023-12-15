@@ -208,16 +208,6 @@ fn simulate(monkeys: &mut Vec<Monkey>, worry_reducer: &WorryReducer, rounds: usi
         }
     }
 
-    for (i, monkey) in monkeys.iter().enumerate() {
-        println!(
-            "After {} rounds, Monkey {} has {} items and inspected {} times.",
-            rounds,
-            i,
-            monkey.items.len(),
-            monkey.times_inspected
-        );
-    }
-
     monkeys.sort_by(|a, b| b.times_inspected.cmp(&a.times_inspected));
     println!(
         "Answer with {} monkeys = {}",

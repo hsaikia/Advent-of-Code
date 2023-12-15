@@ -1,6 +1,6 @@
 use aoc::{common, grid::Grid};
 
-fn part1(grid: &Grid<u32>) {
+fn part1(grid: &Grid<u32>) -> usize {
     // Check visibility for each internal tree
     let mut visible = Grid::<bool>::new(grid.rows, grid.cols, false);
 
@@ -48,15 +48,14 @@ fn part1(grid: &Grid<u32>) {
         }
     }
 
-    let ans = visible
+    visible
         .values
         .iter()
         .map(|row| row.iter().filter(|&x| *x).count())
-        .sum::<usize>();
-    println!("Part 1 Answer {}", ans);
+        .sum::<usize>()
 }
 
-fn part2(grid: &Grid<u32>) {
+fn part2(grid: &Grid<u32>) -> i32 {
     let mut ans = 0;
     for i in 0..grid.rows {
         for j in 0..grid.cols {
@@ -78,12 +77,19 @@ fn part2(grid: &Grid<u32>) {
             ans = ans.max(scores.iter().product::<i32>());
         }
     }
-    println!("Part 2 Answer {}", ans);
+    ans
+}
+
+fn get_grid_and_solve<const PART1: bool>(input: &str) -> i32 {
+    let grid = Grid::from_str(input, |c| c.to_digit(10).unwrap());
+    if PART1 {
+        return part1(&grid) as i32;
+    }
+    part2(&grid)
 }
 
 fn main() {
     let input = common::get_input();
-    let grid = Grid::from_str(&input, |c| c.to_digit(10).unwrap());
-    part1(&grid);
-    part2(&grid);
+    common::timed(&input, get_grid_and_solve::<true>, true);
+    common::timed(&input, get_grid_and_solve::<false>, false);
 }

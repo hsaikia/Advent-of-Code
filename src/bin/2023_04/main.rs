@@ -31,15 +31,15 @@ fn matching_cards(input: &str) -> Vec<Vec<usize>> {
     ret
 }
 
-fn part1(matches: &Vec<Vec<usize>>) {
+fn part1(matches: &Vec<Vec<usize>>) -> usize {
     let mut ans: usize = 0;
     for m in matches {
         ans += val(m.len());
     }
-    println!("Answer Part 1 : {}", ans);
+    ans
 }
 
-fn part2(matching_cards: &Vec<Vec<usize>>) {
+fn part2(matching_cards: &Vec<Vec<usize>>) -> usize {
     let n = matching_cards.len();
     let mut number_of_cards = Vec::with_capacity(n);
     number_of_cards.resize(n, 1);
@@ -51,12 +51,19 @@ fn part2(matching_cards: &Vec<Vec<usize>>) {
             }
         }
     }
-    println!("Answer Part 2: {}", number_of_cards.iter().sum::<usize>());
+    number_of_cards.iter().sum::<usize>()
+}
+
+fn solve<const PART1: bool>(input: &str) -> usize {
+    let matching_cards = matching_cards(input);
+    if PART1 {
+        return part1(&matching_cards);
+    }
+    part2(&matching_cards)
 }
 
 fn main() {
     let input = common::get_input();
-    let matching_cards = matching_cards(&input);
-    part1(&matching_cards);
-    part2(&matching_cards);
+    common::timed(&input, solve::<true>, true);
+    common::timed(&input, solve::<false>, false);
 }

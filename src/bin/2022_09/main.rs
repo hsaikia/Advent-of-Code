@@ -48,15 +48,8 @@ fn solve<const ROPE_SIZE: usize>(input: &str) -> usize {
     tail_history.into_iter().unique().count()
 }
 
-fn part1(input: &str) -> usize {
-    solve::<2>(input)
-}
-
-fn part2(input: &str) -> usize {
-    solve::<10>(input)
-}
 fn main() {
     let input = common::get_input();
-    common::timed(&input, part1, true);
-    common::timed(&input, part2, false);
+    common::timed(&input, solve::<2>, true);
+    common::timed(&input, solve::<10>, false);
 }

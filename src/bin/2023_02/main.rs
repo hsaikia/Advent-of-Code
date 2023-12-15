@@ -85,39 +85,43 @@ impl FromStr for Game {
     }
 }
 
-fn part2(games: &[Game]) {
-    println!(
-        "Part2 Answer : {}",
-        games.iter().map(|g| g.power()).sum::<usize>()
-    );
+fn part2(games: &[Game]) -> usize {
+    games.iter().map(|g| g.power()).sum::<usize>()
 }
 
-fn part1(games: &[Game]) {
+fn part1(games: &[Game]) -> usize {
     const MIN_GRAB: Grab = Grab {
         red: 12,
         green: 13,
         blue: 14,
     };
-    println!(
-        "Part1 Answer : {}",
-        games
-            .iter()
-            .filter_map(|g| if g.is_good(&MIN_GRAB) {
+
+    games
+        .iter()
+        .filter_map(|g| {
+            if g.is_good(&MIN_GRAB) {
                 Some(g.game_id)
             } else {
                 None
-            })
-            .sum::<usize>()
-    );
+            }
+        })
+        .sum::<usize>()
 }
 
-fn main() {
-    let input = common::get_input();
+fn process_games_and_solve<const PART1: bool>(input: &str) -> usize {
     let mut games = Vec::new();
     for line in input.lines() {
         games.push(Game::from_str(line).unwrap());
     }
 
-    part1(&games);
-    part2(&games);
+    if PART1 {
+        return part1(&games);
+    }
+    part2(&games)
+}
+
+fn main() {
+    let input = common::get_input();
+    common::timed(&input, process_games_and_solve::<true>, true);
+    common::timed(&input, process_games_and_solve::<false>, false);
 }

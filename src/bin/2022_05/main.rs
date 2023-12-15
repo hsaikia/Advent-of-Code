@@ -1,6 +1,6 @@
 use aoc::common;
 
-fn part1(stacks: &[Vec<char>], instructions: &Vec<Vec<usize>>) {
+fn part1(stacks: &[Vec<char>], instructions: &Vec<Vec<usize>>) -> String {
     let mut stacks = stacks.to_owned();
     // Perform instructions
     for ins in instructions {
@@ -10,11 +10,10 @@ fn part1(stacks: &[Vec<char>], instructions: &Vec<Vec<usize>>) {
         }
     }
 
-    let ans = stacks.iter().flat_map(|v| v.last()).collect::<String>();
-    println!("Part 1 Answer {}", ans);
+    stacks.iter().flat_map(|v| v.last()).collect::<String>()
 }
 
-fn part2(stacks: &[Vec<char>], instructions: &Vec<Vec<usize>>) {
+fn part2(stacks: &[Vec<char>], instructions: &Vec<Vec<usize>>) -> String {
     let mut stacks = stacks.to_owned();
     // Perform instructions
     for ins in instructions {
@@ -25,11 +24,10 @@ fn part2(stacks: &[Vec<char>], instructions: &Vec<Vec<usize>>) {
         stacks[ins[1] - 1].truncate(l - ins[0]);
     }
 
-    let ans = stacks.iter().flat_map(|v| v.last()).collect::<String>();
-    println!("Part 2 Answer {}", ans);
+    stacks.iter().flat_map(|v| v.last()).collect::<String>()
 }
 
-fn pre_process(input: &str) -> (Vec<Vec<char>>, Vec<Vec<usize>>) {
+fn process_and_solve<const PART1: bool>(input: &str) -> String {
     let mut reading_config = true;
     let mut stacks: Vec<Vec<char>> = Vec::new();
     let mut instructions: Vec<Vec<usize>> = Vec::new();
@@ -74,12 +72,15 @@ fn pre_process(input: &str) -> (Vec<Vec<char>>, Vec<Vec<usize>>) {
         stack.reverse();
     }
 
-    (stacks, instructions)
+    if PART1 {
+        return part1(&stacks, &instructions);
+    }
+
+    part2(&stacks, &instructions)
 }
 
 fn main() {
     let input = common::get_input();
-    let (stacks, instructions) = pre_process(&input);
-    part1(&stacks, &instructions);
-    part2(&stacks, &instructions);
+    common::timed(&input, process_and_solve::<true>, true);
+    common::timed(&input, process_and_solve::<false>, false);
 }

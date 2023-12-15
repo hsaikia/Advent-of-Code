@@ -6,12 +6,12 @@ fn hash(s: &str) -> u32 {
 }
 
 fn part1(input: &str) -> u32 {
-    input.split(',').into_iter().map(|s| hash(s)).sum::<u32>()
+    input.split(',').map(hash).sum::<u32>()
 }
 
 fn part2(input: &str) -> u32 {
     const VAL: Vec<(&str, u32)> = Vec::new();
-    let mut map: [Vec<(&str, u32)>; 256] = [VAL; 256];
+    let mut box_map: [Vec<(&str, u32)>; 256] = [VAL; 256];
 
     let seqs = io::tokenize(input, ",");
     for seq in &seqs {
@@ -20,7 +20,7 @@ fn part2(input: &str) -> u32 {
                 let val: u32 = io::parse_num(val).unwrap();
                 let box_idx = hash(id) as usize;
                 let mut found = false;
-                for (id1, val1) in &mut map[box_idx] {
+                for (id1, val1) in &mut box_map[box_idx] {
                     if id == *id1 {
                         *val1 = val;
                         found = true;
@@ -28,20 +28,18 @@ fn part2(input: &str) -> u32 {
                     }
                 }
                 if !found {
-                    map[box_idx].push((id, val));
+                    box_map[box_idx].push((id, val));
                 }
             }
-        } else {
-            if let Some((id, _)) = seq.split_once('-') {
-                let box_idx = hash(id) as usize;
-                map[box_idx].retain(|(id1, _)| *id1 != id);
-            }
+        } else if let Some((id, _)) = seq.split_once('-') {
+            let box_idx = hash(id) as usize;
+            box_map[box_idx].retain(|(id1, _)| *id1 != id);
         }
     }
 
     (0..256)
         .map(|idx| {
-            map[idx]
+            box_map[idx]
                 .iter()
                 .enumerate()
                 .map(|(slot, (_, val))| (idx as u32 + 1) * (slot as u32 + 1) * val)

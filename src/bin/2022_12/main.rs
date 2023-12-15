@@ -49,14 +49,11 @@ fn shortest_from(grid: &Grid<usize>, start: (usize, usize), end: (usize, usize))
     None
 }
 
-fn part1(grid: &Grid<usize>, start: (usize, usize), end: (usize, usize)) {
-    println!(
-        "Part 1 : Fewest possible steps {}",
-        shortest_from(grid, start, end).unwrap()
-    );
+fn part1(grid: &Grid<usize>, start: (usize, usize), end: (usize, usize)) -> usize {
+    shortest_from(grid, start, end).unwrap()
 }
 
-fn part2(grid: &Grid<usize>, end: (usize, usize)) {
+fn part2(grid: &Grid<usize>, end: (usize, usize)) -> usize {
     let mut best = usize::MAX;
     for i in 0..grid.rows {
         for j in 0..grid.cols {
@@ -68,10 +65,10 @@ fn part2(grid: &Grid<usize>, end: (usize, usize)) {
             }
         }
     }
-    println!("Part 2 : Fewest possible steps {}", best);
+    best
 }
 
-fn get_grid(input: &str) -> (Grid<usize>, (usize, usize), (usize, usize)) {
+fn get_grid_and_solve<const PART1: bool>(input: &str) -> usize {
     let grid = Grid::from_str(input, |c| *ELEV.get(&c).unwrap());
     let mut start: (usize, usize) = (0, 0);
     let mut end: (usize, usize) = (0, 0);
@@ -87,12 +84,15 @@ fn get_grid(input: &str) -> (Grid<usize>, (usize, usize), (usize, usize)) {
         }
     }
 
-    (grid, start, end)
+    if PART1 {
+        return part1(&grid, start, end);
+    }
+
+    part2(&grid, end)
 }
 
 fn main() {
     let input = common::get_input();
-    let (grid, start, end) = get_grid(&input);
-    part1(&grid, start, end);
-    part2(&grid, end);
+    common::timed(&input, get_grid_and_solve::<true>, true);
+    common::timed(&input, get_grid_and_solve::<false>, false);
 }
