@@ -7,12 +7,11 @@ fn hash(s: &str) -> u32 {
         .fold(0, |acc, c| ((acc + (c as u8) as u32) * 17) % 256)
 }
 
-fn part1(input: &str) {
-    let ans = input.split(',').into_iter().map(|s| hash(s)).sum::<u32>();
-    println!("Answer Part1: {}", ans);
+fn part1(input: &str) -> u32 {
+    input.split(',').into_iter().map(|s| hash(s)).sum::<u32>()
 }
 
-fn part2(input: &str) {
+fn part2(input: &str) -> u32 {
     const VAL: Vec<(&str, u32)> = Vec::new();
     let mut map: [Vec<(&str, u32)>; 256] = [VAL; 256];
 
@@ -42,7 +41,7 @@ fn part2(input: &str) {
         }
     }
 
-    let ans = (0..256)
+    (0..256)
         .map(|idx| {
             map[idx]
                 .iter()
@@ -50,9 +49,7 @@ fn part2(input: &str) {
                 .map(|(slot, (_, val))| (idx as u32 + 1) * (slot as u32 + 1) * val)
                 .sum::<u32>()
         })
-        .sum::<u32>();
-
-    println!("Answer Part2 : {}", ans);
+        .sum::<u32>()
 }
 
 fn main() {
@@ -61,12 +58,12 @@ fn main() {
     let input = std::fs::read_to_string(filepath).unwrap();
 
     let start = Instant::now();
-    part1(&input);
+    println!("Part1 Answer {}", part1(&input));
     let duration = start.elapsed();
     println!("Time elapsed in Part 1 is: {:?}", duration);
 
     let start = Instant::now();
-    part2(&input);
+    println!("Part2 Answer {}", part2(&input));
     let duration = start.elapsed();
     println!("Time elapsed in Part 2 is: {:?}", duration);
 }
@@ -77,11 +74,14 @@ mod tests {
 
     #[test]
     fn test_sample() {
-        let sample_input = "HASH";
-
-        assert_eq!(hash(sample_input), 52);
+        let example_id = "HASH";
+        assert_eq!(hash(example_id), 52);
         assert_eq!(hash("rn"), 0);
         assert_eq!(hash("qp"), 1);
         assert_eq!(hash("cm"), 0);
+
+        let sample_input = "rn=1,cm-,qp=3,cm=2,qp-,pc=4,ot=9,ab=5,pc-,pc=6,ot=7";
+        assert_eq!(part1(sample_input), 1320);
+        assert_eq!(part2(sample_input), 145);
     }
 }
