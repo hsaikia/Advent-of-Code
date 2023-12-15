@@ -1,11 +1,6 @@
 use std::collections::HashSet;
 
-use aoc::io;
-
-const INPUT: [(&str, &str); 2] = [
-    ("Sample Input", include_str!("sample_input.txt")),
-    ("Input", include_str!("input.txt")),
-];
+use aoc::{common, io};
 
 fn hash_set_from_str(strs: &[&str]) -> HashSet<usize> {
     strs.iter()
@@ -60,10 +55,8 @@ fn part2(matching_cards: &Vec<Vec<usize>>) {
 }
 
 fn main() {
-    for (file, input) in INPUT {
-        println!("{}", file);
-        let matching_cards = matching_cards(input);
-        part1(&matching_cards);
-        part2(&matching_cards);
-    }
+    let input = common::get_input();
+    let matching_cards = matching_cards(&input);
+    part1(&matching_cards);
+    part2(&matching_cards);
 }

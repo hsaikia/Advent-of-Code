@@ -1,12 +1,7 @@
-use std::{collections::HashMap, time::Instant};
+use std::collections::HashMap;
 
-use aoc::io;
+use aoc::{common, io};
 use num::Integer;
-
-const INPUT: [(&str, &str); 2] = [
-    ("Input", include_str!("sample_input.txt")),
-    ("Input", include_str!("input.txt")),
-];
 
 fn solve(
     start: &str,
@@ -36,12 +31,11 @@ fn solve(
     steps
 }
 
-fn part1(ins: &[char], lm: &HashMap<&str, &str>, rm: &HashMap<&str, &str>) {
-    let sol = solve("AAA", &["ZZZ"], ins, lm, rm);
-    println!("Part1 answer : {}", sol);
+fn part1(ins: &[char], lm: &HashMap<&str, &str>, rm: &HashMap<&str, &str>) -> usize {
+    solve("AAA", &["ZZZ"], ins, lm, rm)
 }
 
-fn part2(ins: &[char], lm: &HashMap<&str, &str>, rm: &HashMap<&str, &str>) {
+fn part2(ins: &[char], lm: &HashMap<&str, &str>, rm: &HashMap<&str, &str>) -> usize {
     let mut starts: Vec<&str> = Vec::new();
     let mut dst: Vec<&str> = Vec::new();
 
@@ -61,37 +55,33 @@ fn part2(ins: &[char], lm: &HashMap<&str, &str>, rm: &HashMap<&str, &str>) {
         //println!("{} = {}", x, sol);
         ans = ans.lcm(&sol);
     }
+    ans
+}
 
-    println!("Part2 Answer : {}", ans);
+fn process<const PART1: bool>(input: &str) -> usize {
+    let mut lm: HashMap<&str, &str> = HashMap::new();
+    let mut rm: HashMap<&str, &str> = HashMap::new();
+    let line_batches = io::line_batches(input);
+    let ins = line_batches[0][0].chars().collect::<Vec<_>>();
+
+    for line in &line_batches[1] {
+        let (from, left_right) = line.split_once(" = ").unwrap();
+        let (left, right) = left_right[1..left_right.len() - 1]
+            .split_once(", ")
+            .unwrap();
+
+        lm.insert(from, left);
+        rm.insert(from, right);
+    }
+
+    if PART1 {
+        return part1(&ins, &lm, &rm);
+    }
+    part2(&ins, &lm, &rm)
 }
 
 fn main() {
-    for (file, input) in INPUT {
-        println!("{}", file);
-
-        let mut lm: HashMap<&str, &str> = HashMap::new();
-        let mut rm: HashMap<&str, &str> = HashMap::new();
-        let line_batches = io::line_batches(input);
-        let ins = line_batches[0][0].chars().collect::<Vec<_>>();
-
-        for line in &line_batches[1] {
-            let (from, left_right) = line.split_once(" = ").unwrap();
-            let (left, right) = left_right[1..left_right.len() - 1]
-                .split_once(", ")
-                .unwrap();
-
-            lm.insert(from, left);
-            rm.insert(from, right);
-        }
-
-        let start = Instant::now();
-        part1(&ins, &lm, &rm);
-        let duration = start.elapsed();
-        println!("Time elapsed in Part 1 is: {:?}", duration);
-
-        let start = Instant::now();
-        part2(&ins, &lm, &rm);
-        let duration = start.elapsed();
-        println!("Time elapsed in Part 2 is: {:?}", duration);
-    }
+    let input = common::get_input();
+    common::timed(&input, process::<true>, true);
+    common::timed(&input, process::<false>, false);
 }

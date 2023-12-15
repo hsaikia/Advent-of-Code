@@ -1,11 +1,7 @@
+use aoc::common;
 use itertools::Itertools;
 
-const INPUT: [(&str, &str); 2] = [
-    ("Sample Input", include_str!("sample_input.txt")),
-    ("Input", include_str!("input.txt")),
-];
-
-fn solve(input: &str, part1: bool) {
+fn solve<const PART1: bool>(input: &str) -> i64 {
     let mut ans: i64 = 0;
 
     for line in input.split('\n') {
@@ -14,7 +10,7 @@ fn solve(input: &str, part1: bool) {
             .map(|x| x.parse::<i64>().unwrap())
             .collect::<Vec<_>>();
         let mut x = nums.clone();
-        if !part1 {
+        if !PART1 {
             x.reverse();
         }
 
@@ -32,14 +28,11 @@ fn solve(input: &str, part1: bool) {
         }
         ans += cnt;
     }
-
-    println!("Answer Part {}: {}", if part1 { 1 } else { 2 }, ans);
+    ans
 }
 
 fn main() {
-    for (file, input) in INPUT {
-        println!("{}", file);
-        solve(input, true);
-        solve(input, false);
-    }
+    let input = common::get_input();
+    common::timed(&input, solve::<true>, true);
+    common::timed(&input, solve::<false>, false);
 }

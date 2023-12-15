@@ -1,12 +1,10 @@
 use std::collections::HashMap;
 
-use aoc::{common::HashMapVector, grid::Grid};
+use aoc::{
+    common::{self, HashMapVector},
+    grid::Grid,
+};
 use itertools::Itertools;
-
-const INPUT: [(&str, &str); 2] = [
-    ("Sample Input", include_str!("sample_input.txt")),
-    ("Input", include_str!("input.txt")),
-];
 
 fn get_symbols(input: &str) -> Vec<char> {
     input
@@ -22,7 +20,7 @@ fn get_symbols(input: &str) -> Vec<char> {
         .collect()
 }
 
-fn solve(input: &str) {
+fn solve(input: &str, part1: bool) -> u32 {
     let grid = Grid::from_str(input, |c| c);
     let symbols = get_symbols(input);
 
@@ -76,7 +74,11 @@ fn solve(input: &str) {
         }
     }
 
-    let ans2 = part_numbers_map
+    if part1 {
+        return ans1;
+    }
+
+    part_numbers_map
         .values()
         .filter_map(|vals| {
             if vals.len() == 2 {
@@ -85,15 +87,19 @@ fn solve(input: &str) {
                 None
             }
         })
-        .sum::<u32>();
+        .sum::<u32>()
+}
 
-    println!("Part 1 Answer : {}", ans1);
-    println!("Part 2 Answer : {}", ans2);
+fn part1(input: &str) -> u32 {
+    solve(input, true)
+}
+
+fn part2(input: &str) -> u32 {
+    solve(input, false)
 }
 
 fn main() {
-    for (file, input) in INPUT {
-        println!("{}", file);
-        solve(input);
-    }
+    let input = common::get_input();
+    common::timed(&input, part1, true);
+    common::timed(&input, part2, false);
 }

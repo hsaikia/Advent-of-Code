@@ -1,13 +1,7 @@
-use aoc::{io, range::Range};
+use aoc::{common, io, range::Range};
 use itertools::Itertools;
-use std::time::Instant;
 
-const INPUT: [(&str, &str); 1] = [
-    //("Sample Input", include_str!("sample_input.txt")),
-    ("Input", include_str!("input.txt")),
-];
-
-fn part1(input: &str) {
+fn part1(input: &str) -> Option<usize> {
     let mut v: Vec<Option<usize>> = Vec::new();
     let mut w: Vec<Option<usize>> = Vec::new();
     for line in input.lines() {
@@ -56,10 +50,10 @@ fn part1(input: &str) {
         }
     }
 
-    println!("Answer Part 1 : {:?}", v.iter().min().unwrap());
+    *v.iter().min().unwrap()
 }
 
-fn part2(input: &str) {
+fn part2(input: &str) -> usize {
     type Remap = Option<(usize, usize)>;
     let mut ranges: Vec<(Range<usize>, Remap)> = Vec::new();
 
@@ -124,27 +118,16 @@ fn part2(input: &str) {
         }
     }
 
-    println!(
-        "Answer Part 2 : {:?}",
-        ranges
-            .iter()
-            .map(|x| x.0.a)
-            .sorted()
-            .take(1)
-            .collect::<Vec<_>>()[0]
-    );
+    ranges
+        .iter()
+        .map(|x| x.0.a)
+        .sorted()
+        .take(1)
+        .collect::<Vec<_>>()[0]
 }
 
 fn main() {
-    for (file, input) in INPUT {
-        println!("{}", file);
-        let start = Instant::now();
-        part1(input);
-        let duration = start.elapsed();
-        println!("Time elapsed in Part 1 is: {:?}", duration);
-        let start = Instant::now();
-        part2(input);
-        let duration = start.elapsed();
-        println!("Time elapsed in Part 2 is: {:?}", duration);
-    }
+    let input = common::get_input();
+    common::timed(&input, part1, true);
+    common::timed(&input, part2, false);
 }

@@ -1,10 +1,5 @@
-use aoc::grid::Grid;
-use std::{collections::HashMap, time::Instant};
-
-const INPUT: [(&str, &str); 2] = [
-    ("Sample Input", include_str!("sample_input.txt")),
-    ("Input", include_str!("input.txt")),
-];
+use aoc::{common, grid::Grid};
+use std::collections::HashMap;
 
 fn simulate(grid: &mut Grid<char>, cycles: usize) {
     if cycles == 0 {
@@ -116,7 +111,7 @@ fn north_load(grid: &Grid<char>) -> usize {
     ans
 }
 
-fn part1(grid: &Grid<char>) {
+fn part1(grid: &Grid<char>) -> usize {
     let mut ans: usize = 0;
     for c in 0..grid.cols {
         let mut num = grid.rows;
@@ -129,33 +124,28 @@ fn part1(grid: &Grid<char>) {
             }
         }
     }
-    println!("North load after moving North {}", ans);
+    ans
 }
 
-fn part2(grid: &Grid<char>) {
+fn part2(grid: &Grid<char>) -> usize {
     let (period, offset_front) = period_and_offset(grid);
     let offset_back = (1000000000 - offset_front) % period;
     let mut grid = grid.clone();
     simulate(&mut grid, period + offset_front + offset_back);
-    println!(
-        "North Load after simulating 1000000000 times {}",
-        north_load(&grid)
-    );
+    north_load(&grid)
+}
+
+fn process_and_solve<const PART1: bool>(input: &str) -> usize {
+    let grid = Grid::from_str(input, |c| c);
+    if PART1 {
+        return part1(&grid);
+    }
+
+    part2(&grid)
 }
 
 fn main() {
-    for (file, input) in INPUT {
-        println!("{}", file);
-        let grid = Grid::from_str(input, |c| c);
-
-        let start = Instant::now();
-        part1(&grid);
-        let duration = start.elapsed();
-        println!("Time elapsed in Part 1 is: {:?}", duration);
-
-        let start = Instant::now();
-        part2(&grid);
-        let duration = start.elapsed();
-        println!("Time elapsed in Part 2 is: {:?}", duration);
-    }
+    let input = common::get_input();
+    common::timed(&input, process_and_solve::<true>, true);
+    common::timed(&input, process_and_solve::<false>, false);
 }

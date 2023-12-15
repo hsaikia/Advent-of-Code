@@ -1,9 +1,4 @@
-use aoc::grid::Grid;
-
-const INPUT: [(&str, &str); 2] = [
-    ("Sample Input", include_str!("sample_input.txt")),
-    ("Input", include_str!("input.txt")),
-];
+use aoc::{common, grid::Grid};
 
 fn solve(grid: &Grid<char>, part1: bool) -> usize {
     let mut ans: usize = 0;
@@ -47,19 +42,18 @@ fn solve(grid: &Grid<char>, part1: bool) -> usize {
     ans
 }
 
-fn main() {
-    for (file, input) in INPUT {
-        println!("{}", file);
-        let mut ans1 = 0;
-        let mut ans2 = 0;
-        let batches = input.split("\n\n").collect::<Vec<_>>();
-        for batch in batches {
-            let grid = Grid::from_str(batch, |c| c);
-            ans1 += solve(&grid, true);
-            ans2 += solve(&grid, false);
-        }
-
-        println!("Answer Part1 : {}", ans1);
-        println!("Answer Part2 : {}", ans2);
+fn process_and_solve<const PART1: bool>(input: &str) -> usize {
+    let mut ans = 0;
+    let batches = input.split("\n\n").collect::<Vec<_>>();
+    for batch in batches {
+        let grid = Grid::from_str(batch, |c| c);
+        ans += solve(&grid, PART1);
     }
+    ans
+}
+
+fn main() {
+    let input = common::get_input();
+    common::timed(&input, process_and_solve::<true>, true);
+    common::timed(&input, process_and_solve::<false>, false);
 }

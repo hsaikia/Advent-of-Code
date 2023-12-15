@@ -1,12 +1,6 @@
-use std::cmp::Ordering;
-
-use aoc::io;
+use aoc::{common, io};
 use itertools::Itertools;
-
-const INPUT: [(&str, &str); 2] = [
-    ("Sample Input", include_str!("sample_input.txt")),
-    ("Input", include_str!("input.txt")),
-];
+use std::cmp::Ordering;
 
 const ORDER_1: [char; 13] = [
     'A', 'K', 'Q', 'J', 'T', '9', '8', '7', '6', '5', '4', '3', '2',
@@ -107,7 +101,7 @@ fn compare_hands(hand1: &str, hand2: &str, joker: bool) -> Ordering {
     order
 }
 
-fn solve(input: &str, joker: bool) {
+fn solve(input: &str, joker: bool) -> usize {
     let mut cards: Vec<(&str, usize)> = Vec::new();
 
     for line in input.split('\n') {
@@ -123,17 +117,19 @@ fn solve(input: &str, joker: bool) {
         .map(|(i, e)| (i + 1) * e.1)
         .sum::<usize>();
 
-    if !joker {
-        println!("Answer Part 1 {}", ans);
-    } else {
-        println!("Answer Part 2 {}", ans);
-    }
+    ans
+}
+
+fn part1(input: &str) -> usize {
+    solve(input, false)
+}
+
+fn part2(input: &str) -> usize {
+    solve(input, true)
 }
 
 fn main() {
-    for input in INPUT {
-        println!("{}", input.0);
-        solve(input.1, false);
-        solve(input.1, true);
-    }
+    let input = common::get_input();
+    common::timed(&input, part1, true);
+    common::timed(&input, part2, false);
 }

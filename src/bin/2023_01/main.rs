@@ -1,14 +1,10 @@
+use aoc::common;
+
 const DIGITS: [&str; 9] = [
     "one", "two", "three", "four", "five", "six", "seven", "eight", "nine",
 ];
 
-const INPUT: [(&str, &str); 3] = [
-    ("Sample Input", include_str!("sample_input.txt")),
-    ("Sample Input", include_str!("sample_input2.txt")),
-    ("Input", include_str!("input.txt")),
-];
-
-fn solve(input: &str, all: bool) {
+fn solve(input: &str, all: bool) -> usize {
     let mut ans: usize = 0;
     let mut digit_map: Vec<(String, usize)> = Vec::new();
     for i in 1..=9 {
@@ -37,20 +33,26 @@ fn solve(input: &str, all: bool) {
 
         if digit1.is_empty() || digit2.is_empty() {
             println!("Input doesn't match algorithm.");
-            return;
+            return 0;
         }
 
         ans += 10 * digit1[0].1;
         ans += digit2[0].1;
     }
 
-    println!("Answer with all digits ({}) : {}", all, ans);
+    ans
+}
+
+fn part1(input: &str) -> usize {
+    solve(input, false)
+}
+
+fn part2(input: &str) -> usize {
+    solve(input, true)
 }
 
 fn main() {
-    for input in INPUT {
-        println!("{}", input.0);
-        solve(input.1, false);
-        solve(input.1, true);
-    }
+    let input = common::get_input();
+    common::timed(&input, part1, true);
+    common::timed(&input, part2, false);
 }

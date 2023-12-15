@@ -1,17 +1,6 @@
-use std::time::Instant;
+use itertools::Itertools;
 
-const INPUT: [(&str, &str, (usize, usize)); 2] = [
-    (
-        "Sample Input",
-        include_str!("sample_input.txt"),
-        (71530, 940200),
-    ),
-    (
-        "Input",
-        include_str!("input.txt"),
-        (53916768, 250133010811025),
-    ),
-];
+use aoc::common;
 
 #[allow(dead_code)]
 enum Solution {
@@ -83,7 +72,7 @@ fn solve(t: usize, d: usize, sol_type: Solution) -> usize {
     }
 }
 
-fn part1(input: &str) {
+fn part1(input: &str) -> usize {
     let lines = input.split('\n').collect::<Vec<_>>();
     let ts = lines[0]
         .split(' ')
@@ -99,29 +88,33 @@ fn part1(input: &str) {
         .collect::<Vec<_>>();
 
     let mut ans: usize = 1;
-    let start = Instant::now();
     for (t, d) in ts.iter().zip(ds.iter()) {
         let num_ways = solve(*t, *d, Solution::BruteForce1);
         ans *= num_ways;
     }
-    let duration = start.elapsed();
-    println!("Time elapsed in Part 1 is: {:?}", duration);
-
-    println!("Part 1 Ans {}", ans);
+    ans
 }
 
-fn part2(t: usize, d: usize) {
-    let start = Instant::now();
-    let num_ways = solve(t, d, Solution::Analytic);
-    let duration = start.elapsed();
-    println!("Time elapsed in Part 2 is: {:?}", duration);
-    println!("Part 2 Ans {}", num_ways);
+fn part2(input: &str) -> usize {
+    let lines = input.split('\n').collect::<Vec<_>>();
+    let t = lines[0]
+        .split(' ')
+        .skip(1)
+        .join("")
+        .parse::<usize>()
+        .unwrap();
+    let d = lines[1]
+        .split(' ')
+        .skip(1)
+        .join("")
+        .parse::<usize>()
+        .unwrap();
+
+    solve(t, d, Solution::Analytic)
 }
 
 fn main() {
-    for input in INPUT {
-        println!("{}", input.0);
-        part1(input.1);
-        part2(input.2 .0, input.2 .1);
-    }
+    let input = common::get_input();
+    common::timed(&input, part1, true);
+    common::timed(&input, part2, false);
 }

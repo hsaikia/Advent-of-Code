@@ -1,10 +1,8 @@
-use aoc::io::{self, AOCError};
+use aoc::{
+    common,
+    io::{self, AOCError},
+};
 use std::str::FromStr;
-
-const INPUT: [(&str, &str); 2] = [
-    ("Sample Input", include_str!("sample_input.txt")),
-    ("Input", include_str!("input.txt")),
-];
 
 #[derive(Debug)]
 struct Grab {
@@ -114,14 +112,12 @@ fn part1(games: &[Game]) {
 }
 
 fn main() {
-    for input in INPUT {
-        let mut games = Vec::new();
-        println!("{}", input.0);
-        for line in input.1.lines() {
-            games.push(Game::from_str(line).unwrap());
-        }
-
-        part1(&games);
-        part2(&games);
+    let input = common::get_input();
+    let mut games = Vec::new();
+    for line in input.lines() {
+        games.push(Game::from_str(line).unwrap());
     }
+
+    part1(&games);
+    part2(&games);
 }

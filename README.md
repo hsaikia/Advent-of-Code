@@ -6,27 +6,45 @@ This repo contains my solutions to [Advent of Code](https://adventofcode.com/) p
 
 You need to have rustc (and cargo) installed. Instructions [here](https://www.rust-lang.org/tools/install).
 
-Currently the file structure assumes that a certain number of input files are contained in the respective binary folder for each day. Once those are set up, we need to run the command from the root directory
+Then for any particular year_day we need to run this command from the root directory
 
 ```
-cargo run --release --bin <binary_name>
+cargo run --release --bin <year_day> <input_file>
 ```
 
-For example for binary `2022_01` we have an `input.txt` for the actual input and a `sample_input.txt` for a sample input. Then we run 
+For example for binary `2022_01` say we have a `sample_input.txt` file in the root directory with the following contents 
 
 ```
-cargo run --release --bin 2022_01
+1000
+2000
+3000
+
+4000
+
+5000
+6000
+
+7000
+8000
+9000
+
+10000
 ```
 
-which gives the output for both parts
+Then we run 
 
 ```
-Sample Input
-Part 1 Answer : 24000
-Part 2 Answer : 41000
-Input
-Part 1 Answer : 69626
-Part 2 Answer : 206780
+cargo run --release --bin 2022_01 sample_input.txt
+```
+
+which outputs the answers for both parts
+
+```
+Part#1 Answer 24000
+Time elapsed in Part#1 is: 75µs
+
+Part#2 Answer 41000
+Time elapsed in Part#2 is: 5.042µs
 ```
 
 

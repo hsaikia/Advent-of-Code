@@ -1,6 +1,6 @@
 use aoc::{common, grid::Grid};
 
-fn solve(input: &str, galaxy_expansion: usize) -> usize {
+fn solve<const GALAXY_EXPANSION: usize>(input: &str) -> usize {
     let mut ans: usize = 0;
 
     let grid = Grid::<char>::from_str(input, |c| c);
@@ -20,8 +20,8 @@ fn solve(input: &str, galaxy_expansion: usize) -> usize {
             let (c1, c2) = common::minmax(c1, c2);
             let mut d = r2 + c2 - r1 - c1;
 
-            d += (r1 + 1..r2).filter(|r| empty_rows.contains(r)).count() * (galaxy_expansion - 1);
-            d += (c1 + 1..c2).filter(|c| empty_cols.contains(c)).count() * (galaxy_expansion - 1);
+            d += (r1 + 1..r2).filter(|r| empty_rows.contains(r)).count() * (GALAXY_EXPANSION - 1);
+            d += (c1 + 1..c2).filter(|c| empty_cols.contains(c)).count() * (GALAXY_EXPANSION - 1);
 
             ans += d;
         }
@@ -31,9 +31,9 @@ fn solve(input: &str, galaxy_expansion: usize) -> usize {
 }
 
 fn main() {
-    let input = include_str!("input.txt");
-    println!("Part1 Answer {}", solve(input, 2));
-    println!("Part2 Answer {}", solve(input, 1000000));
+    let input = common::get_input();
+    common::timed(&input, solve::<2>, true);
+    common::timed(&input, solve::<1000000>, false);
 }
 
 #[cfg(test)]
@@ -43,9 +43,9 @@ mod tests {
     #[test]
     fn test_sample() {
         let sample_input = "...#......\n.......#..\n#.........\n..........\n......#...\n.#........\n.........#\n..........\n.......#..\n#...#.....";
-        assert_eq!(solve(sample_input, 2), 374);
-        assert_eq!(solve(sample_input, 10), 1030);
-        assert_eq!(solve(sample_input, 100), 8410);
-        assert_eq!(solve(sample_input, 1000000), 82000210);
+        assert_eq!(solve::<2>(sample_input), 374);
+        assert_eq!(solve::<10>(sample_input), 1030);
+        assert_eq!(solve::<100>(sample_input), 8410);
+        assert_eq!(solve::<1000000>(sample_input), 82000210);
     }
 }

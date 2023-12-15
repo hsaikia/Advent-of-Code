@@ -1,13 +1,9 @@
 use std::collections::VecDeque;
 
-use aoc::grid::{CellDir, CellIndex, Grid};
-
-const INPUT: [(&str, &str); 4] = [
-    ("Sample Input 1", include_str!("sample_input.txt")),
-    ("Sample Input 2", include_str!("sample_input2.txt")),
-    ("Sample Input 3", include_str!("sample_input3.txt")),
-    ("Input", include_str!("input.txt")),
-];
+use aoc::{
+    common,
+    grid::{CellDir, CellIndex, Grid},
+};
 
 #[derive(Debug)]
 enum Dir {
@@ -146,7 +142,7 @@ fn directed_path(path: &Vec<CellIndex>) -> Vec<Dir> {
     ret
 }
 
-fn solve(input: &str) {
+fn solve<const PART1: bool>(input: &str) -> usize {
     let original = Grid::from_str(input, |c| c);
     let grid = Grid::<Vec<CellDir>>::from_str(input, |c| match c {
         'F' => vec![(1, 0), (0, 1)],
@@ -209,7 +205,9 @@ fn solve(input: &str) {
     // Since we added the start position to the first half path
     assert!(path.len() == half_path2.len() + 1);
 
-    println!("Answer Part1 {}", half_path2.len());
+    if PART1 {
+        return half_path2.len();
+    }
 
     let mut cluster = Grid::new(grid.rows, grid.cols, Cluster::Empty);
 
@@ -240,15 +238,13 @@ fn solve(input: &str) {
     // Find out which cluster is at the border
     // The other one is basically the inner one
     if is_cluster_id_at_border(&mut cluster, Cluster::Side1) {
-        println!("Answer Part2 {}", cluster.count(&Cluster::Side2));
-    } else {
-        println!("Answer Part2 {}", cluster.count(&Cluster::Side1));
+        return cluster.count(&Cluster::Side2);
     }
+    cluster.count(&Cluster::Side1)
 }
 
 fn main() {
-    for (file, input) in INPUT {
-        println!("{}", file);
-        solve(input);
-    }
+    let input = common::get_input();
+    common::timed(&input, solve::<true>, true);
+    common::timed(&input, solve::<false>, false);
 }

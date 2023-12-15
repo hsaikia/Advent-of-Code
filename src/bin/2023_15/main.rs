@@ -1,5 +1,3 @@
-use std::env;
-
 use aoc::{common, io};
 
 fn hash(s: &str) -> u32 {
@@ -53,10 +51,7 @@ fn part2(input: &str) -> u32 {
 }
 
 fn main() {
-    let args: Vec<String> = env::args().collect();
-    let filepath = &args[1];
-    let input = std::fs::read_to_string(filepath).unwrap();
-
+    let input = common::get_input();
     common::timed(&input, part1, true);
     common::timed(&input, part2, false);
 }
