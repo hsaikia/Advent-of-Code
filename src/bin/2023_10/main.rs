@@ -17,7 +17,7 @@ enum Dir {
     NY,
 }
 
-#[derive(Clone, Default, Debug, PartialEq)]
+#[derive(Hash, Clone, Default, Debug, PartialEq)]
 enum Cluster {
     #[default]
     Empty,
