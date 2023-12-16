@@ -13,12 +13,9 @@ fn solve(grid: &Grid<char>, start: CellIndex, start_dir: CellDir) -> usize {
 
     let mut cell_set: HashSet<usize> = HashSet::new();
     while !queue.is_empty() {
+        
         let ((x, y), d) = queue.pop_front().unwrap();
-
-        //println!("Processing cell {:?} from Dir {:?}", (x, y), d);
-
         cell_set.insert(grid.to_flat_idx(x, y));
-        //dis.set(x, y, '#');
 
         let mut dirs = vis.get(x, y).unwrap().clone();
         if dirs.contains(&d) {
@@ -46,7 +43,7 @@ fn solve(grid: &Grid<char>, start: CellIndex, start_dir: CellDir) -> usize {
                 vec![d]
             }
         };
-        //println!("{:?}", next_dirs);
+        
         for nd in &next_dirs {
             if let Some(nc) = grid.cell_in_direction(x, y, nd.0, nd.1) {
                 queue.push_back((nc, *nd));
@@ -54,7 +51,6 @@ fn solve(grid: &Grid<char>, start: CellIndex, start_dir: CellDir) -> usize {
         }
     }
 
-    //dis.print();
     cell_set.len()
 }
 
@@ -65,21 +61,33 @@ fn part1(input: &str) -> usize {
 
 fn part2(input: &str) -> usize {
     let grid = Grid::from_str(input, |c| c);
-    let mut mx = 0;
+    let mut ans = 0;
     for i in 0..grid.rows {
-        mx = mx.max(solve(&grid, (i, 0), (0, 1)));
-        mx = mx.max(solve(&grid, (i, grid.cols - 1), (0, -1)));
+        ans = ans.max(solve(&grid, (i, 0), (0, 1)));
+        ans = ans.max(solve(&grid, (i, grid.cols - 1), (0, -1)));
     }
     for j in 0..grid.cols {
-        mx = mx.max(solve(&grid, (0, j), (1, 0)));
-        mx = mx.max(solve(&grid, (grid.rows - 1, j), (-1, 0)));
+        ans = ans.max(solve(&grid, (0, j), (1, 0)));
+        ans = ans.max(solve(&grid, (grid.rows - 1, j), (-1, 0)));
     }
 
-    mx
+    ans
 }
 
 fn main() {
     let input = common::get_input();
     common::timed(&input, part1, true);
     common::timed(&input, part2, false);
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_sample() {
+        let sample_input = ".|...\\....\n|.-.\\.....\n.....|-...\n........|.\n..........\n.........\\\n..../.\\\\..\n.-.-/..|..\n.|....-|.\\\n..//.|....";
+        assert_eq!(part1(sample_input), 46);
+        assert_eq!(part2(sample_input), 51);
+    }
 }
