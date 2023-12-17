@@ -112,7 +112,7 @@ impl<T: std::fmt::Debug + Clone + Default + PartialEq + Hash> Grid<T> {
     pub fn print(&self) {
         for row in &self.values {
             for cell in row {
-                print!("{:?}", &cell);
+                print!("{:?},", &cell);
             }
             println!();
         }

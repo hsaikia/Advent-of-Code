@@ -13,7 +13,6 @@ fn solve(grid: &Grid<char>, start: CellIndex, start_dir: CellDir) -> usize {
 
     let mut cell_set: HashSet<usize> = HashSet::new();
     while !queue.is_empty() {
-        
         let ((x, y), d) = queue.pop_front().unwrap();
         cell_set.insert(grid.to_flat_idx(x, y));
 
@@ -43,7 +42,7 @@ fn solve(grid: &Grid<char>, start: CellIndex, start_dir: CellDir) -> usize {
                 vec![d]
             }
         };
-        
+
         for nd in &next_dirs {
             if let Some(nc) = grid.cell_in_direction(x, y, nd.0, nd.1) {
                 queue.push_back((nc, *nd));
