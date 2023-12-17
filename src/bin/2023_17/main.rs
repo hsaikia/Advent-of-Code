@@ -1,137 +1,127 @@
-use std::{
-    cmp::Reverse,
-    collections::{BinaryHeap, HashMap},
-};
-
 use aoc::{
     common,
+    graph::Graph,
     grid::{CellDir, CellIndex, Grid},
 };
 
 #[derive(Debug, Copy, Clone, Eq, PartialEq, PartialOrd, Ord, Hash)]
-enum CardDir {
+pub enum CardinalDirection {
     Up,
     Down,
     Right,
     Left,
 }
 
-const DIRS: [CardDir; 4] = [CardDir::Up, CardDir::Down, CardDir::Right, CardDir::Left];
-
-impl CardDir {
-    fn next(&self) -> Vec<CardDir> {
+impl CardinalDirection {
+    pub fn next(&self) -> Vec<CardinalDirection> {
         match self {
-            CardDir::Up => {
-                vec![CardDir::Left, CardDir::Right]
+            CardinalDirection::Up | CardinalDirection::Down => {
+                vec![CardinalDirection::Left, CardinalDirection::Right]
             }
-            CardDir::Down => {
-                vec![CardDir::Left, CardDir::Right]
-            }
-            CardDir::Left => {
-                vec![CardDir::Up, CardDir::Down]
-            }
-            CardDir::Right => {
-                vec![CardDir::Up, CardDir::Down]
+            CardinalDirection::Left | CardinalDirection::Right => {
+                vec![CardinalDirection::Up, CardinalDirection::Down]
             }
         }
     }
 
-    fn to_dir(self) -> CellDir {
+    pub fn to_dir(self) -> CellDir {
         match self {
-            CardDir::Up => (-1, 0),
-            CardDir::Down => (1, 0),
-            CardDir::Left => (0, -1),
-            CardDir::Right => (0, 1),
+            CardinalDirection::Up => (-1, 0),
+            CardinalDirection::Down => (1, 0),
+            CardinalDirection::Left => (0, -1),
+            CardinalDirection::Right => (0, 1),
         }
     }
 }
 
-fn get_next_directions2(dir: &CardDir, hops: usize) -> Vec<(CardDir, usize)> {
-    let mut next_dir: Vec<(CardDir, usize)> = Vec::new();
-    if hops < 4 {
-        next_dir.push((*dir, hops + 1));
-    } else if hops < 10 {
-        for ndx in dir.next() {
-            next_dir.push((ndx, 1));
-        }
-        next_dir.push((*dir, hops + 1));
-    } else {
-        for ndx in dir.next() {
-            next_dir.push((ndx, 1));
-        }
+type Hops = usize;
+type Node = (CellIndex, CardinalDirection, Hops);
+
+const START: CellIndex = (0, 0);
+
+fn add_neighbor_in_cardinal_dir(
+    ret: &mut Vec<(Node, i64)>,
+    cell_index: &CellIndex,
+    cardinal_dir: &CardinalDirection,
+    g: &Grid<i64>,
+    hops: usize,
+) {
+    let dir = cardinal_dir.to_dir();
+    let opt_neighbor = g.cell_in_direction(cell_index.0, cell_index.1, dir.0, dir.1);
+
+    if let Some(neighbor) = opt_neighbor {
+        ret.push((
+            (neighbor, *cardinal_dir, hops),
+            g.get(neighbor.0, neighbor.1).unwrap(),
+        ));
     }
-    next_dir
 }
 
-fn get_next_directions1(dir: &CardDir, hops: usize) -> Vec<(CardDir, usize)> {
-    let mut next_dir: Vec<(CardDir, usize)> = Vec::new();
+struct MyGrid1(Grid<i64>);
+struct MyGrid2(Grid<i64>);
 
-    for ndx in dir.next() {
-        next_dir.push((ndx, 1));
+impl Graph<Node> for MyGrid1 {
+    fn connections_and_cost(&self, node: &Node) -> Vec<(Node, i64)> {
+        let (cell_index, cardinal_dir, hops) = node;
+        let mut ret = Vec::new();
+
+        for other_cardinal_dir in cardinal_dir.next() {
+            add_neighbor_in_cardinal_dir(&mut ret, cell_index, &other_cardinal_dir, &self.0, 1);
+        }
+
+        if *hops < 3 {
+            add_neighbor_in_cardinal_dir(&mut ret, cell_index, cardinal_dir, &self.0, hops + 1);
+        }
+
+        ret
     }
 
-    if hops < 3 {
-        next_dir.push((*dir, hops + 1));
+    fn termination_condition(&self, node: &Node) -> bool {
+        let (cell_index, _, _) = node;
+        cell_index.0 == self.0.rows - 1 && cell_index.1 == self.0.cols - 1
     }
-    next_dir
 }
 
-fn dijkstra<const PART1: bool>(start: CellIndex, g: &Grid<u32>) -> u32 {
-    let mut distances: HashMap<(CellIndex, usize, usize), u32> = HashMap::new();
-    let mut pq: BinaryHeap<Reverse<(CellIndex, usize, usize, u32)>> = BinaryHeap::new();
+impl Graph<Node> for MyGrid2 {
+    fn connections_and_cost(&self, node: &Node) -> Vec<(Node, i64)> {
+        let (cell_index, cardinal_dir, hops) = node;
+        let mut ret = Vec::new();
 
-    for i in 0..g.rows {
-        for j in 0..g.cols {
-            for dir in 0..4 {
-                distances.insert(((i, j), dir, 0), u32::MAX);
+        if *hops < 4 {
+            add_neighbor_in_cardinal_dir(&mut ret, cell_index, cardinal_dir, &self.0, hops + 1);
+        } else if *hops < 10 {
+            for other_cardinal_dir in cardinal_dir.next() {
+                add_neighbor_in_cardinal_dir(&mut ret, cell_index, &other_cardinal_dir, &self.0, 1);
             }
-        }
-    }
-
-    pq.push(Reverse((start, CardDir::Right as usize, 0, 0)));
-    pq.push(Reverse((start, CardDir::Down as usize, 0, 0)));
-
-    while let Some(Reverse((c, dir, hops, dist))) = pq.pop() {
-        if c.0 == g.rows - 1 && c.1 == g.cols - 1 {
-            return dist;
-        }
-
-        let next_dir = if PART1 {
-            get_next_directions1(&DIRS[dir], hops)
+            add_neighbor_in_cardinal_dir(&mut ret, cell_index, cardinal_dir, &self.0, hops + 1);
         } else {
-            get_next_directions2(&DIRS[dir], hops)
-        };
-        for nd in &next_dir {
-            let (dx, dy) = nd.0.to_dir();
-            if let Some(nc) = g.cell_in_direction(c.0, c.1, dx, dy) {
-                let new_dist = dist + g.get(nc.0, nc.1).unwrap();
-
-                if let Some(dist1) = distances.get_mut(&(nc, nd.0 as usize, nd.1)) {
-                    if *dist1 > new_dist {
-                        *dist1 = new_dist;
-                        pq.push(Reverse((nc, nd.0 as usize, nd.1, new_dist)));
-                        //println!("  Adding {:?} D {}", nc, new_dist);
-                    }
-                } else {
-                    distances.insert((nc, nd.0 as usize, nd.1), new_dist);
-                    pq.push(Reverse((nc, nd.0 as usize, nd.1, new_dist)));
-                    //println!("  Adding {:?} D {}", nc, new_dist);
-                }
+            for other_cardinal_dir in cardinal_dir.next() {
+                add_neighbor_in_cardinal_dir(&mut ret, cell_index, &other_cardinal_dir, &self.0, 1);
             }
         }
+
+        ret
     }
 
-    u32::MAX
+    fn termination_condition(&self, node: &Node) -> bool {
+        let (cell_index, _, hops) = node;
+        cell_index.0 == self.0.rows - 1
+            && cell_index.1 == self.0.cols - 1
+            && *hops >= 4
+            && *hops <= 10
+    }
 }
 
-fn part1(input: &str) -> u32 {
-    let g = Grid::from_str(input, |c| c.to_digit(10).unwrap());
-    dijkstra::<true>((0, 0), &g)
+fn part1(input: &str) -> i64 {
+    let g = MyGrid1(Grid::from_str(input, |c| c.to_digit(10).unwrap() as i64));
+    g.shortest_path((START, CardinalDirection::Right, 0))
+        .min(g.shortest_path((START, CardinalDirection::Down, 0)))
 }
 
-fn part2(input: &str) -> u32 {
-    let g = Grid::from_str(input, |c| c.to_digit(10).unwrap());
-    dijkstra::<false>((0, 0), &g)
+fn part2(input: &str) -> i64 {
+    let g = MyGrid2(Grid::from_str(input, |c| c.to_digit(10).unwrap() as i64));
+    g.shortest_path((START, CardinalDirection::Right, 0))
+        .min(g.shortest_path((START, CardinalDirection::Down, 0)))
 }
 
 fn main() {

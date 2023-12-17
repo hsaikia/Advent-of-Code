@@ -1,45 +1,43 @@
-use std::collections::HashMap;
+use std::collections::{BinaryHeap, HashMap};
 use std::hash::Hash;
 
-#[derive(Debug)]
-pub struct Graph<T: PartialEq + Eq + Hash + Clone, W: Clone> {
-    pub connections: HashMap<T, Vec<(T, W)>>,
-    pub node_weights: HashMap<T, W>,
-}
+pub trait Graph<T: Ord + Hash + Clone> {
+    fn connections_and_cost(&self, node: &T) -> Vec<(T, i64)>;
 
-impl<T: PartialEq + Eq + Hash + Clone, W: Clone> Default for Graph<T, W> {
-    fn default() -> Self {
-        Self::new()
-    }
-}
+    fn termination_condition(&self, node: &T) -> bool;
 
-impl<T: PartialEq + Eq + Hash + Clone, W: Clone> Graph<T, W> {
-    pub fn new() -> Self {
-        Graph {
-            connections: HashMap::new(),
-            node_weights: HashMap::new(),
+    // Dijkstra's algorithm for finding the shortest path from a start node to an end node
+    fn shortest_path(&self, start: T) -> i64 {
+        let mut distances: HashMap<T, i64> = HashMap::new();
+
+        let mut pq: BinaryHeap<(i64, T)> = BinaryHeap::new();
+
+        pq.push((0, start));
+
+        while !pq.is_empty() {
+            let (dist, node) = pq.pop().unwrap();
+
+            if self.termination_condition(&node) {
+                return -dist;
+            }
+
+            let neighbors = self.connections_and_cost(&node);
+            for (neighbor, cost) in neighbors {
+                let new_dist = dist - cost;
+
+                let opt_ndist = distances.get_mut(&neighbor);
+                if let Some(ndist) = opt_ndist {
+                    if new_dist > *ndist {
+                        *ndist = new_dist;
+                        pq.push((new_dist, neighbor));
+                    }
+                } else {
+                    distances.insert(neighbor.clone(), new_dist);
+                    pq.push((new_dist, neighbor));
+                }
+            }
         }
-    }
 
-    pub fn add_unidirectional_edge(&mut self, from: T, to: T, edge_weight: W) {
-        self.connections
-            .entry(from)
-            .or_default()
-            .push((to, edge_weight));
-    }
-
-    pub fn add_bidirectional_edge(&mut self, from: T, to: T, edge_weight: W) {
-        self.connections
-            .entry(from.clone())
-            .or_default()
-            .push((to.clone(), edge_weight.clone()));
-        self.connections
-            .entry(to)
-            .or_default()
-            .push((from, edge_weight));
-    }
-
-    pub fn add_node_weight(&mut self, node: T, node_weight: W) {
-        self.node_weights.entry(node).or_insert(node_weight);
+        i64::MAX
     }
 }
