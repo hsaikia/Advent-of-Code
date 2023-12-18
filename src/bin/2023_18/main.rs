@@ -1,4 +1,8 @@
-use aoc::{common, grid::CellDir, io};
+use aoc::{
+    analytic::{self, picks_formula},
+    common,
+    io,
+};
 
 #[derive(Debug, Copy, Clone, Eq, PartialEq, PartialOrd, Ord, Hash)]
 pub enum CardinalDirection {
@@ -6,6 +10,7 @@ pub enum CardinalDirection {
     Down,
     Left,
     Up,
+    None,
 }
 
 const DIRS: [CardinalDirection; 4] = [
@@ -30,15 +35,17 @@ impl CardinalDirection {
             CardinalDirection::Down => CardinalDirection::Up,
             CardinalDirection::Left => CardinalDirection::Right,
             CardinalDirection::Right => CardinalDirection::Left,
+            _ => CardinalDirection::None,
         }
     }
 
-    pub fn to_dir(self) -> CellDir {
+    pub fn to_dir(self) -> (i64, i64) {
         match self {
             CardinalDirection::Up => (-1, 0),
             CardinalDirection::Down => (1, 0),
             CardinalDirection::Left => (0, -1),
             CardinalDirection::Right => (0, 1),
+            _ => (0, 0),
         }
     }
 }
@@ -127,13 +134,29 @@ fn reduce(v: &mut Vec<(CardinalDirection, i64)>) -> i64 {
     ans
 }
 
-fn part2(input: &str) -> i64 {
+fn incremental_reduction<const PART1: bool>(input: &str) -> i64 {
     let mut v: Vec<(CardinalDirection, i64)> = Vec::new();
+
     for line in input.lines() {
         let tok = io::tokenize(line, " ");
-        let hx = i64::from_str_radix(&tok[2][2..7], 16).unwrap();
-        let dir = DIRS[io::parse_num::<usize>(&tok[2][7..8]).unwrap()];
-        v.push((dir, hx));
+        let hops = if PART1 {
+            tok[1].parse::<i64>().unwrap()
+        } else {
+            i64::from_str_radix(&tok[2][2..7], 16).unwrap()
+        };
+
+        let dir = if PART1 {
+            match tok[0] {
+                "R" => CardinalDirection::Right,
+                "L" => CardinalDirection::Left,
+                "U" => CardinalDirection::Up,
+                "D" => CardinalDirection::Down,
+                _ => CardinalDirection::None,
+            }
+        } else {
+            DIRS[io::parse_num::<usize>(&tok[2][7..8]).unwrap()]
+        };
+        v.push((dir, hops));
     }
 
     let mut ans = 0;
@@ -143,37 +166,45 @@ fn part2(input: &str) -> i64 {
     ans + 1
 }
 
-fn part1(input: &str) -> i64 {
-    let mut v: Vec<(CardinalDirection, i64)> = Vec::new();
+fn analytic<const PART1: bool>(input: &str) -> usize {
+    let mut positions: Vec<(i64, i64)> = Vec::new();
+    let mut curr_position = (0, 0);
+    let mut num_boundary_points = 0;
     for line in input.lines() {
+        positions.push(curr_position);
         let tok = io::tokenize(line, " ");
-        let x = tok[1].parse::<i64>().unwrap();
-        match tok[0] {
-            "R" => {
-                v.push((CardinalDirection::Right, x));
+        let hops = if PART1 {
+            tok[1].parse::<usize>().unwrap()
+        } else {
+            usize::from_str_radix(&tok[2][2..7], 16).unwrap()
+        };
+        num_boundary_points += hops;
+        let dir = if PART1 {
+            match tok[0] {
+                "R" => CardinalDirection::Right.to_dir(),
+                "L" => CardinalDirection::Left.to_dir(),
+                "U" => CardinalDirection::Up.to_dir(),
+                "D" => CardinalDirection::Down.to_dir(),
+                _ => (0, 0),
             }
-            "L" => {
-                v.push((CardinalDirection::Left, x));
-            }
-            "U" => {
-                v.push((CardinalDirection::Up, x));
-            }
-            "D" => {
-                v.push((CardinalDirection::Down, x));
-            }
-            _ => (),
-        }
+        } else {
+            DIRS[io::parse_num::<usize>(&tok[2][7..8]).unwrap()].to_dir()
+        };
+        curr_position.0 += dir.0 * hops as i64;
+        curr_position.1 += dir.1 * hops as i64;
     }
 
-    let mut ans = 0;
-    while !v.is_empty() {
-        ans += reduce(&mut v);
-    }
-    ans + 1
+    let area = analytic::shoelace_formula(&positions).abs() / 2;
+    let inner_points = picks_formula(area as usize, num_boundary_points);
+    num_boundary_points + inner_points
 }
 
 fn main() {
     let input = common::get_input();
-    common::timed(&input, part1, true);
-    common::timed(&input, part2, false);
+    println!("Incremental Reduction");
+    common::timed(&input, incremental_reduction::<true>, true);
+    common::timed(&input, incremental_reduction::<false>, false);
+    println!("\nAnalytic");
+    common::timed(&input, analytic::<true>, true);
+    common::timed(&input, analytic::<false>, false);
 }

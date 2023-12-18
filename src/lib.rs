@@ -1,3 +1,4 @@
+pub mod analytic;
 pub mod common;
 pub mod graph;
 pub mod grid;

@@ -31,11 +31,7 @@ pub fn minmax<T: Ord + Copy>(x: &T, y: &T) -> (T, T) {
 
 pub fn timed<T: core::fmt::Debug>(input: &str, f: fn(&str) -> T, part1: bool) {
     let start = Instant::now();
-    println!(
-        "\nPart #{} Answer {:?}",
-        if part1 { 1 } else { 2 },
-        f(input)
-    );
+    println!("Part #{} Answer {:?}", if part1 { 1 } else { 2 }, f(input));
     let duration = start.elapsed();
     println!(
         "Time elapsed in Part #{} is: {:?}",
