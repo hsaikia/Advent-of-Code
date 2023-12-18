@@ -1,8 +1,4 @@
-use aoc::{
-    analytic::{self, picks_formula},
-    common,
-    io,
-};
+use aoc::{analytic, common, io};
 
 #[derive(Debug, Copy, Clone, Eq, PartialEq, PartialOrd, Ord, Hash)]
 pub enum CardinalDirection {
@@ -21,14 +17,6 @@ const DIRS: [CardinalDirection; 4] = [
 ];
 
 impl CardinalDirection {
-    pub fn right(&self) -> CardinalDirection {
-        DIRS[(*self as usize + 1) % 4]
-    }
-
-    pub fn left(&self) -> CardinalDirection {
-        DIRS[(*self as usize + 3) % 4]
-    }
-
     pub fn opp(&self) -> CardinalDirection {
         match self {
             CardinalDirection::Up => CardinalDirection::Down,
@@ -63,19 +51,10 @@ fn reduce(v: &mut Vec<(CardinalDirection, i64)>) -> i64 {
 
     for i in 0..v.len() - 1 {
         if v[i].0 == v[i + 1].0.opp() {
-            if v[i].1 > v[i + 1].1 {
-                ans = v[i + 1].1;
-                v[i].1 -= v[i + 1].1;
-                v.remove(i + 1);
-            } else if v[i].1 < v[i + 1].1 {
-                ans = v[i].1;
-                v[i + 1].1 -= v[i].1;
-                v.remove(i);
-            } else {
-                ans = v[i].1;
-                v.remove(i + 1);
-                v.remove(i);
-            }
+            ans = v[i].1.min(v[i + 1].1);
+            v[i].1 -= ans;
+            v[i + 1].1 -= ans;
+            v.retain(|(_, hops)| *hops != 0);
             return ans;
         } else if v[i].0 == v[i + 1].0 {
             v[i + 1].1 += v[i].1;
@@ -92,19 +71,11 @@ fn reduce(v: &mut Vec<(CardinalDirection, i64)>) -> i64 {
                 && v[i].0 == CardinalDirection::Up
                 && v[i + 1].0 == CardinalDirection::Right)
         {
-            if v[i - 1].1 < v[i + 1].1 {
-                ans = (v[i - 1].1) * (v[i].1 + 1);
-                v[i + 1].1 -= v[i - 1].1;
-                v.remove(i - 1);
-            } else if v[i - 1].1 > v[i + 1].1 {
-                ans = (v[i + 1].1) * (v[i].1 + 1);
-                v[i - 1].1 -= v[i + 1].1;
-                v.remove(i + 1);
-            } else {
-                ans = (v[i - 1].1) * (v[i].1 + 1);
-                v.remove(i + 1);
-                v.remove(i - 1);
-            }
+            let mi = v[i - 1].1.min(v[i + 1].1);
+            ans = mi * (v[i].1 + 1);
+            v[i - 1].1 -= mi;
+            v[i + 1].1 -= mi;
+            v.retain(|(_, hops)| *hops != 0);
             return ans;
         }
         if (v[i - 1].0 == CardinalDirection::Right
@@ -114,19 +85,11 @@ fn reduce(v: &mut Vec<(CardinalDirection, i64)>) -> i64 {
                 && v[i].0 == CardinalDirection::Down
                 && v[i + 1].0 == CardinalDirection::Right)
         {
-            if v[i - 1].1 < v[i + 1].1 {
-                ans = -(v[i - 1].1) * (v[i].1 - 1);
-                v[i + 1].1 -= v[i - 1].1;
-                v.remove(i - 1);
-            } else if v[i - 1].1 > v[i + 1].1 {
-                ans = -(v[i + 1].1) * (v[i].1 - 1);
-                v[i - 1].1 -= v[i + 1].1;
-                v.remove(i + 1);
-            } else {
-                ans = -(v[i - 1].1) * (v[i].1 - 1);
-                v.remove(i + 1);
-                v.remove(i - 1);
-            }
+            let mi = v[i - 1].1.min(v[i + 1].1);
+            ans = -mi * (v[i].1 - 1);
+            v[i - 1].1 -= mi;
+            v[i + 1].1 -= mi;
+            v.retain(|(_, hops)| *hops != 0);
             return ans;
         }
     }
@@ -195,7 +158,7 @@ fn analytic<const PART1: bool>(input: &str) -> usize {
     }
 
     let area = analytic::shoelace_formula(&positions).abs() / 2;
-    let inner_points = picks_formula(area as usize, num_boundary_points);
+    let inner_points = analytic::picks_formula(area as usize, num_boundary_points);
     num_boundary_points + inner_points
 }
 
