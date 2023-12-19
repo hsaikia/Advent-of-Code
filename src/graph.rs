@@ -1,7 +1,8 @@
 use std::collections::{BinaryHeap, HashMap};
+use std::fmt::Debug;
 use std::hash::Hash;
 
-pub trait Graph<T: Ord + Hash + Clone> {
+pub trait ShortestPath<T: Ord + Hash + Clone + Debug> {
     fn connections_and_cost(&self, node: &T) -> Vec<(T, i64)>;
 
     fn termination_condition(&self, node: &T) -> bool;
@@ -16,6 +17,8 @@ pub trait Graph<T: Ord + Hash + Clone> {
 
         while !pq.is_empty() {
             let (dist, node) = pq.pop().unwrap();
+
+            println!("Visiting {:?} with pressure = {}", node, dist);
 
             if self.termination_condition(&node) {
                 return -dist;

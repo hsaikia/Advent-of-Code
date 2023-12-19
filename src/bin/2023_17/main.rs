@@ -1,6 +1,6 @@
 use aoc::{
     common,
-    graph::Graph,
+    graph::ShortestPath,
     grid::{CellDir, CellIndex, Grid},
 };
 
@@ -60,7 +60,7 @@ fn add_neighbor_in_cardinal_dir(
 struct MyGrid1(Grid<i64>);
 struct MyGrid2(Grid<i64>);
 
-impl Graph<Node> for MyGrid1 {
+impl ShortestPath<Node> for MyGrid1 {
     fn connections_and_cost(&self, node: &Node) -> Vec<(Node, i64)> {
         let (cell_index, cardinal_dir, hops) = node;
         let mut ret = Vec::new();
@@ -82,7 +82,7 @@ impl Graph<Node> for MyGrid1 {
     }
 }
 
-impl Graph<Node> for MyGrid2 {
+impl ShortestPath<Node> for MyGrid2 {
     fn connections_and_cost(&self, node: &Node) -> Vec<(Node, i64)> {
         let (cell_index, cardinal_dir, hops) = node;
         let mut ret = Vec::new();

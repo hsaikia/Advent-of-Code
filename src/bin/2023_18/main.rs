@@ -157,8 +157,8 @@ fn analytic<const PART1: bool>(input: &str) -> usize {
         curr_position.1 += dir.1 * hops as i64;
     }
 
-    let area = analytic::shoelace_formula(&positions).abs() / 2;
-    let inner_points = analytic::picks_formula(area as usize, num_boundary_points);
+    let area = analytic::polygon_area(&positions).abs() / 2;
+    let inner_points = analytic::polygon_inner_vertices(area as usize, num_boundary_points);
     num_boundary_points + inner_points
 }
 

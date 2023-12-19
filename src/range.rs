@@ -1,18 +1,21 @@
-use num::{traits::NumAssign, Num};
+use num::{traits::NumAssign, Integer, Num};
 
 /// A collection of ranges that dynamically maintain mutual exclusivity
-#[derive(Debug)]
-pub struct RangeUnion<T: Default + Ord + Num + NumAssign + Copy + std::fmt::Debug> {
-    ranges: Vec<Range<T>>,
+#[derive(Debug, Clone)]
+pub struct RangeUnion<T: Integer + Default + Ord + Num + NumAssign + Copy + Clone + std::fmt::Debug>
+{
+    pub ranges: Vec<Range<T>>,
 }
 
-impl<T: Default + Ord + Num + NumAssign + Copy + std::fmt::Debug> Default for RangeUnion<T> {
+impl<T: Integer + Default + Ord + Num + NumAssign + Copy + Clone + std::fmt::Debug> Default
+    for RangeUnion<T>
+{
     fn default() -> Self {
         Self::new()
     }
 }
 
-impl<T: Default + Ord + Num + NumAssign + Copy + std::fmt::Debug> RangeUnion<T> {
+impl<T: Integer + Default + Ord + Num + NumAssign + Copy + Clone + std::fmt::Debug> RangeUnion<T> {
     pub fn new() -> Self {
         Self { ranges: Vec::new() }
     }
@@ -59,12 +62,12 @@ impl<T: Default + Ord + Num + NumAssign + Copy + std::fmt::Debug> RangeUnion<T> 
 // Inclusive at the front, exclusive at the back
 // [a. b)
 #[derive(PartialEq, Eq, Debug, Clone, Hash, Copy)]
-pub struct Range<T: Default + Ord + Num + NumAssign + Copy> {
+pub struct Range<T: Integer + Default + Ord + Num + NumAssign + Copy> {
     pub a: T,
     pub b: T,
 }
 
-impl<T: Default + Ord + Num + NumAssign + Copy> Range<T> {
+impl<T: Integer + Default + Ord + Num + NumAssign + Copy> Range<T> {
     pub fn new(a: T, b: T) -> Self {
         Range { a, b }
     }
