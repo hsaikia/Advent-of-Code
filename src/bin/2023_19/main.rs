@@ -72,7 +72,7 @@ fn parse_rule<'a>(line: &'a str, map: &mut HashMap<&'a str, Vec<Rule<'a>>>) {
     }
 }
 
-fn process_range_part<'a>(
+fn process_part_range<'a>(
     prt: &[Range<i64>],
     map: &HashMap<&'a str, Vec<Rule<'a>>>,
     start: &'a str,
