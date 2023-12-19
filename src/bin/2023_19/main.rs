@@ -104,14 +104,14 @@ fn process_part_range<'a>(
                 ret += match action {
                     Action::Accepted => part_tmp.iter().map(|r| r.spread()).product::<i64>(),
                     Action::Rejected => 0,
-                    Action::SendTo(dst) => process_range_part(&part_tmp, map, dst),
+                    Action::SendTo(dst) => process_part_range(&part_tmp, map, dst),
                 };
             }
             Rule::Process(action) => {
                 ret += match action {
                     Action::Accepted => part.iter().map(|r| r.spread()).product::<i64>(),
                     Action::Rejected => 0,
-                    Action::SendTo(dst) => process_range_part(&part, map, dst),
+                    Action::SendTo(dst) => process_part_range(&part, map, dst),
                 };
             }
         }
@@ -184,7 +184,7 @@ fn part2<'a>(input: &'a str) -> i64 {
             b: MAX_EXC_RANGE,
         });
     }
-    process_range_part(&ranges, &map, "in")
+    process_part_range(&ranges, &map, "in")
 }
 
 fn main() {
