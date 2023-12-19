@@ -67,63 +67,12 @@ fn parse_rule<'a>(line: &'a str, map: &mut HashMap<&'a str, Vec<Rule<'a>>>) {
     }
 }
 
-pub fn split_less(ru: &RangeUnion<i64>, val: i64) -> (RangeUnion<i64>, RangeUnion<i64>) {
-    let mut acc: RangeUnion<i64> = RangeUnion::new();
-    let mut rej: RangeUnion<i64> = RangeUnion::new();
-    //ru.ranges.sort_by(|r1, r2| r1.a.cmp(&r2.a));
-
-    let mut found = false;
-    for range in ru.ranges.iter() {
-        if range.contains(val) {
-            found = true;
-            acc.add_range(Range { a: range.a, b: val });
-            rej.add_range(Range { a: val, b: range.b });
-            continue;
-        }
-
-        if found {
-            rej.add_range(*range);
-        } else {
-            acc.add_range(*range);
-        }
-    }
-    (acc, rej)
-}
-
-pub fn split_more(ru: &RangeUnion<i64>, val: i64) -> (RangeUnion<i64>, RangeUnion<i64>) {
-    let mut acc: RangeUnion<i64> = RangeUnion::new();
-    let mut rej: RangeUnion<i64> = RangeUnion::new();
-    //ru.ranges.sort_by(|r1, r2| r1.a.cmp(&r2.a));
-
-    let mut found = false;
-    for range in ru.ranges.iter() {
-        if range.contains(val) {
-            found = true;
-            rej.add_range(Range {
-                a: range.a,
-                b: val + 1,
-            });
-            acc.add_range(Range {
-                a: val + 1,
-                b: range.b,
-            });
-            continue;
-        }
-
-        if found {
-            acc.add_range(*range);
-        } else {
-            rej.add_range(*range);
-        }
-    }
-    (acc, rej)
-}
-
 fn process_range_part<'a>(
     prt: &[RangeUnion<i64>],
     map: &HashMap<&'a str, Vec<Rule<'a>>>,
     start: &'a str,
 ) -> i64 {
+    //println!("Visiting {:?}", prt);
     let rules = map.get(start).unwrap();
     let mut ret = 0;
     let mut part = prt.to_owned();
@@ -134,7 +83,9 @@ fn process_range_part<'a>(
                     if cat[i] == 0 {
                         continue;
                     }
-                    let (acc, rej) = split_less(&part[i], cat[i]);
+                    let range = Range { a: 1, b: cat[i] };
+                    let acc = part[i].intersect(&range);
+                    part[i] = part[i].difference(&range);
                     match action {
                         Action::Accepted => {
                             let mut part_tmp = part.clone();
@@ -150,7 +101,6 @@ fn process_range_part<'a>(
                             ret += process_range_part(&part_tmp, map, dst);
                         }
                     }
-                    part[i] = rej;
                 }
             }
             Rule::IfMore(cat, action) => {
@@ -158,7 +108,13 @@ fn process_range_part<'a>(
                     if cat[i] == 0 {
                         continue;
                     }
-                    let (acc, rej) = split_more(&part[i], cat[i]);
+                    let range = Range {
+                        a: cat[i] + 1,
+                        b: 4001,
+                    };
+                    let acc = part[i].intersect(&range);
+                    part[i] = part[i].difference(&range);
+
                     match action {
                         Action::Accepted => {
                             let mut part_tmp = part.clone();
@@ -174,7 +130,6 @@ fn process_range_part<'a>(
                             ret += process_range_part(&part_tmp, map, dst);
                         }
                     }
-                    part[i] = rej;
                 }
             }
             Rule::Process(action) => match action {

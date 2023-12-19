@@ -1,13 +1,28 @@
+use std::fmt::{Debug, Display};
+
+use itertools::Itertools;
 use num::{traits::NumAssign, Integer, Num};
 
 /// A collection of ranges that dynamically maintain mutual exclusivity
-#[derive(Debug, Clone)]
-pub struct RangeUnion<T: Integer + Default + Ord + Num + NumAssign + Copy + Clone + std::fmt::Debug>
-{
+#[derive(Clone)]
+pub struct RangeUnion<T: Integer + Default + Ord + Num + NumAssign + Copy + Clone + Display> {
     pub ranges: Vec<Range<T>>,
 }
 
-impl<T: Integer + Default + Ord + Num + NumAssign + Copy + Clone + std::fmt::Debug> Default
+impl<T: Integer + Default + Ord + Num + NumAssign + Copy + Clone + Display> Debug
+    for RangeUnion<T>
+{
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let s = self
+            .ranges
+            .iter()
+            .map(|r| format!("[{}, {}]", r.a, r.b))
+            .join(" | ");
+        write!(f, "{}", s)
+    }
+}
+
+impl<T: Integer + Default + Ord + Num + NumAssign + Copy + Clone + Display> Default
     for RangeUnion<T>
 {
     fn default() -> Self {
@@ -15,7 +30,7 @@ impl<T: Integer + Default + Ord + Num + NumAssign + Copy + Clone + std::fmt::Deb
     }
 }
 
-impl<T: Integer + Default + Ord + Num + NumAssign + Copy + Clone + std::fmt::Debug> RangeUnion<T> {
+impl<T: Integer + Default + Ord + Num + NumAssign + Copy + Clone + Display> RangeUnion<T> {
     pub fn new() -> Self {
         Self { ranges: Vec::new() }
     }
@@ -56,18 +71,44 @@ impl<T: Integer + Default + Ord + Num + NumAssign + Copy + Clone + std::fmt::Deb
         }
         false
     }
+
+    pub fn intersect(&self, range: &Range<T>) -> RangeUnion<T> {
+        RangeUnion::<T> {
+            ranges: self
+                .ranges
+                .iter()
+                .filter_map(|r| r.intersect(range))
+                .collect(),
+        }
+    }
+
+    pub fn difference(&self, range: &Range<T>) -> RangeUnion<T> {
+        RangeUnion::<T> {
+            ranges: self
+                .ranges
+                .iter()
+                .flat_map(|r| r.difference(range))
+                .collect_vec(),
+        }
+    }
 }
 
 // Range Struct
 // Inclusive at the front, exclusive at the back
 // [a. b)
-#[derive(PartialEq, Eq, Debug, Clone, Hash, Copy)]
-pub struct Range<T: Integer + Default + Ord + Num + NumAssign + Copy> {
+#[derive(PartialEq, Eq, Clone, Hash, Copy)]
+pub struct Range<T: Integer + Default + Ord + Num + NumAssign + Copy + Display> {
     pub a: T,
     pub b: T,
 }
 
-impl<T: Integer + Default + Ord + Num + NumAssign + Copy> Range<T> {
+impl<T: Integer + Default + Ord + Num + NumAssign + Copy + Display> Debug for Range<T> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "[{},{})", self.a, self.b)
+    }
+}
+
+impl<T: Integer + Default + Ord + Num + NumAssign + Copy + Display> Range<T> {
     pub fn new(a: T, b: T) -> Self {
         Range { a, b }
     }
