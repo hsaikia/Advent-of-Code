@@ -1,9 +1,6 @@
 use std::collections::HashMap;
 
-use aoc::{
-    common, io,
-    range::{Range, RangeUnion},
-};
+use aoc::{common, io, range::Range};
 
 fn cat_to_idx(cat: &str) -> usize {
     match cat {
@@ -68,7 +65,7 @@ fn parse_rule<'a>(line: &'a str, map: &mut HashMap<&'a str, Vec<Rule<'a>>>) {
 }
 
 fn process_range_part<'a>(
-    prt: &[RangeUnion<i64>],
+    prt: &[Range<i64>],
     map: &HashMap<&'a str, Vec<Rule<'a>>>,
     start: &'a str,
 ) -> i64 {
@@ -76,68 +73,45 @@ fn process_range_part<'a>(
     let rules = map.get(start).unwrap();
     let mut ret = 0;
     let mut part = prt.to_owned();
+
     for rule in rules {
         match rule {
             Rule::IfLess(cat, action) => {
-                for i in 0..4 {
-                    if cat[i] == 0 {
-                        continue;
-                    }
-                    let range = Range { a: 1, b: cat[i] };
-                    let mut part_tmp = part.clone();
-                    part_tmp[i] = part[i].intersect(&range);
-                    part[i] = part[i].difference(&range);
+                let idx = (0..4).filter(|&i| cat[i] != 0).collect::<Vec<_>>()[0];
+                let range = Range { a: 1, b: cat[idx] };
+                let mut part_tmp = part.clone();
+                part_tmp[idx] = part[idx].intersect(&range).unwrap();
+                part[idx] = part[idx].difference(&range)[0];
 
-                    match action {
-                        Action::Accepted => {
-                            ret += part_tmp.iter().map(|ru| ru.spread()).product::<i64>();
-                        }
-                        Action::Rejected => {
-                            ret += 0;
-                        }
-                        Action::SendTo(dst) => {
-                            ret += process_range_part(&part_tmp, map, dst);
-                        }
-                    }
-                }
+                ret += match action {
+                    Action::Accepted => part_tmp.iter().map(|r| r.spread()).product::<i64>(),
+                    Action::Rejected => 0,
+                    Action::SendTo(dst) => process_range_part(&part_tmp, map, dst),
+                };
             }
             Rule::IfMore(cat, action) => {
-                for i in 0..4 {
-                    if cat[i] == 0 {
-                        continue;
-                    }
-                    let range = Range {
-                        a: cat[i] + 1,
-                        b: 4001,
-                    };
-                    let mut part_tmp = part.clone();
-                    part_tmp[i] = part[i].intersect(&range);
-                    part[i] = part[i].difference(&range);
+                let idx = (0..4).filter(|&i| cat[i] != 0).collect::<Vec<_>>()[0];
+                let range = Range {
+                    a: cat[idx] + 1,
+                    b: 4001,
+                };
+                let mut part_tmp = part.clone();
+                part_tmp[idx] = part[idx].intersect(&range).unwrap();
+                part[idx] = part[idx].difference(&range)[0];
 
-                    match action {
-                        Action::Accepted => {
-                            ret += part_tmp.iter().map(|ru| ru.spread()).product::<i64>();
-                        }
-                        Action::Rejected => {
-                            ret += 0;
-                        }
-                        Action::SendTo(dst) => {
-                            ret += process_range_part(&part_tmp, map, dst);
-                        }
-                    }
-                }
+                ret += match action {
+                    Action::Accepted => part_tmp.iter().map(|r| r.spread()).product::<i64>(),
+                    Action::Rejected => 0,
+                    Action::SendTo(dst) => process_range_part(&part_tmp, map, dst),
+                };
             }
-            Rule::Process(action) => match action {
-                Action::Accepted => {
-                    ret += part.iter().map(|ru| ru.spread()).product::<i64>();
-                }
-                Action::Rejected => {
-                    ret += 0;
-                }
-                Action::SendTo(dst) => {
-                    ret += process_range_part(&part, map, dst);
-                }
-            },
+            Rule::Process(action) => {
+                ret += match action {
+                    Action::Accepted => part.iter().map(|r| r.spread()).product::<i64>(),
+                    Action::Rejected => 0,
+                    Action::SendTo(dst) => process_range_part(&part, map, dst),
+                };
+            }
         }
     }
     ret
@@ -148,56 +122,32 @@ fn process_part<'a>(part: [i64; 4], map: &HashMap<&'a str, Vec<Rule<'a>>>, start
     for rule in rules {
         match rule {
             Rule::IfLess(cat, action) => {
-                for i in 0..4 {
-                    if cat[i] == 0 {
-                        continue;
-                    }
-                    if part[i] < cat[i] {
-                        match action {
-                            Action::Accepted => {
-                                return part.iter().sum();
-                            }
-                            Action::Rejected => {
-                                return 0;
-                            }
-                            Action::SendTo(dst) => {
-                                return process_part(part, map, dst);
-                            }
-                        }
-                    }
+                let idx = (0..4).filter(|&i| cat[i] != 0).collect::<Vec<_>>()[0];
+                if part[idx] < cat[idx] {
+                    return match action {
+                        Action::Accepted => part.iter().sum(),
+                        Action::Rejected => 0,
+                        Action::SendTo(dst) => process_part(part, map, dst),
+                    };
                 }
             }
             Rule::IfMore(cat, action) => {
-                for i in 0..4 {
-                    if cat[i] == 0 {
-                        continue;
-                    }
-                    if part[i] > cat[i] {
-                        match action {
-                            Action::Accepted => {
-                                return part.iter().sum();
-                            }
-                            Action::Rejected => {
-                                return 0;
-                            }
-                            Action::SendTo(dst) => {
-                                return process_part(part, map, dst);
-                            }
-                        }
-                    }
+                let idx = (0..4).filter(|&i| cat[i] != 0).collect::<Vec<_>>()[0];
+                if part[idx] > cat[idx] {
+                    return match action {
+                        Action::Accepted => part.iter().sum(),
+                        Action::Rejected => 0,
+                        Action::SendTo(dst) => process_part(part, map, dst),
+                    };
                 }
             }
-            Rule::Process(action) => match action {
-                Action::Accepted => {
-                    return part.iter().sum();
+            Rule::Process(action) => {
+                return match action {
+                    Action::Accepted => part.iter().sum(),
+                    Action::Rejected => 0,
+                    Action::SendTo(dst) => process_part(part, map, dst),
                 }
-                Action::Rejected => {
-                    return 0;
-                }
-                Action::SendTo(dst) => {
-                    return process_part(part, map, dst);
-                }
-            },
+            }
         }
     }
     0
@@ -233,14 +183,12 @@ fn part2<'a>(input: &'a str) -> i64 {
         parse_rule(line, &mut map);
     }
 
-    let mut rup: Vec<RangeUnion<i64>> = Vec::new();
+    let mut ranges: Vec<Range<i64>> = Vec::new();
     for _ in 0..4 {
-        let mut ru: RangeUnion<i64> = RangeUnion::new();
-        ru.add_range(Range { a: 1, b: 4001 });
-        rup.push(ru);
+        ranges.push(Range { a: 1, b: 4001 });
     }
 
-    process_range_part(&rup, &map, "in")
+    process_range_part(&ranges, &map, "in")
 }
 
 fn main() {

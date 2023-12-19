@@ -58,7 +58,7 @@ impl<T: Integer + Default + Ord + Num + NumAssign + Copy + Clone + Display> Rang
     pub fn spread(&self) -> T {
         let mut ans: T = T::default();
         for r in &self.ranges {
-            ans += r.b - r.a;
+            ans += r.spread();
         }
         ans
     }
@@ -126,6 +126,10 @@ impl<T: Integer + Default + Ord + Num + NumAssign + Copy + Display> Range<T> {
 
     pub fn idx_from(&self, idx: T) -> T {
         self.a + idx
+    }
+
+    pub fn spread(&self) -> T {
+        self.b - self.a
     }
 
     pub fn intersect(&self, other: &Range<T>) -> Option<Range<T>> {
