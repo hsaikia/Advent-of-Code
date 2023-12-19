@@ -84,20 +84,18 @@ fn process_range_part<'a>(
                         continue;
                     }
                     let range = Range { a: 1, b: cat[i] };
-                    let acc = part[i].intersect(&range);
+                    let mut part_tmp = part.clone();
+                    part_tmp[i] = part[i].intersect(&range);
                     part[i] = part[i].difference(&range);
+
                     match action {
                         Action::Accepted => {
-                            let mut part_tmp = part.clone();
-                            part_tmp[i] = acc;
                             ret += part_tmp.iter().map(|ru| ru.spread()).product::<i64>();
                         }
                         Action::Rejected => {
                             ret += 0;
                         }
                         Action::SendTo(dst) => {
-                            let mut part_tmp = part.clone();
-                            part_tmp[i] = acc;
                             ret += process_range_part(&part_tmp, map, dst);
                         }
                     }
@@ -112,21 +110,18 @@ fn process_range_part<'a>(
                         a: cat[i] + 1,
                         b: 4001,
                     };
-                    let acc = part[i].intersect(&range);
+                    let mut part_tmp = part.clone();
+                    part_tmp[i] = part[i].intersect(&range);
                     part[i] = part[i].difference(&range);
 
                     match action {
                         Action::Accepted => {
-                            let mut part_tmp = part.clone();
-                            part_tmp[i] = acc;
                             ret += part_tmp.iter().map(|ru| ru.spread()).product::<i64>();
                         }
                         Action::Rejected => {
                             ret += 0;
                         }
                         Action::SendTo(dst) => {
-                            let mut part_tmp = part.clone();
-                            part_tmp[i] = acc;
                             ret += process_range_part(&part_tmp, map, dst);
                         }
                     }
