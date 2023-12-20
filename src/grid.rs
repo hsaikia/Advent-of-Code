@@ -42,6 +42,27 @@ impl<T: std::fmt::Debug + Clone + Default + PartialEq + Hash> Grid<T> {
         grid
     }
 
+    pub fn rotate_clockwise(&self) -> Self {
+        let mut ret = Grid::new(self.cols, self.rows, T::default());
+        for i in 0..self.rows {
+            for j in 0..self.cols {
+                ret.set(j, self.rows - 1 - i, self.get(i, j).unwrap())
+            }
+        }
+        ret
+    }
+
+    // flips the column order
+    pub fn flip_vertical(&self) -> Self {
+        let mut ret = Grid::new(self.rows, self.cols, T::default());
+        for i in 0..self.rows {
+            for j in 0..self.cols {
+                ret.set(i, self.cols - 1 - j, self.get(i, j).unwrap())
+            }
+        }
+        ret
+    }
+
     pub fn positions(&self, x: T) -> Vec<CellIndex> {
         let mut ret = Vec::new();
         for r in 0..self.rows {
