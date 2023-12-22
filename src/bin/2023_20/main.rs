@@ -83,7 +83,7 @@ fn part1(input: &str) -> usize {
         let tokens = io::tokenize(line, " -> ");
         if tokens[0] == "broadcaster" {
             states.insert(
-                &tokens[0],
+                tokens[0],
                 Gate {
                     mt: ModType::Broadcaster,
                 },
@@ -118,11 +118,8 @@ fn part1(input: &str) -> usize {
     for (key, vals) in order.iter() {
         for val in vals {
             if let Some(entry) = states.get_mut(val) {
-                match &mut entry.mt {
-                    ModType::Conjunction(map) => {
-                        map.insert(key, Pulse::Low);
-                    }
-                    _ => (),
+                if let ModType::Conjunction(map) = &mut entry.mt {
+                    map.insert(key, Pulse::Low);
                 }
             }
         }

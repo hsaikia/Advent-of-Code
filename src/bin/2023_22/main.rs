@@ -2,6 +2,7 @@ use std::collections::{HashMap, VecDeque};
 
 use aoc::{common, io, range::Range};
 
+#[allow(dead_code)]
 fn show(brs: &Vec<[Range<usize>; 3]>) {
     for br in brs {
         for r in br {
