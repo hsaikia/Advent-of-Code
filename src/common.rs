@@ -1,6 +1,6 @@
 use core::fmt;
 use std::{
-    collections::HashMap,
+    collections::{HashMap, HashSet},
     env,
     hash::{BuildHasher, Hash},
     time::Instant,
@@ -62,4 +62,9 @@ impl fmt::Debug for GridDisplay {
         let s = self.rows.join("\n");
         write!(f, "\n{}\n", s)
     }
+}
+
+pub fn dedup<T: Hash + Clone + Copy + std::cmp::Eq + PartialEq>(v: &mut Vec<T>) {
+    let mut set = HashSet::<T>::new();
+    v.retain(|x| set.insert(*x));
 }

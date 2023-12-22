@@ -23,15 +23,11 @@ impl<'a> Gate<'a> {
                     *val = Pulse::Low;
                 }
             }
-            ModType::FlipFlop(state) => {
-                *state = State::Off
-            }
-            _ => {
-
-            }
+            ModType::FlipFlop(state) => *state = State::Off,
+            _ => {}
         }
     }
-    pub fn process(&mut self, from: &'a str, pulse: &Pulse) -> Option<Pulse>{
+    pub fn process(&mut self, from: &'a str, pulse: &Pulse) -> Option<Pulse> {
         //println!("Receiving {:?} from {}", pulse, from);
         match &mut self.mt {
             ModType::Conjunction(pulse_map) => {
@@ -57,13 +53,10 @@ impl<'a> Gate<'a> {
                         Some(Pulse::High)
                     }
                 }
-                Pulse::High => {
-                    None
-                }
+                Pulse::High => None,
             },
 
             ModType::Broadcaster => Some(*pulse),
-            _ => None,
         }
     }
 }
@@ -80,7 +73,6 @@ enum ModType<'a> {
     Broadcaster,
     FlipFlop(State),
     Conjunction(HashMap<&'a str, Pulse>),
-    Output,
 }
 
 fn part1(input: &str) -> usize {
@@ -96,7 +88,7 @@ fn part1(input: &str) -> usize {
                     mt: ModType::Broadcaster,
                 },
             );
-            order.insert(&tokens[0], io::tokenize(tokens[1], ", "));
+            order.insert(tokens[0], io::tokenize(tokens[1], ", "));
         } else {
             if &tokens[0][0..1] == "&" {
                 states.insert(
@@ -142,21 +134,19 @@ fn part1(input: &str) -> usize {
 
     // Hack!
     // Determine button presses for vm, lm, jd, fv highs as they all connect to zg which must output low
-    let mut ans1 : usize = 0;
-    let mut ans2 : usize = 1;
-    const PART1_TIMES : usize = 1000;
+    let mut ans1: usize = 0;
+    let mut ans2: usize = 1;
+    const PART1_TIMES: usize = 1000;
 
     for elem in ["vm", "lm", "jd", "fv"] {
-
         // Reset all
         for vals in states.values_mut() {
             vals.reset();
         }
-        
+
         let mut sent = [0; 2];
         let mut button_presses = 0;
         loop {
-
             if button_presses == PART1_TIMES {
                 ans1 = sent[0] * sent[1];
             }
@@ -167,18 +157,17 @@ fn part1(input: &str) -> usize {
             q.push_back(("broadcaster", Some(Pulse::Low)));
             sent[0] += 1;
             let mut found_elem = false;
-    
+
             while !q.is_empty() {
                 let (md, opt_pulse) = q.pop_front().unwrap();
                 if let Some(pulse) = opt_pulse {
-    
                     if md == elem && pulse == Pulse::High {
                         println!("Found {} in {} presses", elem, button_presses);
                         ans2 = ans2.lcm(&button_presses);
                         found_elem = true;
                         break;
                     }
-    
+
                     for dg in order.get(md).unwrap() {
                         if button_presses <= PART1_TIMES && pulse == Pulse::High {
                             sent[1] += 1
@@ -186,7 +175,7 @@ fn part1(input: &str) -> usize {
                             sent[0] += 1
                         }
                         //println!("{} -> ({:?}) -> {}", md, pulse, dg);
-    
+
                         if let Some(dst) = states.get_mut(dg) {
                             let new_pulse = dst.process(md, &pulse);
                             q.push_back((dg, new_pulse));
@@ -194,17 +183,15 @@ fn part1(input: &str) -> usize {
                     }
                 }
             }
-    
+
             if found_elem {
                 break;
             }
         }
-    
     }
-    
+
     println!("Part 1 {:?} Part 2 {}", ans1, ans2);
     0
-    
 }
 
 fn main() {
