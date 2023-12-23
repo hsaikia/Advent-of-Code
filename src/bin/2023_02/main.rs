@@ -23,7 +23,7 @@ impl FromStr for Grab {
         let grabs_str = io::tokenize(s, ", ");
         for grab_str in grabs_str {
             let tuple = io::tokenize(grab_str, " ");
-            let q = io::parse_num::<usize>(tuple[0]).unwrap();
+            let q = io::parse_num::<usize>(tuple[0]);
             match tuple[1] {
                 "red" => grab.red = q,
                 "green" => grab.green = q,
@@ -72,7 +72,7 @@ impl FromStr for Game {
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let tokens = io::tokenize(s, ": ");
-        let game_id = io::parse_num::<usize>(tokens[0]).unwrap();
+        let game_id = io::parse_num::<usize>(tokens[0]);
         let mut game: Game = Game {
             game_id,
             grabs: vec![],

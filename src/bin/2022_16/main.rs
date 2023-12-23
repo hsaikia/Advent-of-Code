@@ -98,7 +98,7 @@ fn part1(input: &str) -> i64 {
         graph
             .flow_rate
             .entry(tokens[1])
-            .or_insert(io::parse_num(tokens[4]).unwrap());
+            .or_insert(io::parse_num(tokens[4]));
     }
 
     -graph.shortest_path(("AA", vec![], 0, 0))

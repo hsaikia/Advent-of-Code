@@ -22,14 +22,14 @@ fn part1(input: &str) -> Option<usize> {
 
         if tokens[0] == "seeds:" {
             for token in tokens.iter().skip(1) {
-                v.push(Some(io::parse_num::<usize>(token).unwrap()));
+                v.push(Some(io::parse_num::<usize>(token)));
             }
         } else if tokens[1] == "map:" {
             w.resize(v.len(), None);
         } else {
             let range = tokens
                 .iter()
-                .map(|s| io::parse_num::<usize>(s).unwrap())
+                .map(|s| io::parse_num::<usize>(s))
                 .collect::<Vec<_>>();
             let rs = Range::new(range[1], range[1] + range[2]);
             let rd = Range::new(range[0], range[0] + range[2]);
@@ -73,7 +73,7 @@ fn part2(input: &str) -> usize {
         if tokens[0] == "seeds:" {
             let mut rr = Vec::new();
             for token in tokens.iter().skip(1) {
-                rr.push(io::parse_num::<usize>(token).unwrap());
+                rr.push(io::parse_num::<usize>(token));
             }
 
             let mut i = 0;
@@ -84,7 +84,7 @@ fn part2(input: &str) -> usize {
         } else if tokens.len() == 3 {
             let range = tokens
                 .iter()
-                .map(|s| io::parse_num::<usize>(s).unwrap())
+                .map(|s| io::parse_num::<usize>(s))
                 .collect::<Vec<_>>();
             let rs = Range::new(range[1], range[1] + range[2]);
             let rd_a = range[0];

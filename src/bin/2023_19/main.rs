@@ -56,10 +56,10 @@ fn parse_rule<'a>(line: &'a str, map: &mut HashMap<&'a str, Vec<Rule<'a>>>) {
             let dst_cond_action = get_action(dst);
             let mut category_arr = [0; 4];
             let cond_rule = if let Some((category, val)) = condition.split_once('<') {
-                category_arr[category_to_idx(category)] = io::parse_num(val).unwrap();
+                category_arr[category_to_idx(category)] = io::parse_num(val);
                 Rule::Conditional(category_arr, dst_cond_action, Cmp::Less)
             } else if let Some((category, val)) = condition.split_once('>') {
-                category_arr[category_to_idx(category)] = io::parse_num(val).unwrap();
+                category_arr[category_to_idx(category)] = io::parse_num(val);
                 Rule::Conditional(category_arr, dst_cond_action, Cmp::More)
             } else {
                 panic!("No < or > found!")
@@ -161,7 +161,7 @@ fn part1<'a>(input: &'a str) -> i64 {
         let mut part: [i64; 4] = [0; 4];
         for (i, category) in cats.iter().enumerate() {
             let (_, v) = category.split_once('=').unwrap();
-            part[i] = io::parse_num(v).unwrap();
+            part[i] = io::parse_num(v);
         }
         ans += process_part(part, &map, "in");
     }

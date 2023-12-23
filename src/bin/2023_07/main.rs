@@ -106,7 +106,7 @@ fn solve(input: &str, joker: bool) -> usize {
 
     for line in input.split('\n') {
         let hand_bid = io::tokenize(line, " ");
-        cards.push((hand_bid[0], io::parse_num::<usize>(hand_bid[1]).unwrap()));
+        cards.push((hand_bid[0], io::parse_num::<usize>(hand_bid[1])));
     }
 
     cards.sort_by(|c1, c2| compare_hands(c2.0, c1.0, joker));

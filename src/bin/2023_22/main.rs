@@ -64,11 +64,11 @@ fn solve(input: &str) -> (usize, usize) {
         let (a, b) = line.split_once('~').unwrap();
         let xyz1 = io::tokenize(a, ",")
             .iter()
-            .map(|s| io::parse_num::<usize>(s).unwrap())
+            .map(|s| io::parse_num::<usize>(s))
             .collect::<Vec<_>>();
         let xyz2 = io::tokenize(b, ",")
             .iter()
-            .map(|s| io::parse_num::<usize>(s).unwrap())
+            .map(|s| io::parse_num::<usize>(s))
             .collect::<Vec<_>>();
 
         assert!(xyz1.len() == 3);

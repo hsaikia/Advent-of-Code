@@ -1,6 +1,5 @@
-use std::str::FromStr;
-
 use itertools::Itertools;
+use std::{fmt::Debug, str::FromStr};
 
 #[derive(Debug)]
 pub struct AOCError;
@@ -11,13 +10,16 @@ pub fn tokenize<'a>(line: &'a str, separator: &str) -> Vec<&'a str> {
         .collect::<_>()
 }
 
-pub fn parse_num<T: FromStr>(token: &str) -> Result<T, AOCError> {
+pub fn parse_num<T: FromStr>(token: &str) -> T
+where
+    <T as FromStr>::Err: Debug,
+{
     token
         .chars()
         .filter(|x| x.is_ascii_digit())
         .collect::<String>()
         .parse::<T>()
-        .map_err(|_| AOCError)
+        .unwrap()
 }
 
 pub fn line_batches(input: &str) -> Vec<Vec<&str>> {

@@ -17,7 +17,7 @@ fn part2(input: &str) -> u32 {
     for seq in &seqs {
         if seq.find('=').is_some() {
             if let Some((id, val)) = seq.split_once('=') {
-                let val: u32 = io::parse_num(val).unwrap();
+                let val: u32 = io::parse_num(val);
                 let box_idx = hash(id) as usize;
                 let mut found = false;
                 for (id1, val1) in &mut box_map[box_idx] {

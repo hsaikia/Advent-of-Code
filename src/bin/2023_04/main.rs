@@ -4,7 +4,7 @@ use aoc::{common, io};
 
 fn hash_set_from_str(strs: &[&str]) -> HashSet<usize> {
     strs.iter()
-        .map(|s| io::parse_num::<usize>(s).unwrap())
+        .map(|s| io::parse_num::<usize>(s))
         .collect::<HashSet<_>>()
 }
 

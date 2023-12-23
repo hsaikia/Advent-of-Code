@@ -86,7 +86,7 @@ fn incremental_reduction<const PART1: bool>(input: &str) -> i64 {
                 _ => panic!("Bad direction!"),
             }
         } else {
-            DIRS[io::parse_num::<usize>(&tok[2][7..8]).unwrap()]
+            DIRS[io::parse_num::<usize>(&tok[2][7..8])]
         };
         v.push((dir, hops));
     }
@@ -120,7 +120,7 @@ fn analytic<const PART1: bool>(input: &str) -> usize {
                 _ => (0, 0),
             }
         } else {
-            DIRS[io::parse_num::<usize>(&tok[2][7..8]).unwrap()].to_dir()
+            DIRS[io::parse_num::<usize>(&tok[2][7..8])].to_dir()
         };
         curr_position.0 += dir.0 as i64 * hops as i64;
         curr_position.1 += dir.1 as i64 * hops as i64;
