@@ -47,5 +47,18 @@ Part #2 Answer 41000
 Time elapsed in Part #2 is: 5.042µs
 ```
 
+## Testing
+
+Unit tests are included for some problems using the sample IO. To run tests 
+
+```
+cargo test
+```
+
+To test a specific binary only
+
+```
+cargo test --bin 2023_01
+```
 
 
