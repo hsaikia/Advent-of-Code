@@ -20,10 +20,7 @@ fn add_neighbor_in_cardinal_dir(
     let opt_neighbor = g.cell_in_direction(cell_index.0, cell_index.1, dir.0, dir.1);
 
     if let Some(neighbor) = opt_neighbor {
-        ret.push((
-            (neighbor, *cardinal_dir, hops),
-            g.get(neighbor.0, neighbor.1).unwrap(),
-        ));
+        ret.push(((neighbor, *cardinal_dir, hops), g.get(&neighbor)));
     }
 }
 

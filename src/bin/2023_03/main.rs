@@ -32,34 +32,32 @@ fn solve<const PART1: bool>(input: &str) -> u32 {
         let mut neighboring_symbols: Vec<(char, usize)> = Vec::new();
 
         for j in 0..grid.cols {
-            if let Some(ch) = grid.get(i, j) {
-                if ch.is_ascii_digit() {
-                    num = 10 * num + ch.to_digit(10).unwrap();
-                    let ncells = grid.adjacent_8(i, j);
-                    for (x, y) in &ncells {
-                        if let Some(ch) = grid.get(*x, *y) {
-                            if symbols.contains(&ch) {
-                                neighboring_symbols.push((ch, grid.to_flat_idx(*x, *y)));
-                            }
-                        }
+            let ch = grid.get(&(i, j));
+            if ch.is_ascii_digit() {
+                num = 10 * num + ch.to_digit(10).unwrap();
+                let ncells = grid.adjacent_8(i, j);
+                for nidx in &ncells {
+                    let ch1 = grid.get(nidx);
+                    if symbols.contains(&ch1) {
+                        neighboring_symbols.push((ch1, grid.to_flat_idx(nidx)));
                     }
-                } else if num > 0 {
-                    if !neighboring_symbols.is_empty() {
-                        ans1 += num;
-
-                        neighboring_symbols =
-                            neighboring_symbols.into_iter().unique().collect::<Vec<_>>();
-
-                        for (ch, idx) in &neighboring_symbols {
-                            if *ch == '*' {
-                                part_numbers_map.add_to_vector_hashmap(idx, num);
-                            }
-                        }
-
-                        neighboring_symbols.clear();
-                    }
-                    num = 0;
                 }
+            } else if num > 0 {
+                if !neighboring_symbols.is_empty() {
+                    ans1 += num;
+
+                    neighboring_symbols =
+                        neighboring_symbols.into_iter().unique().collect::<Vec<_>>();
+
+                    for (ch, idx) in &neighboring_symbols {
+                        if *ch == '*' {
+                            part_numbers_map.add_to_vector_hashmap(idx, num);
+                        }
+                    }
+
+                    neighboring_symbols.clear();
+                }
+                num = 0;
             }
         }
 
@@ -94,4 +92,16 @@ fn main() {
     let input = common::get_input();
     common::timed(&input, solve::<true>, true);
     common::timed(&input, solve::<false>, false);
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_sample() {
+        let sample_input = "467..114..\n...*......\n..35..633.\n......#...\n617*......\n.....+.58.\n..592.....\n......755.\n...$.*....\n.664.598..";
+        assert_eq!(solve::<true>(sample_input), 4361);
+        assert_eq!(solve::<false>(sample_input), 467835);
+    }
 }

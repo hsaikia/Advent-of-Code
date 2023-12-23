@@ -102,7 +102,7 @@ fn lr_classification(ch: char, dir: &Dir) -> (Vec<CellDir>, Vec<CellDir>) {
 fn is_cluster_id_at_border(cluster: &mut Grid<Cluster>, cluster_id: Cluster) -> bool {
     for i in 0..cluster.rows {
         for j in [0, cluster.cols - 1] {
-            if cluster.get(i, j).unwrap() == cluster_id {
+            if cluster.get(&(i, j)) == cluster_id {
                 return true;
             }
         }
@@ -110,7 +110,7 @@ fn is_cluster_id_at_border(cluster: &mut Grid<Cluster>, cluster_id: Cluster) -> 
 
     for i in [0, cluster.rows - 1] {
         for j in 0..cluster.cols {
-            if cluster.get(i, j).unwrap() == cluster_id {
+            if cluster.get(&(i, j)) == cluster_id {
                 return true;
             }
         }
@@ -163,38 +163,38 @@ fn solve<const PART1: bool>(input: &str) -> usize {
 
     for i in 0..grid.rows {
         for j in 0..grid.cols {
-            if grid.get(i, j).unwrap().len() == 4 {
+            if grid.get(&(i, j)).len() == 4 {
                 // Add start to path
                 path.push((i, j));
 
-                let mut queue = VecDeque::<(usize, usize, bool)>::new();
+                let mut queue = VecDeque::<(CellIndex, bool)>::new();
                 let nbs = grid.adjacent_4(i, j);
-                for (nx, ny) in nbs {
-                    let ndirs = grid.get(nx, ny).unwrap();
-                    let nns = grid.adjacent_in_dir(nx, ny, &ndirs);
+                for idx in &nbs {
+                    let ndirs = grid.get(idx);
+                    let nns = grid.adjacent_in_dir(idx.0, idx.1, &ndirs);
                     if nns.contains(&(i, j)) {
-                        queue.push_back((nx, ny, d));
+                        queue.push_back((*idx, d));
                         d = !d;
                     }
                 }
 
                 assert!(queue.len() == 2);
 
-                visited.set(i, j, true);
+                visited.set(&(i, j), true);
                 while !queue.is_empty() {
-                    let (x, y, lr) = queue.pop_front().unwrap();
+                    let (cidx, lr) = queue.pop_front().unwrap();
                     if lr {
-                        path.push((x, y));
+                        path.push(cidx);
                     } else {
-                        half_path2.push((x, y));
+                        half_path2.push(cidx);
                     }
-                    visited.set(x, y, true);
+                    visited.set(&cidx, true);
 
-                    let dirs = grid.get(x, y).unwrap();
-                    let nc = grid.adjacent_in_dir(x, y, &dirs);
-                    for (nx, ny) in nc {
-                        if !visited.get(nx, ny).unwrap() {
-                            queue.push_back((nx, ny, lr));
+                    let dirs = grid.get(&cidx);
+                    let nc = grid.adjacent_in_dir(cidx.0, cidx.1, &dirs);
+                    for nidx in &nc {
+                        if !visited.get(nidx) {
+                            queue.push_back((*nidx, lr));
                         }
                     }
                 }
@@ -214,20 +214,20 @@ fn solve<const PART1: bool>(input: &str) -> usize {
     path.extend(half_path2.iter().rev().skip(1));
     let directed_path = directed_path(&path);
 
-    for (cx, cy) in &path {
-        cluster.set(*cx, *cy, Cluster::Path);
+    for idx in &path {
+        cluster.set(idx, Cluster::Path);
     }
 
     for (dir, p) in directed_path.iter().zip(path.iter()) {
-        let (l, r) = lr_classification(original.get(p.0, p.1).unwrap(), dir);
-        for (a, b) in cluster.adjacent_in_dir(p.0, p.1, &l) {
-            if cluster.get(a, b).unwrap() == Cluster::Empty {
-                cluster.set(a, b, Cluster::Side1);
+        let (l, r) = lr_classification(original.get(p), dir);
+        for idx in cluster.adjacent_in_dir(p.0, p.1, &l) {
+            if cluster.get(&idx) == Cluster::Empty {
+                cluster.set(&idx, Cluster::Side1);
             }
         }
-        for (a, b) in cluster.adjacent_in_dir(p.0, p.1, &r) {
-            if cluster.get(a, b).unwrap() == Cluster::Empty {
-                cluster.set(a, b, Cluster::Side2);
+        for idx in cluster.adjacent_in_dir(p.0, p.1, &r) {
+            if cluster.get(&idx) == Cluster::Empty {
+                cluster.set(&idx, Cluster::Side2);
             }
         }
     }

@@ -231,7 +231,7 @@ fn solve(
         // );
 
         for nn in &adj_4_inf {
-            if g.get(nn.0, nn.1).unwrap() {
+            if g.get(nn) {
                 let mut gx = pos.gx;
                 let mut gy = pos.gy;
 

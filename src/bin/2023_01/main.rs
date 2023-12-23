@@ -48,3 +48,17 @@ fn main() {
     common::timed(&input, solve::<false>, true);
     common::timed(&input, solve::<true>, false);
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_samples() {
+        let sample_input1 = "1abc2\npqr3stu8vwx\na1b2c3d4e5f\ntreb7uchet";
+        assert_eq!(solve::<false>(sample_input1), 142);
+
+        let sample_input2 = "two1nine\neightwothree\nabcone2threexyz\nxtwone3four\n4nineeightseven2\nzoneight234\n7pqrstsixteen";
+        assert_eq!(solve::<true>(sample_input2), 281);
+    }
+}

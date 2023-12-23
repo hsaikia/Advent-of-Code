@@ -13,17 +13,17 @@ fn solve(grid: &Grid<char>, start: CellIndex, start_dir: CellDir) -> usize {
 
     let mut cell_set: HashSet<usize> = HashSet::new();
     while !queue.is_empty() {
-        let ((x, y), d) = queue.pop_front().unwrap();
-        cell_set.insert(grid.to_flat_idx(x, y));
+        let (cell_idx, d) = queue.pop_front().unwrap();
+        cell_set.insert(grid.to_flat_idx(&cell_idx));
 
-        let mut dirs = vis.get(x, y).unwrap().clone();
+        let mut dirs = vis.get(&cell_idx).clone();
         if dirs.contains(&d) {
             continue;
         }
         dirs.push(d);
-        vis.set(x, y, dirs);
+        vis.set(&cell_idx, dirs);
 
-        let cell = grid.get(x, y).unwrap();
+        let cell = grid.get(&cell_idx);
 
         let next_dirs = match cell {
             '-' => {
@@ -44,7 +44,7 @@ fn solve(grid: &Grid<char>, start: CellIndex, start_dir: CellDir) -> usize {
         };
 
         for nd in &next_dirs {
-            if let Some(nc) = grid.cell_in_direction(x, y, nd.0, nd.1) {
+            if let Some(nc) = grid.cell_in_direction(cell_idx.0, cell_idx.1, nd.0, nd.1) {
                 queue.push_back((nc, *nd));
             }
         }

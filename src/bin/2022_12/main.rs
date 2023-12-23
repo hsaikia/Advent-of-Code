@@ -1,4 +1,7 @@
-use aoc::{common, grid::Grid};
+use aoc::{
+    common,
+    grid::{CellIndex, Grid},
+};
 
 use std::collections::{HashMap, VecDeque};
 
@@ -18,31 +21,31 @@ lazy_static! {
 }
 
 fn shortest_from(grid: &Grid<usize>, start: (usize, usize), end: (usize, usize)) -> Option<usize> {
-    let mut bfs_queue: VecDeque<(usize, usize, usize)> = VecDeque::new();
-    bfs_queue.push_back((start.0, start.1, 0));
+    let mut bfs_queue: VecDeque<(CellIndex, usize)> = VecDeque::new();
+    bfs_queue.push_back((start, 0));
 
     let mut visited = Grid::<bool>::new(grid.rows, grid.cols, false);
 
     while !bfs_queue.is_empty() {
-        let elem = bfs_queue.pop_front().unwrap();
-        if elem.0 == end.0 && elem.1 == end.1 {
-            return Some(elem.2);
+        let (elem, l) = bfs_queue.pop_front().unwrap();
+        if elem == end {
+            return Some(l);
         }
 
-        if visited.get(elem.0, elem.1).unwrap() {
+        if visited.get(&elem) {
             continue;
         }
 
-        visited.set(elem.0, elem.1, true);
-        let val = grid.get(elem.0, elem.1).unwrap();
+        visited.set(&elem, true);
+        let val = grid.get(&elem);
         let adjacent = grid.adjacent_4(elem.0, elem.1);
         let next_cells = adjacent
             .iter()
-            .filter(|&e| grid.get(e.0, e.1).unwrap() <= val + 1)
+            .filter(|&e| grid.get(e) <= val + 1)
             .collect::<Vec<&(usize, usize)>>();
 
         for cell in next_cells {
-            bfs_queue.push_back((cell.0, cell.1, elem.2 + 1));
+            bfs_queue.push_back((*cell, l + 1));
         }
     }
 
@@ -57,7 +60,7 @@ fn part2(grid: &Grid<usize>, end: (usize, usize)) -> usize {
     let mut best = usize::MAX;
     for i in 0..grid.rows {
         for j in 0..grid.cols {
-            if grid.get(i, j).unwrap() == 0 {
+            if grid.get(&(i, j)) == 0 {
                 let steps = shortest_from(grid, (i, j), end);
                 if steps.is_some() {
                     best = best.min(steps.unwrap());

@@ -9,19 +9,19 @@ fn part1(grid: &Grid<u32>) -> usize {
 
         // left to right sweep
         for j in 0..grid.cols {
-            let val = grid.get(i, j).unwrap() as i32;
+            let val = grid.get(&(i, j)) as i32;
             if val > best[0] {
                 best[0] = val;
-                visible.set(i, j, true);
+                visible.set(&(i, j), true);
             }
         }
 
         // right to left sweep
         for j in (0..grid.cols).rev() {
-            let val = grid.get(i, j).unwrap() as i32;
+            let val = grid.get(&(i, j)) as i32;
             if val > best[1] {
                 best[1] = val;
-                visible.set(i, j, true);
+                visible.set(&(i, j), true);
             }
         }
     }
@@ -31,19 +31,19 @@ fn part1(grid: &Grid<u32>) -> usize {
 
         // top to bottom sweep
         for i in 0..grid.rows {
-            let val = grid.get(i, j).unwrap() as i32;
+            let val = grid.get(&(i, j)) as i32;
             if val > best[0] {
                 best[0] = val;
-                visible.set(i, j, true);
+                visible.set(&(i, j), true);
             }
         }
 
         // bottom to top sweep
         for i in (0..grid.rows).rev() {
-            let val = grid.get(i, j).unwrap() as i32;
+            let val = grid.get(&(i, j)) as i32;
             if val > best[1] {
                 best[1] = val;
-                visible.set(i, j, true);
+                visible.set(&(i, j), true);
             }
         }
     }
@@ -61,11 +61,11 @@ fn part2(grid: &Grid<u32>) -> i32 {
         for j in 0..grid.cols {
             let mut scores = [0; 4];
             let sweeps = grid.sweep_4(i, j);
-            let h = grid.get(i, j).unwrap();
+            let h = grid.get(&(i, j));
 
             for (i, sweep) in sweeps.iter().enumerate() {
-                for (ni, nj) in sweep {
-                    let h1 = grid.get(*ni, *nj).unwrap();
+                for nxy in sweep {
+                    let h1 = grid.get(nxy);
                     scores[i] += 1;
 
                     if h1 >= h {

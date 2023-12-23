@@ -86,7 +86,7 @@ impl<T: std::fmt::Debug + Clone + Default + PartialEq + Hash> Grid<T> {
         let mut ret = Grid::new(self.cols, self.rows, T::default());
         for i in 0..self.rows {
             for j in 0..self.cols {
-                ret.set(j, self.rows - 1 - i, self.get(i, j).unwrap())
+                ret.set(&(j, self.rows - 1 - i), self.get(&(i, j)))
             }
         }
         ret
@@ -97,7 +97,7 @@ impl<T: std::fmt::Debug + Clone + Default + PartialEq + Hash> Grid<T> {
         let mut ret = Grid::new(self.rows, self.cols, T::default());
         for i in 0..self.rows {
             for j in 0..self.cols {
-                ret.set(i, self.cols - 1 - j, self.get(i, j).unwrap())
+                ret.set(&(i, self.cols - 1 - j), self.get(&(i, j)))
             }
         }
         ret
@@ -181,27 +181,33 @@ impl<T: std::fmt::Debug + Clone + Default + PartialEq + Hash> Grid<T> {
         println!();
     }
 
-    pub fn to_flat_idx(&self, i: usize, j: usize) -> usize {
-        i * self.cols + j
+    pub fn to_flat_idx(&self, idx: &CellIndex) -> usize {
+        if idx.0 >= self.rows || idx.1 >= self.cols {
+            panic!("Grid index out of bounds");
+        }
+        idx.0 * self.cols + idx.1
     }
 
     pub fn from_flat_idx(&self, idx: usize) -> (usize, usize) {
         (idx / self.cols, idx % self.cols)
     }
 
-    pub fn get(&self, i: usize, j: usize) -> Option<T> {
-        if i < self.rows && j < self.cols {
-            return Some(self.values[i][j].clone());
+    pub fn get(&self, idx: &CellIndex) -> T {
+        if idx.0 >= self.rows || idx.1 >= self.cols {
+            panic!("Grid index out of bounds");
         }
-        None
+        self.values[idx.0][idx.1].clone()
     }
 
     pub fn set_row(&mut self, i: usize, row_vals: Vec<T>) {
         self.values[i] = row_vals;
     }
 
-    pub fn set(&mut self, i: usize, j: usize, val: T) {
-        self.values[i][j] = val;
+    pub fn set(&mut self, idx: &CellIndex, val: T) {
+        if idx.0 >= self.rows || idx.1 >= self.cols {
+            panic!("Grid index out of bounds");
+        }
+        self.values[idx.0][idx.1] = val;
     }
 
     pub fn cell_in_direction(
@@ -297,7 +303,7 @@ impl<T: std::fmt::Debug + Clone + Default + PartialEq + Hash> Grid<T> {
 
         for i in 0..self.rows {
             for j in 0..self.cols {
-                if self.get(i, j).unwrap() == cluster_id.clone() {
+                if self.get(&(i, j)) == cluster_id.clone() {
                     q.push_back((i, j));
                 }
             }
@@ -307,16 +313,16 @@ impl<T: std::fmt::Debug + Clone + Default + PartialEq + Hash> Grid<T> {
         while !q.is_empty() {
             let x = q.pop_front().unwrap();
 
-            if visited.get(x.0, x.1).unwrap() {
+            if visited.get(&x) {
                 continue;
             }
 
-            visited.set(x.0, x.1, true);
+            visited.set(&x, true);
 
-            self.set(x.0, x.1, cluster_id.clone());
+            self.set(&x, cluster_id.clone());
 
             for n in self.adjacent_4(x.0, x.1) {
-                if self.get(n.0, n.1).unwrap() == replace_id.clone() {
+                if self.get(&n) == replace_id.clone() {
                     q.push_back(n);
                 }
             }

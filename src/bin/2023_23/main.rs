@@ -14,11 +14,11 @@ enum Cell {
 }
 
 fn get_neighbors(g: &Grid<Cell>, lst: &CellIndex, slopes: bool) -> Vec<CellIndex> {
-    match g.get(lst.0, lst.1).unwrap() {
+    match g.get(lst) {
         Cell::Path => g
             .adjacent_4(lst.0, lst.1)
             .into_iter()
-            .filter(|(x, y)| g.get(*x, *y).unwrap() != Cell::Forest)
+            .filter(|idx| g.get(idx) != Cell::Forest)
             .collect::<Vec<_>>(),
         Cell::Slope(cd) => {
             if slopes {
@@ -27,7 +27,7 @@ fn get_neighbors(g: &Grid<Cell>, lst: &CellIndex, slopes: bool) -> Vec<CellIndex
             } else {
                 g.adjacent_4(lst.0, lst.1)
                     .into_iter()
-                    .filter(|(x, y)| g.get(*x, *y).unwrap() != Cell::Forest)
+                    .filter(|idx| g.get(idx) != Cell::Forest)
                     .collect::<Vec<_>>()
             }
         }

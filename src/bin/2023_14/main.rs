@@ -12,11 +12,12 @@ fn simulate(grid: &mut Grid<char>, cycles: usize) {
     for c in 0..grid.cols {
         let mut idx = 0;
         for r in 0..grid.rows {
-            if grid.get(r, c).unwrap() == 'O' {
-                grid_new.set(idx, c, 'O');
+            let cidx = (r, c);
+            if grid.get(&cidx) == 'O' {
+                grid_new.set(&(idx, c), 'O');
                 idx += 1;
-            } else if grid.get(r, c).unwrap() == '#' {
-                grid_new.set(r, c, '#');
+            } else if grid.get(&cidx) == '#' {
+                grid_new.set(&cidx, '#');
                 idx = r + 1;
             }
         }
@@ -29,11 +30,12 @@ fn simulate(grid: &mut Grid<char>, cycles: usize) {
     for r in 0..grid.rows {
         let mut idx = 0;
         for c in 0..grid.cols {
-            if grid.get(r, c).unwrap() == 'O' {
-                grid_new.set(r, idx, 'O');
+            let cidx = (r, c);
+            if grid.get(&cidx) == 'O' {
+                grid_new.set(&(r, idx), 'O');
                 idx += 1;
-            } else if grid.get(r, c).unwrap() == '#' {
-                grid_new.set(r, c, '#');
+            } else if grid.get(&cidx) == '#' {
+                grid_new.set(&cidx, '#');
                 idx = c + 1;
             }
         }
@@ -46,11 +48,12 @@ fn simulate(grid: &mut Grid<char>, cycles: usize) {
     for c in 0..grid.cols {
         let mut idx = grid.rows - 1;
         for r in (0..grid.rows).rev() {
-            if grid.get(r, c).unwrap() == 'O' {
-                grid_new.set(idx, c, 'O');
+            let cidx = (r, c);
+            if grid.get(&cidx) == 'O' {
+                grid_new.set(&(idx, c), 'O');
                 idx -= 1;
-            } else if grid.get(r, c).unwrap() == '#' {
-                grid_new.set(r, c, '#');
+            } else if grid.get(&cidx) == '#' {
+                grid_new.set(&cidx, '#');
                 idx = r - 1;
             }
         }
@@ -63,11 +66,11 @@ fn simulate(grid: &mut Grid<char>, cycles: usize) {
     for r in 0..grid.rows {
         let mut idx = grid.cols - 1;
         for c in (0..grid.cols).rev() {
-            if grid.get(r, c).unwrap() == 'O' {
-                grid_new.set(r, idx, 'O');
+            if grid.get(&(r, c)) == 'O' {
+                grid_new.set(&(r, idx), 'O');
                 idx -= 1;
-            } else if grid.get(r, c).unwrap() == '#' {
-                grid_new.set(r, c, '#');
+            } else if grid.get(&(r, c)) == '#' {
+                grid_new.set(&(r, c), '#');
                 idx = c - 1;
             }
         }
@@ -103,7 +106,7 @@ fn north_load(grid: &Grid<char>) -> usize {
     let mut ans: usize = 0;
     for c in 0..grid.cols {
         for r in 0..grid.rows {
-            if grid.get(r, c).unwrap() == 'O' {
+            if grid.get(&(r, c)) == 'O' {
                 ans += grid.rows - r;
             }
         }
@@ -116,10 +119,10 @@ fn part1(grid: &Grid<char>) -> usize {
     for c in 0..grid.cols {
         let mut num = grid.rows;
         for r in 0..grid.rows {
-            if grid.get(r, c).unwrap() == 'O' {
+            if grid.get(&(r, c)) == 'O' {
                 ans += num;
                 num -= 1;
-            } else if grid.get(r, c).unwrap() == '#' {
+            } else if grid.get(&(r, c)) == '#' {
                 num = grid.rows - r - 1;
             }
         }
