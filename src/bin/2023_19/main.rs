@@ -1,6 +1,10 @@
 use std::collections::HashMap;
 
-use aoc::{common, io, range::Range};
+use aoc::{
+    common::{self, HashMapVector},
+    io,
+    range::Range,
+};
 
 const MIN_INC_RANGE: i64 = 1;
 const MAX_EXC_RANGE: i64 = 4001;
@@ -60,14 +64,10 @@ fn parse_rule<'a>(line: &'a str, map: &mut HashMap<&'a str, Vec<Rule<'a>>>) {
             } else {
                 panic!("No < or > found!")
             };
-            map.entry(from)
-                .and_modify(|v| v.push(cond_rule.clone()))
-                .or_insert(vec![cond_rule]);
+            map.add_to_vector_hashmap(&from, cond_rule.clone());
         } else {
             let dst_process = Rule::Process(get_action(rule));
-            map.entry(from)
-                .and_modify(|v| v.push(dst_process.clone()))
-                .or_insert(vec![dst_process]);
+            map.add_to_vector_hashmap(&from, dst_process.clone());
         }
     }
 }
@@ -77,7 +77,6 @@ fn process_part_range<'a>(
     map: &HashMap<&'a str, Vec<Rule<'a>>>,
     start: &'a str,
 ) -> i64 {
-    //println!("Visiting {:?}", prt);
     let rules = map.get(start).unwrap();
     let mut ret = 0;
     let mut part = prt.to_owned();

@@ -1,6 +1,10 @@
 use std::collections::HashMap;
 
-use aoc::{common, graph::ShortestPath, io};
+use aoc::{
+    common::{self, HashMapVector},
+    graph::ShortestPath,
+    io,
+};
 
 type Node<'a> = (&'a str, Vec<&'a str>, usize, i64);
 
@@ -89,9 +93,7 @@ fn part1(input: &str) -> i64 {
         for valve in tokens.iter().skip(9) {
             graph
                 .connections
-                .entry(tokens[1])
-                .and_modify(|v| v.push(&valve[0..2]))
-                .or_insert(vec![&valve[0..2]]);
+                .add_to_vector_hashmap(&tokens[1], &valve[0..2]);
         }
         graph
             .flow_rate

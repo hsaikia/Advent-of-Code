@@ -1,6 +1,10 @@
 use std::collections::{HashMap, VecDeque};
 
-use aoc::{common, io, range::Range};
+use aoc::{
+    common::{self, HashMapVector},
+    io,
+    range::Range,
+};
 
 #[allow(dead_code)]
 fn show(brs: &Vec<[Range<usize>; 3]>) {
@@ -30,8 +34,6 @@ fn settle(brs: &mut Vec<[Range<usize>; 3]>) {
             let (j_top_of_i, directly) = on_top_of(&brs[i], &brs[j]);
             if j_top_of_i {
                 highest_z = highest_z.max(brs[i][2].b);
-                //println!("{} is on top of {}. Highest Z updated to {}", j, i, highest_z);
-
                 if directly {
                     // cannot fall, break
                     assert!(brs[j][2].a == brs[i][2].b);
@@ -88,7 +90,6 @@ fn solve(input: &str) -> (usize, usize) {
     let n = brs.len();
 
     // Now settle in order, checking for intersections with all previous
-
     let mut top_of: HashMap<usize, Vec<(usize, bool)>> = HashMap::new();
     let mut num_d_supports: Vec<usize> = brs.iter().map(|_| 0).collect::<Vec<_>>();
 
@@ -96,19 +97,13 @@ fn solve(input: &str) -> (usize, usize) {
         for j in i + 1..n {
             let (j_top_of_i, directly) = on_top_of(&brs[i], &brs[j]);
             if j_top_of_i {
-                top_of
-                    .entry(i)
-                    .and_modify(|v| v.push((j, directly)))
-                    .or_insert(vec![(j, directly)]);
+                top_of.add_to_vector_hashmap(&i, (j, directly));
                 if directly {
                     num_d_supports[j] += 1;
                 }
             }
         }
     }
-
-    //println!("{:?}", top_of);
-    //println!("{:?}", num_d_supports);
 
     let mut ans1 = 0;
     let mut bad_bricks: Vec<usize> = Vec::new();
@@ -122,18 +117,14 @@ fn solve(input: &str) -> (usize, usize) {
                 }
             }
             if can {
-                //println!("{}", i);
                 ans1 += 1
             } else {
                 bad_bricks.push(i);
             }
         } else {
-            //println!("{}", i);
             ans1 += 1;
         }
     }
-
-    //println!("{:?}", bad_bricks);
 
     let mut ans2 = 0;
     for bad_idx in bad_bricks {
@@ -146,7 +137,6 @@ fn solve(input: &str) -> (usize, usize) {
                 if *d && num_d_supports_tmp[*b] == 1 {
                     num_d_supports_tmp[*b] -= 1;
                     q.push_back(*b);
-                    //println!("Adding {} to fall queue. Supports Arr {:?}", *b, num_d_supports_tmp);
                 }
             }
         }
@@ -160,7 +150,6 @@ fn solve(input: &str) -> (usize, usize) {
                     if *d {
                         if num_d_supports_tmp[*b] == 1 {
                             q.push_back(*b);
-                            //println!("Adding {} to fall queue. Supports Arr {:?}", *b, num_d_supports_tmp);
                         }
                         num_d_supports_tmp[*b] -= 1;
                     }
@@ -168,14 +157,9 @@ fn solve(input: &str) -> (usize, usize) {
             }
         }
         let num_falls = falls.iter().filter(|&f| *f).count();
-        // println!(
-        //     "Disintegrating brick {} causes {} other bricks to fall.",
-        //     bad_idx, num_falls
-        // );
         ans2 += num_falls;
     }
 
-    //let mut ans = can_be_disintegrated.iter().filter(|&x| *x).count();
     (ans1, ans2)
 }
 

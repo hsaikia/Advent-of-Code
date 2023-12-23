@@ -1,7 +1,7 @@
 use std::collections::{HashMap, HashSet, VecDeque};
 
 use aoc::{
-    common,
+    common::{self, HashMapVector},
     grid::{CardinalDirection, CellIndex, Grid},
 };
 
@@ -147,11 +147,6 @@ fn part_solve<const PART1: bool>(input: &str) -> usize {
 
     let start = (0, start_col);
     let end = (g.rows - 1, end_col);
-    // println!(
-    //     "{:?} {:?}",
-    //     g.to_flat_idx(0, start_col),
-    //     g.to_flat_idx(g.rows - 1, end_col)
-    // );
 
     let mut js = junctions(&g, PART1);
     js.push(start);
@@ -165,16 +160,10 @@ fn part_solve<const PART1: bool>(input: &str) -> usize {
             }
             let opt_dist = bfs(&g, js[i], js[j], &js, PART1);
             if let Some(dist) = opt_dist {
-                map.entry(js[i])
-                    .and_modify(|v| v.push((js[j], dist)))
-                    .or_insert(vec![(js[j], dist)]);
+                map.add_to_vector_hashmap(&js[i], (js[j], dist));
             }
         }
     }
-
-    // for (k, v) in map.iter() {
-    //     println!("{:?} => {:?}", k, v);
-    // }
 
     solve(&map, start, end)
 }
