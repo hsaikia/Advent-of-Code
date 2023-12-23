@@ -10,15 +10,12 @@ pub trait ShortestPath<T: Ord + Hash + Clone + Debug> {
     // Dijkstra's algorithm for finding the shortest path from a start node to an end node
     fn shortest_path(&self, start: T) -> i64 {
         let mut distances: HashMap<T, i64> = HashMap::new();
-
         let mut pq: BinaryHeap<(i64, T)> = BinaryHeap::new();
 
         pq.push((0, start));
 
         while !pq.is_empty() {
             let (dist, node) = pq.pop().unwrap();
-
-            println!("Visiting {:?} with pressure = {}", node, dist);
 
             if self.termination_condition(&node) {
                 return -dist;

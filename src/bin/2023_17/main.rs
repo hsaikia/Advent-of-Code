@@ -1,38 +1,8 @@
 use aoc::{
     common,
     graph::ShortestPath,
-    grid::{CellDir, CellIndex, Grid},
+    grid::{CardinalDirection, CellIndex, Grid},
 };
-
-#[derive(Debug, Copy, Clone, Eq, PartialEq, PartialOrd, Ord, Hash)]
-pub enum CardinalDirection {
-    Up,
-    Down,
-    Right,
-    Left,
-}
-
-impl CardinalDirection {
-    pub fn next(&self) -> Vec<CardinalDirection> {
-        match self {
-            CardinalDirection::Up | CardinalDirection::Down => {
-                vec![CardinalDirection::Left, CardinalDirection::Right]
-            }
-            CardinalDirection::Left | CardinalDirection::Right => {
-                vec![CardinalDirection::Up, CardinalDirection::Down]
-            }
-        }
-    }
-
-    pub fn to_dir(self) -> CellDir {
-        match self {
-            CardinalDirection::Up => (-1, 0),
-            CardinalDirection::Down => (1, 0),
-            CardinalDirection::Left => (0, -1),
-            CardinalDirection::Right => (0, 1),
-        }
-    }
-}
 
 type Hops = usize;
 type Node = (CellIndex, CardinalDirection, Hops);
@@ -65,7 +35,7 @@ impl ShortestPath<Node> for MyGrid1 {
         let (cell_index, cardinal_dir, hops) = node;
         let mut ret = Vec::new();
 
-        for other_cardinal_dir in cardinal_dir.next() {
+        for other_cardinal_dir in cardinal_dir.orthogonal() {
             add_neighbor_in_cardinal_dir(&mut ret, cell_index, &other_cardinal_dir, &self.0, 1);
         }
 
@@ -90,12 +60,12 @@ impl ShortestPath<Node> for MyGrid2 {
         if *hops < 4 {
             add_neighbor_in_cardinal_dir(&mut ret, cell_index, cardinal_dir, &self.0, hops + 1);
         } else if *hops < 10 {
-            for other_cardinal_dir in cardinal_dir.next() {
+            for other_cardinal_dir in cardinal_dir.orthogonal() {
                 add_neighbor_in_cardinal_dir(&mut ret, cell_index, &other_cardinal_dir, &self.0, 1);
             }
             add_neighbor_in_cardinal_dir(&mut ret, cell_index, cardinal_dir, &self.0, hops + 1);
         } else {
-            for other_cardinal_dir in cardinal_dir.next() {
+            for other_cardinal_dir in cardinal_dir.orthogonal() {
                 add_neighbor_in_cardinal_dir(&mut ret, cell_index, &other_cardinal_dir, &self.0, 1);
             }
         }
@@ -114,14 +84,14 @@ impl ShortestPath<Node> for MyGrid2 {
 
 fn part1(input: &str) -> i64 {
     let g = MyGrid1(Grid::from_str(input, |c| c.to_digit(10).unwrap() as i64));
-    g.shortest_path((START, CardinalDirection::Right, 0))
-        .min(g.shortest_path((START, CardinalDirection::Down, 0)))
+    g.shortest_path((START, CardinalDirection::East, 0))
+        .min(g.shortest_path((START, CardinalDirection::South, 0)))
 }
 
 fn part2(input: &str) -> i64 {
     let g = MyGrid2(Grid::from_str(input, |c| c.to_digit(10).unwrap() as i64));
-    g.shortest_path((START, CardinalDirection::Right, 0))
-        .min(g.shortest_path((START, CardinalDirection::Down, 0)))
+    g.shortest_path((START, CardinalDirection::East, 0))
+        .min(g.shortest_path((START, CardinalDirection::South, 0)))
 }
 
 fn main() {

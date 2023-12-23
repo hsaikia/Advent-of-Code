@@ -7,6 +7,46 @@ use std::hash::{Hash, Hasher};
 pub type CellIndex = (usize, usize);
 pub type CellDir = (i32, i32);
 
+#[derive(Debug, Default, Copy, Clone, Eq, PartialEq, PartialOrd, Ord, Hash)]
+pub enum CardinalDirection {
+    #[default]
+    North,
+    East,
+    West,
+    South,
+}
+
+impl CardinalDirection {
+    pub fn to_dir(&self) -> CellDir {
+        match self {
+            Self::North => (-1, 0),
+            Self::South => (1, 0),
+            Self::West => (0, -1),
+            Self::East => (0, 1),
+        }
+    }
+
+    pub fn orthogonal(&self) -> Vec<Self> {
+        match self {
+            Self::North | Self::South => {
+                vec![Self::West, Self::East]
+            }
+            Self::West | Self::East => {
+                vec![Self::North, Self::South]
+            }
+        }
+    }
+
+    pub fn opposite(&self) -> Self {
+        match self {
+            Self::North => Self::South,
+            Self::South => Self::North,
+            Self::West => Self::East,
+            Self::East => Self::West,
+        }
+    }
+}
+
 #[derive(Debug, Clone, Hash, Eq, PartialEq)]
 pub struct Grid<T: std::fmt::Debug + Clone + Default + PartialEq + Hash> {
     pub values: Vec<Vec<T>>,

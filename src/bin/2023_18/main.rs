@@ -1,48 +1,17 @@
-use aoc::{analytic, common, io};
-
-#[derive(Debug, Copy, Clone, Eq, PartialEq, PartialOrd, Ord, Hash)]
-pub enum CardinalDirection {
-    Right,
-    Down,
-    Left,
-    Up,
-    None,
-}
+use aoc::{analytic, common, grid::CardinalDirection, io};
 
 const DIRS: [CardinalDirection; 4] = [
-    CardinalDirection::Right,
-    CardinalDirection::Down,
-    CardinalDirection::Left,
-    CardinalDirection::Up,
+    CardinalDirection::East,
+    CardinalDirection::South,
+    CardinalDirection::West,
+    CardinalDirection::North,
 ];
-
-impl CardinalDirection {
-    pub fn opp(&self) -> CardinalDirection {
-        match self {
-            CardinalDirection::Up => CardinalDirection::Down,
-            CardinalDirection::Down => CardinalDirection::Up,
-            CardinalDirection::Left => CardinalDirection::Right,
-            CardinalDirection::Right => CardinalDirection::Left,
-            _ => CardinalDirection::None,
-        }
-    }
-
-    pub fn to_dir(self) -> (i64, i64) {
-        match self {
-            CardinalDirection::Up => (-1, 0),
-            CardinalDirection::Down => (1, 0),
-            CardinalDirection::Left => (0, -1),
-            CardinalDirection::Right => (0, 1),
-            _ => (0, 0),
-        }
-    }
-}
 
 fn reduce(v: &mut Vec<(CardinalDirection, i64)>) -> i64 {
     let mut ans = 0;
 
     if v.len() == 2 {
-        assert!(v[0].0.opp() == v[1].0);
+        assert!(v[0].0.opposite() == v[1].0);
         assert!(v[0].1 == v[1].1);
         ans = v[0].1;
         v.clear();
@@ -50,7 +19,7 @@ fn reduce(v: &mut Vec<(CardinalDirection, i64)>) -> i64 {
     }
 
     for i in 0..v.len() - 1 {
-        if v[i].0 == v[i + 1].0.opp() {
+        if v[i].0 == v[i + 1].0.opposite() {
             ans = v[i].1.min(v[i + 1].1);
             v[i].1 -= ans;
             v[i + 1].1 -= ans;
@@ -64,12 +33,12 @@ fn reduce(v: &mut Vec<(CardinalDirection, i64)>) -> i64 {
     }
 
     for i in 1..v.len() - 1 {
-        if (v[i - 1].0 == CardinalDirection::Right
-            && v[i].0 == CardinalDirection::Down
-            && v[i + 1].0 == CardinalDirection::Left)
-            || (v[i - 1].0 == CardinalDirection::Left
-                && v[i].0 == CardinalDirection::Up
-                && v[i + 1].0 == CardinalDirection::Right)
+        if (v[i - 1].0 == CardinalDirection::East
+            && v[i].0 == CardinalDirection::South
+            && v[i + 1].0 == CardinalDirection::West)
+            || (v[i - 1].0 == CardinalDirection::West
+                && v[i].0 == CardinalDirection::North
+                && v[i + 1].0 == CardinalDirection::East)
         {
             let mi = v[i - 1].1.min(v[i + 1].1);
             ans = mi * (v[i].1 + 1);
@@ -78,12 +47,12 @@ fn reduce(v: &mut Vec<(CardinalDirection, i64)>) -> i64 {
             v.retain(|(_, hops)| *hops != 0);
             return ans;
         }
-        if (v[i - 1].0 == CardinalDirection::Right
-            && v[i].0 == CardinalDirection::Up
-            && v[i + 1].0 == CardinalDirection::Left)
-            || (v[i - 1].0 == CardinalDirection::Left
-                && v[i].0 == CardinalDirection::Down
-                && v[i + 1].0 == CardinalDirection::Right)
+        if (v[i - 1].0 == CardinalDirection::East
+            && v[i].0 == CardinalDirection::North
+            && v[i + 1].0 == CardinalDirection::West)
+            || (v[i - 1].0 == CardinalDirection::West
+                && v[i].0 == CardinalDirection::South
+                && v[i + 1].0 == CardinalDirection::East)
         {
             let mi = v[i - 1].1.min(v[i + 1].1);
             ans = -mi * (v[i].1 - 1);
@@ -110,11 +79,11 @@ fn incremental_reduction<const PART1: bool>(input: &str) -> i64 {
 
         let dir = if PART1 {
             match tok[0] {
-                "R" => CardinalDirection::Right,
-                "L" => CardinalDirection::Left,
-                "U" => CardinalDirection::Up,
-                "D" => CardinalDirection::Down,
-                _ => CardinalDirection::None,
+                "R" => CardinalDirection::East,
+                "L" => CardinalDirection::West,
+                "U" => CardinalDirection::North,
+                "D" => CardinalDirection::South,
+                _ => panic!("Bad direction!"),
             }
         } else {
             DIRS[io::parse_num::<usize>(&tok[2][7..8]).unwrap()]
@@ -144,17 +113,17 @@ fn analytic<const PART1: bool>(input: &str) -> usize {
         num_boundary_points += hops;
         let dir = if PART1 {
             match tok[0] {
-                "R" => CardinalDirection::Right.to_dir(),
-                "L" => CardinalDirection::Left.to_dir(),
-                "U" => CardinalDirection::Up.to_dir(),
-                "D" => CardinalDirection::Down.to_dir(),
+                "R" => CardinalDirection::East.to_dir(),
+                "L" => CardinalDirection::West.to_dir(),
+                "U" => CardinalDirection::North.to_dir(),
+                "D" => CardinalDirection::South.to_dir(),
                 _ => (0, 0),
             }
         } else {
             DIRS[io::parse_num::<usize>(&tok[2][7..8]).unwrap()].to_dir()
         };
-        curr_position.0 += dir.0 * hops as i64;
-        curr_position.1 += dir.1 * hops as i64;
+        curr_position.0 += dir.0 as i64 * hops as i64;
+        curr_position.1 += dir.1 as i64 * hops as i64;
     }
 
     let area = analytic::polygon_area(&positions).abs() / 2;

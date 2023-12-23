@@ -2,35 +2,15 @@ use std::collections::{HashMap, HashSet, VecDeque};
 
 use aoc::{
     common,
-    grid::{CellDir, CellIndex, Grid},
+    grid::{CardinalDirection, CellIndex, Grid},
 };
-
-#[derive(Clone, Debug, Default, PartialEq, Hash)]
-enum Dir {
-    #[default]
-    North,
-    East,
-    West,
-    South,
-}
-
-impl Dir {
-    pub fn to_dir(&self) -> CellDir {
-        match self {
-            Dir::North => (-1, 0),
-            Dir::South => (1, 0),
-            Dir::West => (0, -1),
-            Dir::East => (0, 1),
-        }
-    }
-}
 
 #[derive(Clone, Debug, Default, PartialEq, Hash)]
 enum Cell {
     Forest,
     #[default]
     Path,
-    Slope(Dir),
+    Slope(CardinalDirection),
 }
 
 fn get_neighbors(g: &Grid<Cell>, lst: &CellIndex, slopes: bool) -> Vec<CellIndex> {
@@ -147,10 +127,10 @@ fn part_solve<const PART1: bool>(input: &str) -> usize {
     let g = Grid::from_str(input, |ch| match ch {
         '#' => Cell::Forest,
         '.' => Cell::Path,
-        '>' => Cell::Slope(Dir::East),
-        '<' => Cell::Slope(Dir::West),
-        '^' => Cell::Slope(Dir::North),
-        'v' => Cell::Slope(Dir::South),
+        '>' => Cell::Slope(CardinalDirection::East),
+        '<' => Cell::Slope(CardinalDirection::West),
+        '^' => Cell::Slope(CardinalDirection::North),
+        'v' => Cell::Slope(CardinalDirection::South),
         _ => panic!("Bad cell"),
     });
 
