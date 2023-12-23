@@ -96,6 +96,8 @@ fn solve_quadratic(g: &Grid<bool>, start: CellIndex) -> usize {
     // In 851 steps, plots visited 637171
     // In 982 steps, plots visited 848260
 
+    // The differences are linear!
+
     // The first sequence is the border of (0,0), the second the border of grids of cardinality 1, the third of 2 and so on.
     // We see that the plots grow according to the square of the steps (which is understandable, since the plots represent area, and steps represent a radius)
 
