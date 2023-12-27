@@ -1,4 +1,5 @@
 use aoc::{common, grid::Grid};
+use itertools::iproduct;
 
 fn part1(grid: &Grid<u32>) -> usize {
     // Check visibility for each internal tree
@@ -57,26 +58,26 @@ fn part1(grid: &Grid<u32>) -> usize {
 
 fn part2(grid: &Grid<u32>) -> i32 {
     let mut ans = 0;
-    for i in 0..grid.rows {
-        for j in 0..grid.cols {
-            let mut scores = [0; 4];
-            let sweeps = grid.sweep_4(i, j);
-            let h = grid.get(&(i, j));
 
-            for (i, sweep) in sweeps.iter().enumerate() {
-                for nxy in sweep {
-                    let h1 = grid.get(nxy);
-                    scores[i] += 1;
+    for (i, j) in iproduct!(0..grid.rows, 0..grid.cols) {
+        let mut scores = [0; 4];
+        let sweeps = grid.sweep_4(i, j);
+        let h = grid.get(&(i, j));
 
-                    if h1 >= h {
-                        break;
-                    }
+        for (idx, sweep) in sweeps.iter().enumerate() {
+            for nxy in sweep {
+                let h1 = grid.get(nxy);
+                scores[idx] += 1;
+
+                if h1 >= h {
+                    break;
                 }
             }
-
-            ans = ans.max(scores.iter().product::<i32>());
         }
+
+        ans = ans.max(scores.iter().product::<i32>());
     }
+
     ans
 }
 
@@ -92,4 +93,16 @@ fn main() {
     let input = common::get_input();
     common::timed(&input, get_grid_and_solve::<true>, true);
     common::timed(&input, get_grid_and_solve::<false>, false);
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_sample() {
+        let sample_input = "30373\n25512\n65332\n33549\n35390";
+        assert_eq!(get_grid_and_solve::<true>(sample_input), 21);
+        assert_eq!(get_grid_and_solve::<false>(sample_input), 8);
+    }
 }

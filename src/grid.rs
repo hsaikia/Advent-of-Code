@@ -2,7 +2,7 @@ use std::collections::hash_map::DefaultHasher;
 use std::collections::VecDeque;
 use std::hash::{Hash, Hasher};
 
-// A Generic Grid of items of type T
+use itertools::iproduct;
 
 pub type CellIndex = (usize, usize);
 pub type CellDir = (i32, i32);
@@ -47,6 +47,7 @@ impl CardinalDirection {
     }
 }
 
+/// A Generic Grid of items of type T
 #[derive(Debug, Clone, Hash, Eq, PartialEq)]
 pub struct Grid<T: std::fmt::Debug + Clone + Default + PartialEq + Hash> {
     pub values: Vec<Vec<T>>,
@@ -73,6 +74,7 @@ impl<T: std::fmt::Debug + Clone + Default + PartialEq + Hash> Grid<T> {
         let lines = input
             .split('\n')
             .filter(|l| !l.is_empty())
+            .map(|l| l.trim())
             .collect::<Vec<_>>();
         let mut grid = Grid::<T>::new(lines.len(), lines[0].len(), T::default());
         for (i, line) in lines.iter().enumerate() {
@@ -84,10 +86,8 @@ impl<T: std::fmt::Debug + Clone + Default + PartialEq + Hash> Grid<T> {
 
     pub fn rotate_clockwise(&self) -> Self {
         let mut ret = Grid::new(self.cols, self.rows, T::default());
-        for i in 0..self.rows {
-            for j in 0..self.cols {
-                ret.set(&(j, self.rows - 1 - i), self.get(&(i, j)))
-            }
+        for (i, j) in iproduct!(0..self.rows, 0..self.cols) {
+            ret.set(&(j, self.rows - 1 - i), self.get(&(i, j)))
         }
         ret
     }
@@ -95,10 +95,8 @@ impl<T: std::fmt::Debug + Clone + Default + PartialEq + Hash> Grid<T> {
     // flips the column order
     pub fn flip_vertical(&self) -> Self {
         let mut ret = Grid::new(self.rows, self.cols, T::default());
-        for i in 0..self.rows {
-            for j in 0..self.cols {
-                ret.set(&(i, self.cols - 1 - j), self.get(&(i, j)))
-            }
+        for (i, j) in iproduct!(0..self.rows, 0..self.cols) {
+            ret.set(&(i, self.cols - 1 - j), self.get(&(i, j)))
         }
         ret
     }
@@ -301,11 +299,9 @@ impl<T: std::fmt::Debug + Clone + Default + PartialEq + Hash> Grid<T> {
     pub fn flood_fill(&mut self, cluster_id: T, replace_id: T) {
         let mut q = VecDeque::new();
 
-        for i in 0..self.rows {
-            for j in 0..self.cols {
-                if self.get(&(i, j)) == cluster_id.clone() {
-                    q.push_back((i, j));
-                }
+        for (i, j) in iproduct!(0..self.rows, 0..self.cols) {
+            if self.get(&(i, j)) == cluster_id.clone() {
+                q.push_back((i, j));
             }
         }
 

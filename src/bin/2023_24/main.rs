@@ -66,7 +66,6 @@ fn intersect(hail1: &Hail, hail2: &Hail, limits: Option<(i64, i64)>) -> bool {
 
 fn intersecting_pairs(hails: &Vec<Hail>, limits: Option<(i64, i64)>) -> usize {
     let mut ans = 0;
-
     for i in 0..hails.len() {
         for j in i + 1..hails.len() {
             ans += if intersect(&hails[i], &hails[j], limits) {

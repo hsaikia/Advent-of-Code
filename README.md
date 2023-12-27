@@ -61,4 +61,6 @@ To test a specific binary only
 cargo test --bin 2023_01
 ```
 
+## Documentation 
 
+To generate the docs for this package, run `cargo docs --open`

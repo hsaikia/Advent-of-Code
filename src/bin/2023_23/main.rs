@@ -4,6 +4,7 @@ use aoc::{
     common::{self, HashMapVector},
     grid::{CardinalDirection, CellIndex, Grid},
 };
+use itertools::iproduct;
 
 #[derive(Clone, Debug, Default, PartialEq, Hash)]
 enum Cell {
@@ -37,12 +38,10 @@ fn get_neighbors(g: &Grid<Cell>, lst: &CellIndex, slopes: bool) -> Vec<CellIndex
 
 fn junctions(g: &Grid<Cell>, slopes: bool) -> Vec<CellIndex> {
     let mut ret = Vec::new();
-    for i in 0..g.rows {
-        for j in 0..g.cols {
-            let ns = get_neighbors(g, &(i, j), slopes);
-            if ns.len() > 2 {
-                ret.push((i, j));
-            }
+    for (i, j) in iproduct!(0..g.rows, 0..g.cols) {
+        let ns = get_neighbors(g, &(i, j), slopes);
+        if ns.len() > 2 {
+            ret.push((i, j));
         }
     }
     ret
@@ -172,4 +171,38 @@ fn main() {
     let input = common::get_input();
     common::timed(&input, part_solve::<true>, true);
     common::timed(&input, part_solve::<false>, false);
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_sample() {
+        let sample_input = "#.#####################
+        #.......#########...###
+        #######.#########.#.###
+        ###.....#.>.>.###.#.###
+        ###v#####.#v#.###.#.###
+        ###.>...#.#.#.....#...#
+        ###v###.#.#.#########.#
+        ###...#.#.#.......#...#
+        #####.#.#.#######.#.###
+        #.....#.#.#.......#...#
+        #.#####.#.#.#########v#
+        #.#...#...#...###...>.#
+        #.#.#v#######v###.###v#
+        #...#.>.#...>.>.#.###.#
+        #####v#.#.###v#.#.###.#
+        #.....#...#...#.#.#...#
+        #.#########.###.#.#.###
+        #...###...#...#...#.###
+        ###.###.#.###v#####v###
+        #...#...#.#.>.>.#.>.###
+        #.###.###.#.###.#.#v###
+        #.....###...###...#...#
+        #####################.#";
+        assert_eq!(part_solve::<true>(sample_input), 94);
+        assert_eq!(part_solve::<false>(sample_input), 154);
+    }
 }
