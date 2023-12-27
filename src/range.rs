@@ -93,9 +93,7 @@ impl<T: Integer + Default + Ord + Num + NumAssign + Copy + Clone + Display> Rang
     }
 }
 
-// Range Struct
-// Inclusive at the front, exclusive at the back
-// [a. b)
+/// A 1D Range of the form [a, b) i.e., inclusive at the front, exclusive at the back
 #[derive(PartialEq, Eq, Clone, Hash, Copy)]
 pub struct Range<T: Integer + Default + Ord + Num + NumAssign + Copy + Display> {
     pub a: T,

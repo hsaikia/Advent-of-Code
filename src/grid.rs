@@ -295,7 +295,7 @@ impl<T: std::fmt::Debug + Clone + Default + PartialEq + Hash> Grid<T> {
         ret
     }
 
-    // Fill all cells where value = replace_id 4_neighboring the ones where value = cluster_id
+    /// Fill all cells where value = replace_id, neighboring the ones where value = cluster_id
     pub fn flood_fill(&mut self, cluster_id: T, replace_id: T) {
         let mut q = VecDeque::new();
 
