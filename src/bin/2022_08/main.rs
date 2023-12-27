@@ -59,15 +59,15 @@ fn part1(grid: &Grid<u32>) -> usize {
 fn part2(grid: &Grid<u32>) -> i32 {
     let mut ans = 0;
 
-    for (i, j) in iproduct!(0..grid.rows, 0..grid.cols) {
+    for idx in iproduct!(0..grid.rows, 0..grid.cols) {
         let mut scores = [0; 4];
-        let sweeps = grid.sweep_4(i, j);
-        let h = grid.get(&(i, j));
+        let sweeps = grid.sweep_4(&idx);
+        let h = grid.get(&idx);
 
-        for (idx, sweep) in sweeps.iter().enumerate() {
+        for (i, sweep) in sweeps.iter().enumerate() {
             for nxy in sweep {
                 let h1 = grid.get(nxy);
-                scores[idx] += 1;
+                scores[i] += 1;
 
                 if h1 >= h {
                     break;

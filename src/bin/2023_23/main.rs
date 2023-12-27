@@ -17,16 +17,16 @@ enum Cell {
 fn get_neighbors(g: &Grid<Cell>, lst: &CellIndex, slopes: bool) -> Vec<CellIndex> {
     match g.get(lst) {
         Cell::Path => g
-            .adjacent_4(lst.0, lst.1)
+            .adjacent_4(lst)
             .into_iter()
             .filter(|idx| g.get(idx) != Cell::Forest)
             .collect::<Vec<_>>(),
         Cell::Slope(cd) => {
             if slopes {
                 let dir = cd.to_dir();
-                vec![g.cell_in_direction(lst.0, lst.1, dir.0, dir.1).unwrap()]
+                vec![g.cell_in_direction(lst, &dir).unwrap()]
             } else {
-                g.adjacent_4(lst.0, lst.1)
+                g.adjacent_4(lst)
                     .into_iter()
                     .filter(|idx| g.get(idx) != Cell::Forest)
                     .collect::<Vec<_>>()

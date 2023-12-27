@@ -186,7 +186,7 @@ impl<T: std::fmt::Debug + Clone + Default + PartialEq + Hash> Grid<T> {
         idx.0 * self.cols + idx.1
     }
 
-    pub fn from_flat_idx(&self, idx: usize) -> (usize, usize) {
+    pub fn from_flat_idx(&self, idx: usize) -> CellIndex {
         (idx / self.cols, idx % self.cols)
     }
 
@@ -208,40 +208,24 @@ impl<T: std::fmt::Debug + Clone + Default + PartialEq + Hash> Grid<T> {
         self.values[idx.0][idx.1] = val;
     }
 
-    pub fn cell_in_direction(
-        &self,
-        i: usize,
-        j: usize,
-        di: i32,
-        dj: i32,
-    ) -> Option<(usize, usize)> {
-        let mut x = i as i32;
-        let mut y = j as i32;
-        let mut found = false;
-        if ((di < 0 && x + di >= 0) || (di >= 0 && x + di < self.rows as i32))
-            && ((dj < 0 && y + dj >= 0) || (dj >= 0 && y + dj < self.cols as i32))
+    pub fn cell_in_direction(&self, idx: &CellIndex, dir: &CellDir) -> Option<(usize, usize)> {
+        let x = idx.0 as i32;
+        let y = idx.1 as i32;
+        let dx = dir.0;
+        let dy = dir.1;
+        if ((dx < 0 && x + dx >= 0) || (dx >= 0 && x + dx < self.rows as i32))
+            && ((dy < 0 && y + dy >= 0) || (dy >= 0 && y + dy < self.cols as i32))
         {
-            x += di;
-            y += dj;
-            found = true;
-        }
-
-        if found {
-            return Some((x as usize, y as usize));
+            return Some(((x + dx) as usize, (y + dy) as usize));
         }
 
         None
     }
 
-    pub fn adjacent_in_dir(
-        &self,
-        i: usize,
-        j: usize,
-        dirs: &Vec<(i32, i32)>,
-    ) -> Vec<(usize, usize)> {
+    pub fn adjacent_in_dir(&self, idx: &CellIndex, dirs: &Vec<(i32, i32)>) -> Vec<(usize, usize)> {
         let mut ret = Vec::new();
         for d in dirs {
-            let opt_cell = self.cell_in_direction(i, j, d.0, d.1);
+            let opt_cell = self.cell_in_direction(idx, d);
             if let Some(cell) = opt_cell {
                 ret.push(cell);
             }
@@ -249,18 +233,17 @@ impl<T: std::fmt::Debug + Clone + Default + PartialEq + Hash> Grid<T> {
         ret
     }
 
-    pub fn adjacent_2_row(&self, i: usize, j: usize) -> Vec<(usize, usize)> {
-        self.adjacent_in_dir(i, j, &vec![(0, 1), (0, -1)])
+    pub fn adjacent_2_row(&self, idx: &CellIndex) -> Vec<(usize, usize)> {
+        self.adjacent_in_dir(idx, &vec![(0, 1), (0, -1)])
     }
 
-    pub fn adjacent_4(&self, i: usize, j: usize) -> Vec<(usize, usize)> {
-        self.adjacent_in_dir(i, j, &vec![(-1, 0), (0, -1), (1, 0), (0, 1)])
+    pub fn adjacent_4(&self, idx: &CellIndex) -> Vec<(usize, usize)> {
+        self.adjacent_in_dir(idx, &vec![(-1, 0), (0, -1), (1, 0), (0, 1)])
     }
 
-    pub fn adjacent_8(&self, i: usize, j: usize) -> Vec<(usize, usize)> {
+    pub fn adjacent_8(&self, idx: &CellIndex) -> Vec<(usize, usize)> {
         self.adjacent_in_dir(
-            i,
-            j,
+            idx,
             &vec![
                 (-1, 0),
                 (0, -1),
@@ -274,22 +257,15 @@ impl<T: std::fmt::Debug + Clone + Default + PartialEq + Hash> Grid<T> {
         )
     }
 
-    pub fn sweep_4(&self, i: usize, j: usize) -> [Vec<(usize, usize)>; 4] {
+    pub fn sweep_4(&self, idx: &CellIndex) -> [Vec<(usize, usize)>; 4] {
         const VAL: Vec<(usize, usize)> = vec![];
         let mut ret: [Vec<(usize, usize)>; 4] = [VAL; 4];
         let dir = [(-1, 0), (0, -1), (1, 0), (0, 1)];
-        for (idx, d) in dir.iter().enumerate() {
-            let mut x = i;
-            let mut y = j;
-            loop {
-                let cell = self.cell_in_direction(x, y, d.0, d.1);
-                if cell.is_none() {
-                    break;
-                }
-                let cell = cell.unwrap();
-                x = cell.0;
-                y = cell.1;
-                ret[idx].push(cell);
+        for (i, d) in dir.iter().enumerate() {
+            let mut curr_cell = *idx;
+            while let Some(cell) = self.cell_in_direction(&curr_cell, d) {
+                ret[i].push(cell);
+                curr_cell = cell;
             }
         }
         ret
@@ -317,7 +293,7 @@ impl<T: std::fmt::Debug + Clone + Default + PartialEq + Hash> Grid<T> {
 
             self.set(&x, cluster_id.clone());
 
-            for n in self.adjacent_4(x.0, x.1) {
+            for n in self.adjacent_4(&x) {
                 if self.get(&n) == replace_id.clone() {
                     q.push_back(n);
                 }
@@ -337,26 +313,26 @@ mod tests {
         assert!(grid.rows == 10);
         assert!(grid.cols == 6);
 
-        let c1 = grid.cell_in_direction(0, 0, -1, 0);
+        let c1 = grid.cell_in_direction(&(0, 0), &(-1, 0));
         assert!(c1.is_none());
 
-        let c2 = grid.cell_in_direction(0, 0, 1, 0);
+        let c2 = grid.cell_in_direction(&(0, 0), &(1, 0));
         assert!(c2.is_some());
         assert!(c2.unwrap() == (1, 0));
 
-        let nxy = grid.adjacent_4(0, 0);
+        let nxy = grid.adjacent_4(&(0, 0));
         assert!(nxy == vec![(1, 0), (0, 1)]);
 
-        let nxy = grid.adjacent_4(2, 4);
+        let nxy = grid.adjacent_4(&(2, 4));
         assert!(nxy == vec![(1, 4), (2, 3), (3, 4), (2, 5)]);
 
-        let sxy = grid.sweep_4(2, 4);
+        let sxy = grid.sweep_4(&(2, 4));
         assert!(sxy[0] == vec![(1, 4), (0, 4)]);
         assert!(sxy[1] == vec![(2, 3), (2, 2), (2, 1), (2, 0)]);
         assert!(sxy[2] == vec![(3, 4), (4, 4), (5, 4), (6, 4), (7, 4), (8, 4), (9, 4)]);
         assert!(sxy[3] == vec![(2, 5)]);
 
-        let nxy = grid.adjacent_8(0, 0);
+        let nxy = grid.adjacent_8(&(0, 0));
         assert!(nxy == vec![(1, 0), (0, 1), (1, 1)]);
     }
 }

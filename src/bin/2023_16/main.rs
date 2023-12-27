@@ -44,7 +44,7 @@ fn solve(grid: &Grid<char>, start: CellIndex, start_dir: CellDir) -> usize {
         };
 
         for nd in &next_dirs {
-            if let Some(nc) = grid.cell_in_direction(cell_idx.0, cell_idx.1, nd.0, nd.1) {
+            if let Some(nc) = grid.cell_in_direction(&cell_idx, nd) {
                 queue.push_back((nc, *nd));
             }
         }

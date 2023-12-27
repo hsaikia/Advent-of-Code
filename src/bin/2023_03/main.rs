@@ -32,10 +32,11 @@ fn solve<const PART1: bool>(input: &str) -> u32 {
         let mut neighboring_symbols: Vec<(char, usize)> = Vec::new();
 
         for j in 0..grid.cols {
-            let ch = grid.get(&(i, j));
+            let idx = (i, j);
+            let ch = grid.get(&idx);
             if ch.is_ascii_digit() {
                 num = 10 * num + ch.to_digit(10).unwrap();
-                let ncells = grid.adjacent_8(i, j);
+                let ncells = grid.adjacent_8(&idx);
                 for nidx in &ncells {
                     let ch1 = grid.get(nidx);
                     if symbols.contains(&ch1) {
@@ -49,9 +50,9 @@ fn solve<const PART1: bool>(input: &str) -> u32 {
                     neighboring_symbols =
                         neighboring_symbols.into_iter().unique().collect::<Vec<_>>();
 
-                    for (ch, idx) in &neighboring_symbols {
+                    for (ch, key) in &neighboring_symbols {
                         if *ch == '*' {
-                            part_numbers_map.add_to_vector_hashmap(idx, num);
+                            part_numbers_map.add_to_vector_hashmap(key, num);
                         }
                     }
 

@@ -38,7 +38,7 @@ fn shortest_from(grid: &Grid<usize>, start: (usize, usize), end: (usize, usize))
 
         visited.set(&elem, true);
         let val = grid.get(&elem);
-        let adjacent = grid.adjacent_4(elem.0, elem.1);
+        let adjacent = grid.adjacent_4(&elem);
         let next_cells = adjacent
             .iter()
             .filter(|&e| grid.get(e) <= val + 1)
