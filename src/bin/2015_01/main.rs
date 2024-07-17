@@ -1,7 +1,8 @@
 use aoc::common;
 
 fn part1(input: &str) -> i32 {
-    input.chars().filter(|&c| c == '(').count() as i32 - input.chars().filter(|&c| c == ')').count() as i32
+    input.chars().filter(|&c| c == '(').count() as i32
+        - input.chars().filter(|&c| c == ')').count() as i32
 }
 
 fn part2(input: &str) -> usize {
@@ -11,7 +12,7 @@ fn part2(input: &str) -> usize {
         if e == '(' {
             floor += 1;
         } else {
-            floor -= 1; 
+            floor -= 1;
         }
 
         if floor == -1 {
