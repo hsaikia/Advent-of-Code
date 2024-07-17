@@ -1,5 +1,4 @@
 use indicatif::ProgressBar;
-use std::f64::EPSILON;
 
 use aoc::{common, io};
 use glam::{DVec3, I64Vec3};
@@ -27,7 +26,7 @@ impl Hail {
         let v21 = other.v.cross(self.v);
         let v21_l = v21.length();
 
-        if v21_l < EPSILON {
+        if v21_l < f64::EPSILON {
             return None;
         }
 
@@ -64,7 +63,7 @@ fn intersect(hail1: &Hail, hail2: &Hail, limits: Option<(i64, i64)>) -> bool {
     false
 }
 
-fn intersecting_pairs(hails: &Vec<Hail>, limits: Option<(i64, i64)>) -> usize {
+fn intersecting_pairs(hails: &[Hail], limits: Option<(i64, i64)>) -> usize {
     let mut ans = 0;
     for i in 0..hails.len() {
         for j in i + 1..hails.len() {

@@ -17,7 +17,7 @@ fn sum_grove(numbers: &[i64], order: &[usize], key: i64) -> i64 {
     ans
 }
 
-fn mix(numbers: &Vec<i64>, key: i64, times: usize) -> i64 {
+fn mix(numbers: &[i64], key: i64, times: usize) -> i64 {
     let l = numbers.len();
     let mut ptrs = get_forward_backward_ptrs(numbers.len());
 

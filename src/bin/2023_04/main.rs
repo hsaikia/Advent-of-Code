@@ -39,7 +39,7 @@ fn part1(matches: &Vec<Vec<usize>>) -> usize {
     ans
 }
 
-fn part2(matching_cards: &Vec<Vec<usize>>) -> usize {
+fn part2(matching_cards: &[Vec<usize>]) -> usize {
     let n = matching_cards.len();
     let mut number_of_cards = Vec::with_capacity(n);
     number_of_cards.resize(n, 1);

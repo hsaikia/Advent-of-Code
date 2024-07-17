@@ -115,7 +115,7 @@ fn is_cluster_id_at_border(cluster: &mut Grid<Cluster>, cluster_id: Cluster) -> 
     false
 }
 
-fn directed_path(path: &Vec<CellIndex>) -> Vec<Dir> {
+fn directed_path(path: &[CellIndex]) -> Vec<Dir> {
     let mut ret: Vec<Dir> = Vec::new();
 
     for i in 0..path.len() {

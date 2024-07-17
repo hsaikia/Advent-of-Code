@@ -1,7 +1,7 @@
 // Area of a polygon with integer coordinates
 // Assuming that the polygon is closed and the first point does not repeat
 // PS : This function returns twice the area
-pub fn polygon_area<T: Copy + num::Integer + std::iter::Sum>(polygon: &Vec<(T, T)>) -> T {
+pub fn polygon_area<T: Copy + num::Integer + std::iter::Sum>(polygon: &[(T, T)]) -> T {
     let n = polygon.len();
     (0..n)
         .map(|i| polygon[i].0 * (polygon[(i + 1) % n].1 - polygon[(i + n - 1) % n].1))

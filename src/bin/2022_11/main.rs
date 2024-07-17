@@ -199,7 +199,7 @@ fn sample_input() -> Vec<Monkey> {
     ]
 }
 
-fn simulate(monkeys: &mut Vec<Monkey>, worry_reducer: &WorryReducer, rounds: usize) {
+fn simulate(monkeys: &mut [Monkey], worry_reducer: &WorryReducer, rounds: usize) {
     for _ in 0..rounds {
         for i in 0..monkeys.len() {
             while let Some((id, item)) = monkeys[i].throw(worry_reducer) {
