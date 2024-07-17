@@ -63,4 +63,4 @@ cargo test --bin 2023_01
 
 ## Documentation 
 
-To generate the docs for this package, run `cargo docs --open`
+To generate the docs for this package, run `cargo doc --open`
