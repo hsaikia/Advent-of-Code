@@ -13,7 +13,7 @@ struct Graph<'a> {
     pub flow_rate: HashMap<&'a str, i64>,
 }
 
-impl<'a> Graph<'a> {
+impl Graph<'_> {
     fn new() -> Self {
         Graph {
             connections: HashMap::new(),

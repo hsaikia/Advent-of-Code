@@ -43,6 +43,7 @@ pub fn timed<T: core::fmt::Debug>(input: &str, f: fn(&str) -> T, part1: bool) {
 pub fn get_input() -> String {
     let args: Vec<String> = env::args().collect();
     let filepath = &args[1];
+    println!("Reading file {filepath}");
     std::fs::read_to_string(filepath).unwrap()
 }
 
