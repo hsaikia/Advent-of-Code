@@ -35,11 +35,7 @@ fn good_sequence<const PART: usize>(seq: &[usize]) -> bool {
 fn solve<const PART: usize>(input: &str) -> usize {
     let mut ans = 0;
     for report in input.lines() {
-        let sequence_str = io::tokenize(report, " ");
-        let sequence = sequence_str
-            .iter()
-            .map(|x| io::parse_num(x))
-            .collect::<Vec<usize>>();
+        let sequence = io::tokenize_nums(report, " ");
         ans += if good_sequence::<PART>(&sequence) {
             1
         } else {

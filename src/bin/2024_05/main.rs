@@ -12,16 +12,10 @@ fn solve<const PART: usize>(input: &str) -> usize {
             continue;
         }
         if line.chars().any(|x| x == '|') {
-            let page_nums: Vec<usize> = io::tokenize(line, "|")
-                .into_iter()
-                .map(io::parse_num)
-                .collect();
+            let page_nums: Vec<usize> = io::tokenize_nums(line, "|");
             page_orderings.push((page_nums[0], page_nums[1]));
         } else {
-            let seq: Vec<usize> = io::tokenize(line, ",")
-                .into_iter()
-                .map(io::parse_num)
-                .collect();
+            let seq: Vec<usize> = io::tokenize_nums(line, ",");
             page_sequences.push(seq);
         }
     }

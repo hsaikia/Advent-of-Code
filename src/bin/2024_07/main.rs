@@ -49,10 +49,7 @@ fn solve<const BASE: i32>(input: &str) -> usize {
     for line in input.lines() {
         let s1 = io::tokenize(line, ": ");
         let res: usize = io::parse_num(s1[0]);
-        let nums: Vec<usize> = io::tokenize(s1[1], " ")
-            .into_iter()
-            .map(io::parse_num)
-            .collect();
+        let nums: Vec<usize> = io::tokenize_nums(s1[1], " ");
         let l = nums.len();
         for permutation in 0..pow(BASE, l - 1) {
             let ops = get_op::<BASE>(permutation, l - 1);
