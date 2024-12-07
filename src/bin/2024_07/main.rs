@@ -73,7 +73,7 @@ fn main() {
     let input = common::get_input();
     println!("{input:?}");
     common::timed(&input, solve::<2>, true);
-    common::timed(&input, solve::<3>, true);
+    common::timed(&input, solve::<3>, false);
 }
 
 #[cfg(test)]

@@ -5,11 +5,12 @@ fn solve<const PART: usize>(input: &str) -> usize {
     let mut lst1 = Vec::new();
     let mut lst2 = Vec::new();
     for line in input.lines() {
-        let nums = io::tokenize(line, " ");
-        let a: usize = io::parse_num(nums[0]);
-        let b: usize = io::parse_num(nums[1]);
-        lst1.push(a);
-        lst2.push(b);
+        let nums: Vec<usize> = io::tokenize(line, " ")
+            .into_iter()
+            .map(io::parse_num)
+            .collect();
+        lst1.push(nums[0]);
+        lst2.push(nums[1]);
     }
     lst1.sort();
     lst2.sort();
