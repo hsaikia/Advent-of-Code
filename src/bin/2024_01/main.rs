@@ -11,19 +11,17 @@ fn solve<const PART: usize>(input: &str) -> usize {
     }
     lst1.sort();
     lst2.sort();
-    let mut ans = 0;
-    if PART == 1 {
-        for (a, b) in lst1.iter().zip(lst2.iter()) {
-            ans += a.max(b) - a.min(b);
-        }
-    } else {
-        ans = lst1
-            .iter()
-            .map(|n| lst2.iter().filter(|x| *x == n).count() * n)
-            .sum();
-    }
 
-    ans
+    if PART == 1 {
+        lst1.iter()
+            .zip(lst2.iter())
+            .map(|(a, b)| a.max(b) - a.min(b))
+            .sum()
+    } else {
+        lst1.iter()
+            .map(|n| lst2.iter().filter(|x| *x == n).count() * n)
+            .sum()
+    }
 }
 
 fn main() {
