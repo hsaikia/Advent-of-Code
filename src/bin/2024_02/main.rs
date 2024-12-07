@@ -33,16 +33,11 @@ fn good_sequence<const PART: usize>(seq: &[usize]) -> bool {
 }
 
 fn solve<const PART: usize>(input: &str) -> usize {
-    let mut ans = 0;
-    for report in input.lines() {
-        let sequence = io::tokenize_nums(report, " ");
-        ans += if good_sequence::<PART>(&sequence) {
-            1
-        } else {
-            0
-        };
-    }
-    ans
+    input
+        .lines()
+        .map(|l| io::tokenize_nums(l, " "))
+        .filter(|v| good_sequence::<PART>(v))
+        .count()
 }
 
 fn main() {

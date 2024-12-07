@@ -68,7 +68,7 @@ fn solve<const BASE: i32>(input: &str) -> usize {
 
 fn main() {
     let input = common::get_input();
-    println!("{input:?}");
+    // println!("{input:?}");
     common::timed(&input, solve::<2>, true);
     common::timed(&input, solve::<3>, false);
 }
