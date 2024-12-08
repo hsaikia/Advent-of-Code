@@ -1,5 +1,6 @@
 use aoc::common;
 use aoc::grid::Grid;
+use itertools::Itertools;
 
 fn solve<const PART: i32>(input: &str) -> usize {
     let map = Grid::from_str(input, |c| c);
@@ -39,9 +40,7 @@ fn solve<const PART: i32>(input: &str) -> usize {
         }
     }
 
-    locations.sort();
-    locations.dedup();
-    locations.len()
+    locations.iter().sorted().dedup().count()
 }
 
 fn main() {
