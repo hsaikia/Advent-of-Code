@@ -1,5 +1,3 @@
-use std::fmt::Debug;
-
 use aoc::{common, range::Range};
 
 #[derive(Clone)]
@@ -13,17 +11,19 @@ struct Space {
     r: Range<usize>,
 }
 
-impl Debug for Space {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+impl Space {
+    fn print(spaces: &[Space]) {
         let mut s = String::new();
-        for _ in self.r.a..self.r.b {
-            let t = match &self.t {
-                SpaceType::Free => ".",
-                SpaceType::Occupied(id) => &id.to_string(),
-            };
-            s.push_str(t);
+        for sp in spaces {
+            for _ in sp.r.a..sp.r.b {
+                let t = match &sp.t {
+                    SpaceType::Free => ".",
+                    SpaceType::Occupied(id) => &id.to_string(),
+                };
+                s.push_str(t);
+            }
         }
-        write!(f, "{}", s)
+        println!("{s}");
     }
 }
 
@@ -85,6 +85,8 @@ fn solve<const PART: i32>(input: &str) -> usize {
             spaces.sort_by(|s1, s2| s1.r.a.cmp(&s2.r.a));
         }
     }
+
+    Space::print(&spaces);
 
     let mut ans = 0;
     for s in spaces {
