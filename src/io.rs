@@ -26,7 +26,7 @@ where
 {
     token
         .chars()
-        .filter(|x| x.is_ascii_digit())
+        .filter(|x| x.is_ascii_digit() || *x == '-')
         .collect::<String>()
         .parse::<T>()
         .unwrap()
