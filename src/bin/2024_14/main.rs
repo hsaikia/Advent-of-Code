@@ -29,6 +29,7 @@ fn largest_cluster(grid: &Grid<char>) -> usize {
 fn solve<const PART: usize, const SECONDS: usize, const MAX_X: i64, const MAX_Y: i64>(
     input: &str,
 ) -> usize {
+    let mut ans = 0;
     let mut positions: Vec<I64Vec2> = Vec::new();
     let mut velocities: Vec<I64Vec2> = Vec::new();
 
@@ -49,9 +50,8 @@ fn solve<const PART: usize, const SECONDS: usize, const MAX_X: i64, const MAX_Y:
         });
     }
 
-    let mut quadrant: [usize; 4] = [0; 4];
     for s in 0..SECONDS {
-        quadrant = [0; 4];
+        let mut quadrant = [0; 4];
         for (curr, vel) in positions.iter_mut().zip(velocities.iter()) {
             *curr += *vel;
 
@@ -82,7 +82,9 @@ fn solve<const PART: usize, const SECONDS: usize, const MAX_X: i64, const MAX_Y:
             }
         }
 
-        if PART == 2 {
+        if PART == 1 {
+            ans = quadrant[0] * quadrant[1] * quadrant[2] * quadrant[3];
+        } else if PART == 2 {
             let mut map: Grid<char> = Grid::new(MAX_X as usize, MAX_Y as usize, '.');
             for p in positions.iter() {
                 map.set(&(p.x as usize, p.y as usize), '#');
@@ -92,17 +94,13 @@ fn solve<const PART: usize, const SECONDS: usize, const MAX_X: i64, const MAX_Y:
                 //println!("After second {}", s + 1);
                 //println!("Largest cluster {}", largest_cluster(&map));
                 //map.print();
-                return s + 1;
+                ans = s + 1;
+                break;
             }
         }
     }
 
-    //println!("{:?}", quadrant);
-    if PART == 1 {
-        quadrant[0] * quadrant[1] * quadrant[2] * quadrant[3]
-    } else {
-        0
-    }
+    ans
 }
 
 fn main() {
