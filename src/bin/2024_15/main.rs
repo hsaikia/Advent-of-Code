@@ -15,54 +15,45 @@ fn get_dir(ch: char) -> (i32, i32) {
     }
 }
 
-fn possible_steps(map: &Grid<char>, pos: &(usize, usize), dir: char) -> usize {
+fn push_possible(map: &Grid<char>, pos: &(usize, usize), dir: char) -> bool {
     let sym = map.get(pos);
     if sym == '.' || sym == '#' {
-        return 0;
+        return false;
     }
     let dir_xy = get_dir(dir);
 
     if let Some(idx) = map.cell_in_direction(pos, &dir_xy) {
         if map.get(&idx) == '#' {
-            return 0;
+            return false;
         }
         if map.get(&idx) == '.' {
-            return 1 + possible_steps(map, &idx, dir);
+            return true;
         }
         if map.get(&idx) == '[' {
             if dir == '^' || dir == 'v' {
-                return possible_steps(map, &idx, dir).min(possible_steps(
-                    map,
-                    &(idx.0, idx.1 + 1),
-                    dir,
-                ));
+                return push_possible(map, &idx, dir)
+                    && push_possible(map, &(idx.0, idx.1 + 1), dir);
             }
-            return possible_steps(map, &idx, dir);
+            return push_possible(map, &idx, dir);
         }
         if map.get(&idx) == ']' {
             if dir == '^' || dir == 'v' {
-                return possible_steps(map, &idx, dir).min(possible_steps(
-                    map,
-                    &(idx.0, idx.1 - 1),
-                    dir,
-                ));
+                return push_possible(map, &idx, dir)
+                    && push_possible(map, &(idx.0, idx.1 - 1), dir);
             }
-            return possible_steps(map, &idx, dir);
+            return push_possible(map, &idx, dir);
         }
         if map.get(&idx) == 'O' {
-            return possible_steps(map, &idx, dir);
+            return push_possible(map, &idx, dir);
         }
     }
-    0
+    false
 }
 
-fn push(map: &mut Grid<char>, pos: (usize, usize), dir: char, steps: usize) -> bool {
+fn push(map: &mut Grid<char>, pos: (usize, usize), dir: char) -> bool {
     let sym = map.get(&pos);
     if sym == '.' || sym == '#' {
         return false;
-    }
-    if steps == 0 {
-        return true;
     }
     let dir_xy = get_dir(dir);
 
@@ -74,28 +65,28 @@ fn push(map: &mut Grid<char>, pos: (usize, usize), dir: char, steps: usize) -> b
             let sym = map.get(&pos);
             map.set(&idx, sym);
             map.set(&pos, '.');
-            return push(map, idx, dir, steps - 1);
+            return true;
         }
         if map.get(&idx) == '[' {
             if dir == '^' || dir == 'v' {
-                if push(map, idx, dir, steps) && push(map, (idx.0, idx.1 + 1), dir, steps) {
-                    return push(map, pos, dir, steps);
+                if push(map, idx, dir) && push(map, (idx.0, idx.1 + 1), dir) {
+                    return push(map, pos, dir);
                 }
-            } else if push(map, idx, dir, steps) {
-                return push(map, pos, dir, steps);
+            } else if push(map, idx, dir) {
+                return push(map, pos, dir);
             }
         }
         if map.get(&idx) == ']' {
             if dir == '^' || dir == 'v' {
-                if push(map, idx, dir, steps) && push(map, (idx.0, idx.1 - 1), dir, steps) {
-                    push(map, pos, dir, steps);
+                if push(map, idx, dir) && push(map, (idx.0, idx.1 - 1), dir) {
+                    push(map, pos, dir);
                 }
-            } else if push(map, idx, dir, steps) {
-                return push(map, pos, dir, steps);
+            } else if push(map, idx, dir) {
+                return push(map, pos, dir);
             }
         }
-        if map.get(&idx) == 'O' && push(map, idx, dir, steps) {
-            return push(map, pos, dir, steps);
+        if map.get(&idx) == 'O' && push(map, idx, dir) {
+            return push(map, pos, dir);
         }
     }
 
@@ -129,16 +120,16 @@ fn solve<const PART: usize>(input: &str) -> usize {
     let mut map = Grid::from_str(&transformed, |c| c);
     let commands = batches[1];
 
-    //map.print();
-
     for ch in commands.chars() {
         if ch == '\n' {
             continue;
         }
 
         let pos = map.positions('@');
-        let ps = possible_steps(&map, &pos[0], ch);
-        push(&mut map, pos[0], ch, ps.min(1));
+        let pp = push_possible(&map, &pos[0], ch);
+        if pp {
+            push(&mut map, pos[0], ch);
+        }
     }
 
     let mut ans = 0;
