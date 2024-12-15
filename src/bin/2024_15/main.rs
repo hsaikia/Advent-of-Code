@@ -139,7 +139,6 @@ fn solve<const PART: usize>(input: &str) -> usize {
         let pos = map.positions('@');
         let ps = possible_steps(&map, &pos[0], ch);
         push(&mut map, pos[0], ch, ps.min(1));
-        push(&mut map, pos[0], ch, ps.min(1));
     }
 
     let mut ans = 0;
@@ -150,7 +149,7 @@ fn solve<const PART: usize>(input: &str) -> usize {
 }
 fn main() {
     let input = common::get_input();
-    println!("{input:?}");
+    //println!("{input:?}");
     common::timed(&input, solve::<1>, true);
     common::timed(&input, solve::<2>, false);
 }
