@@ -63,11 +63,9 @@ fn solve<const PART: usize, const SIZE: usize, const PART_1_BYTES: usize>(input:
 
 fn main() {
     let input = common::get_input();
-    println!("{input:?}");
-    //common::timed(&input, solve::<1, 71, 1024>, true);
-    //common::timed(&input, solve::<2, 71, 0>, false);
-    common::timed(&input, solve::<1, 7, 12>, true);
-    common::timed(&input, solve::<2, 7, 12>, false);
+    //println!("{input:?}");
+    common::timed(&input, solve::<1, 71, 1024>, true);
+    common::timed(&input, solve::<2, 71, 0>, false);
 }
 
 #[cfg(test)]
