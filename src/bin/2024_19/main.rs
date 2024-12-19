@@ -22,42 +22,24 @@ fn possible_ways(patterns: &[&str], towel: &str, map: &mut HashMap<String, usize
     ways
 }
 
-fn possible(patterns: &[&str], towel: &str, map: &mut HashMap<String, bool>) -> bool {
-    if towel.is_empty() {
-        return true;
-    }
-    if map.get(towel).is_some() {
-        return *map.get(towel).unwrap();
-    }
-    let mut status = false;
-    for p in patterns.iter() {
-        if p.len() > towel.len() {
-            continue;
-        }
-        if **p == towel[0..p.len()] {
-            status |= possible(patterns, &towel[p.len()..], map);
-        }
-    }
-    map.insert(towel.to_string(), status);
-    status
-}
-
 fn solve<const PART: usize>(input: &str) -> usize {
     let mut ans = 0;
     let batches = io::line_batches(input);
     let patterns = io::tokenize(batches[0][0], ", ");
-    //println!("{:?}", patterns);
 
-    let mut cache: HashMap<String, bool> = HashMap::new();
-    let mut cache2: HashMap<String, usize> = HashMap::new();
+    let mut cache: HashMap<String, usize> = HashMap::new();
 
     for towel in batches[1].iter() {
         //println!("Checking {}", towel);
-        if PART == 1 && possible(&patterns, towel, &mut cache) {
-            ans += 1;
+        if PART == 1 {
+            ans += if possible_ways(&patterns, towel, &mut cache) > 0 {
+                1
+            } else {
+                0
+            };
         }
         if PART == 2 {
-            ans += possible_ways(&patterns, towel, &mut cache2);
+            ans += possible_ways(&patterns, towel, &mut cache);
         }
     }
     ans
@@ -65,7 +47,7 @@ fn solve<const PART: usize>(input: &str) -> usize {
 
 fn main() {
     let input = common::get_input();
-    println!("{input:?}");
+    //println!("{input:?}");
     common::timed(&input, solve::<1>, true);
     common::timed(&input, solve::<2>, false);
 }
