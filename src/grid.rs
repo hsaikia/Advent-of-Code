@@ -233,6 +233,22 @@ impl<T: std::fmt::Debug + Clone + Default + PartialEq + Hash> Grid<T> {
         ret
     }
 
+    pub fn l1_distance(&self, idx1: &CellIndex, idx2: &CellIndex) -> usize {
+        let dx = if idx1.0 > idx2.0 {
+            idx1.0 - idx2.0
+        } else {
+            idx2.0 - idx1.0
+        };
+
+        let dy = if idx1.1 > idx2.1 {
+            idx1.1 - idx2.1
+        } else {
+            idx2.1 - idx1.1
+        };
+
+        dx + dy
+    }
+
     pub fn adjacent_2_row(&self, idx: &CellIndex) -> Vec<(usize, usize)> {
         self.adjacent_in_dir(idx, &[(0, 1), (0, -1)])
     }
