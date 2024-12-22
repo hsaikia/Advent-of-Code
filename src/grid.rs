@@ -179,6 +179,39 @@ impl<T: std::fmt::Debug + Clone + Default + PartialEq + Hash> Grid<T> {
         println!();
     }
 
+    /// Works best only if the cell values fit in a 3-character space
+    pub fn debug_print(&self)
+    where
+        T: std::fmt::Display,
+    {
+        let mut ret: String = String::new();
+        for r in 0..=2 * self.rows + 1 {
+            for c in 0..=4 * self.cols {
+                if r % 2 == 0 {
+                    if c % 4 == 0 {
+                        ret += "+";
+                    } else {
+                        ret += "-";
+                    }
+                } else if c % 4 == 0 {
+                    ret += "|";
+                } else if c % 4 == 2 {
+                    if r == 2 * self.rows + 1 {
+                        ret += &format!("{:^3}", (c - 2) / 4);
+                    } else {
+                        ret += &format!("{:^3}", self.values[(r - 1) / 2][(c - 2) / 4]);
+                    }
+                }
+            }
+            if r % 2 == 0 {
+                ret += "\n";
+            } else {
+                ret += &format!("{}\n", (r - 1) / 2);
+            }
+        }
+        println!("{}", ret);
+    }
+
     pub fn to_flat_idx(&self, idx: &CellIndex) -> usize {
         if idx.0 >= self.rows || idx.1 >= self.cols {
             panic!("Grid index out of bounds");

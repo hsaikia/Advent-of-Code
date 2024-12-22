@@ -37,6 +37,7 @@ fn shortest_path(map: &Grid<char>) -> Vec<(usize, usize)> {
 
 fn solve<const PICOSECONDS: usize, const CHEAT_PICOSECONDS: usize>(input: &str) -> usize {
     let map = Grid::from_str(input, |c| c);
+    // map.debug_print();
     let path = shortest_path(&map);
     let path_d: Vec<((usize, usize), usize)> =
         path.iter().enumerate().map(|(i, v)| (*v, i)).collect();
@@ -62,7 +63,7 @@ fn solve<const PICOSECONDS: usize, const CHEAT_PICOSECONDS: usize>(input: &str) 
 
 fn main() {
     let input = common::get_input();
-    println!("{input:?}");
+    //println!("{input:?}");
     common::timed(&input, solve::<100, 2>, true);
     common::timed(&input, solve::<100, 20>, false);
 }
