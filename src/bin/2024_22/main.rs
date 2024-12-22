@@ -2,30 +2,26 @@ use std::{collections::HashMap, ops::BitXor};
 
 use aoc::{common, io};
 
-fn mix(secret: usize, b: usize) -> usize {
-    secret.bitxor(b)
+fn mix_and_prune(secret: usize, b: usize) -> usize {
+    secret.bitxor(b) % 16777216
 }
 
-fn prune(secret: usize) -> usize {
-    secret % 16777216
-}
-
-fn generate(n: usize, times: usize) -> usize {
-    if times == 0 {
-        return n;
-    }
-
-    let mut secret = n;
+fn transform(secret: usize) -> usize {
+    let mut secret = secret;
     let a = secret * 64;
-    secret = mix(secret, a);
-    secret = prune(secret);
+    secret = mix_and_prune(secret, a);
     let b = secret / 32;
-    secret = mix(secret, b);
-    secret = prune(secret);
+    secret = mix_and_prune(secret, b);
     let c = secret * 2048;
-    secret = mix(secret, c);
-    secret = prune(secret);
-    generate(secret, times - 1)
+    secret = mix_and_prune(secret, c);
+    secret
+}
+
+fn generate(secret: usize, times: usize) -> usize {
+    if times == 0 {
+        return secret;
+    }
+    generate(transform(secret), times - 1)
 }
 
 fn generate_lst(lst: &mut Vec<usize>, times: usize) {
@@ -34,15 +30,7 @@ fn generate_lst(lst: &mut Vec<usize>, times: usize) {
     }
 
     let mut secret = *lst.last().unwrap();
-    let n2 = secret * 64;
-    secret = mix(secret, n2);
-    secret = prune(secret);
-    let n4 = secret / 32;
-    secret = mix(secret, n4);
-    secret = prune(secret);
-    let n6 = secret * 2048;
-    secret = mix(secret, n6);
-    secret = prune(secret);
+    secret = transform(secret);
     lst.push(secret);
     generate_lst(lst, times - 1)
 }
