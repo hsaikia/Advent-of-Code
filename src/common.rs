@@ -8,6 +8,9 @@ use std::{
 
 pub trait HashMapVector<K: Copy + Hash + Eq + PartialEq, V> {
     fn add_to_vector_hashmap(&mut self, key: &K, value: V);
+    fn contains(&self, key: &K, value: &V) -> bool
+    where
+        V: PartialEq;
 }
 
 impl<K: Copy + Hash + Eq + PartialEq, V, S: BuildHasher> HashMapVector<K, V>
@@ -22,6 +25,16 @@ impl<K: Copy + Hash + Eq + PartialEq, V, S: BuildHasher> HashMapVector<K, V>
                 self.insert(*key, vec![value]);
             }
         }
+    }
+
+    fn contains(&self, key: &K, value: &V) -> bool
+    where
+        V: PartialEq,
+    {
+        if let Some(v) = self.get(key) {
+            return v.contains(value);
+        }
+        false
     }
 }
 
