@@ -2,7 +2,6 @@ use aoc::{common, grid::Grid};
 use itertools::Itertools;
 
 fn solve(input: &str) -> usize {
-    let mut ans = 0;
     let mut rows = 0;
     let mut locks = Vec::new();
     let mut keys = Vec::new();
@@ -21,14 +20,11 @@ fn solve(input: &str) -> usize {
         }
     }
 
-    for (lock, key) in locks.iter().cartesian_product(keys.iter()) {
-        ans += if lock.iter().zip(key.iter()).all(|(a, b)| *a + *b < rows - 1) {
-            1
-        } else {
-            0
-        };
-    }
-    ans
+    locks
+        .iter()
+        .cartesian_product(keys.iter())
+        .filter(|(lock, key)| lock.iter().zip(key.iter()).all(|(a, b)| *a + *b < rows - 1))
+        .count()
 }
 
 fn main() {
