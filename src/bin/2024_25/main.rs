@@ -1,4 +1,5 @@
 use aoc::{common, grid::Grid};
+use itertools::Itertools;
 
 fn solve(input: &str) -> usize {
     let mut ans = 0;
@@ -20,14 +21,12 @@ fn solve(input: &str) -> usize {
         }
     }
 
-    for l in locks.iter() {
-        for k in keys.iter() {
-            ans += if l.iter().zip(k.iter()).all(|(a, b)| *a + *b < rows - 1) {
-                1
-            } else {
-                0
-            };
-        }
+    for (lock, key) in locks.iter().cartesian_product(keys.iter()) {
+        ans += if lock.iter().zip(key.iter()).all(|(a, b)| *a + *b < rows - 1) {
+            1
+        } else {
+            0
+        };
     }
     ans
 }
