@@ -12,7 +12,7 @@ Then for any particular year_day we need to run this command from the root direc
 cargo run --release --bin <year_day> <input_file>
 ```
 
-For example for binary `2022_01` say we have a `sample_input.txt` file in the root directory with the following contents 
+For example for binary `2022_01` say we have a `sample_input.txt` file with the following contents 
 
 ```
 1000
@@ -34,7 +34,7 @@ For example for binary `2022_01` say we have a `sample_input.txt` file in the ro
 Then we run 
 
 ```
-cargo run --release --bin 2022_01 sample_input.txt
+cargo run --release --bin 2022_01 <full path to sample_input.txt>
 ```
 
 which outputs the answers for both parts
