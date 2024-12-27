@@ -1,6 +1,8 @@
 use aoc::common;
 use aoc::io;
 
+#[allow(clippy::cast_possible_truncation)]
+#[allow(clippy::cast_possible_wrap)]
 fn diff_vec(seq: &[usize]) -> Vec<i32> {
     let mut num_diffs: Vec<i32> = Vec::new();
     for i in 1..seq.len() {
@@ -10,9 +12,9 @@ fn diff_vec(seq: &[usize]) -> Vec<i32> {
 }
 
 fn good_difference(seq: &[usize]) -> bool {
-    let diff_seq = diff_vec(seq);
     const ALLOWED_DIFF_POS: [i32; 3] = [1, 2, 3];
     const ALLOWED_DIFF_NEG: [i32; 3] = [-1, -2, -3];
+    let diff_seq = diff_vec(seq);
     diff_seq.iter().all(|x| ALLOWED_DIFF_POS.contains(x))
         || diff_seq.iter().all(|x| ALLOWED_DIFF_NEG.contains(x))
 }

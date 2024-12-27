@@ -24,7 +24,7 @@ impl FromStr for Grab {
         for grab_str in grabs_str {
             let tuple = io::tokenize(grab_str, " ");
             let q = io::parse_num::<usize>(tuple[0]);
-            match tuple[1] {
+            match *tuple.get(1).unwrap() {
                 "red" => grab.red = q,
                 "green" => grab.green = q,
                 "blue" => grab.blue = q,
@@ -86,7 +86,7 @@ impl FromStr for Game {
 }
 
 fn part2(games: &[Game]) -> usize {
-    games.iter().map(|g| g.power()).sum::<usize>()
+    games.iter().map(Game::power).sum::<usize>()
 }
 
 fn part1(games: &[Game]) -> usize {

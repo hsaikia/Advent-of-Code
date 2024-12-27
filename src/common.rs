@@ -53,6 +53,10 @@ pub fn timed<T: core::fmt::Debug>(input: &str, f: fn(&str) -> T, part1: bool) {
     );
 }
 
+/// # Panics
+///
+/// Panics if the file is not found or cannot be read.
+#[must_use]
 pub fn get_input() -> String {
     let args: Vec<String> = env::args().collect();
     let filepath = &args[1];
@@ -67,14 +71,14 @@ pub struct GridDisplay {
 impl fmt::Display for GridDisplay {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let s = self.rows.join("\n");
-        write!(f, "\n{}\n", s)
+        write!(f, "\n{s}\n")
     }
 }
 
 impl fmt::Debug for GridDisplay {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let s = self.rows.join("\n");
-        write!(f, "\n{}\n", s)
+        write!(f, "\n{s}\n")
     }
 }
 

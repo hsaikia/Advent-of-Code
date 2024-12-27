@@ -16,8 +16,8 @@ fn solve<const PART: usize>(input: &str) -> i64 {
         let (bx, by) = get_x_y(batch[1], "X+", "+");
         let (px, py) = get_x_y(batch[2], "X=", "=");
 
-        let px = px + if PART == 2 { 10000000000000 } else { 0 };
-        let py = py + if PART == 2 { 10000000000000 } else { 0 };
+        let px = px + if PART == 2 { 10_000_000_000_000 } else { 0 };
+        let py = py + if PART == 2 { 10_000_000_000_000 } else { 0 };
 
         if let Some((sa, sb)) = linear_equation(ax, bx, px, ay, by, py) {
             ans += sa * 3 + sb;

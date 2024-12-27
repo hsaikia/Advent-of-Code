@@ -9,6 +9,7 @@ pub fn polygon_area<T: Copy + num::Integer + std::iter::Sum>(polygon: &[(T, T)])
 }
 
 // Pick's formula - Number of interior vertices of a polygon given its area and boundary points
+#[must_use]
 pub fn polygon_inner_vertices(area: usize, num_boundary_points: usize) -> usize {
     area + 1 - num_boundary_points / 2
 }

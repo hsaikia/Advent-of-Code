@@ -17,11 +17,12 @@ fn register_history(input_lines: &str) -> Vec<i32> {
     register
 }
 
+#[allow(clippy::cast_possible_truncation)]
+#[allow(clippy::cast_possible_wrap)]
 fn part1(input_lines: &str) -> i32 {
+    const CYCLES: [usize; 6] = [20, 60, 100, 140, 180, 220];
     let mut ans = 0;
     let register = register_history(input_lines);
-
-    const CYCLES: [usize; 6] = [20, 60, 100, 140, 180, 220];
 
     for cycle in CYCLES {
         ans += cycle as i32 * register[cycle - 1];
@@ -30,12 +31,13 @@ fn part1(input_lines: &str) -> i32 {
     ans
 }
 
+#[allow(clippy::cast_possible_truncation)]
+#[allow(clippy::cast_possible_wrap)]
 fn part2(input_lines: &str) -> common::GridDisplay {
-    let mut ans = common::GridDisplay { rows: Vec::new() };
-    let register = register_history(input_lines);
-
     const W: usize = 40;
     const H: usize = 6;
+    let mut ans = common::GridDisplay { rows: Vec::new() };
+    let register = register_history(input_lines);
 
     for row in 0..H {
         let mut crt_row = String::new();

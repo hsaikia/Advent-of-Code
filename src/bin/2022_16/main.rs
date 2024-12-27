@@ -29,7 +29,7 @@ impl Graph<'_> {
     }
 
     fn all_open(&self, opened_valves: &[&str]) -> bool {
-        for (valve, rate) in self.flow_rate.iter() {
+        for (valve, rate) in &self.flow_rate {
             if *rate > 0 && !opened_valves.contains(valve) {
                 return false;
             }

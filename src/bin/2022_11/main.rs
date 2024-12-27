@@ -187,13 +187,7 @@ fn sample_input() -> Vec<Monkey> {
         Monkey {
             items: vec![74].into(),
             op: |x| x + 3,
-            test: |x| {
-                if x % 17 == 0 {
-                    0
-                } else {
-                    1
-                }
-            },
+            test: |x| usize::from(x % 17 != 0),
             times_inspected: 0,
         },
     ]

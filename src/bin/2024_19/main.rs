@@ -10,7 +10,7 @@ fn possible_ways(patterns: &[&str], towel: &str, map: &mut HashMap<String, usize
         return *map.get(towel).unwrap();
     }
     let mut ways = 0;
-    for p in patterns.iter() {
+    for p in patterns {
         if p.len() > towel.len() {
             continue;
         }
@@ -29,14 +29,9 @@ fn solve<const PART: usize>(input: &str) -> usize {
 
     let mut cache: HashMap<String, usize> = HashMap::new();
 
-    for towel in batches[1].iter() {
-        //println!("Checking {}", towel);
+    for towel in &batches[1] {
         if PART == 1 {
-            ans += if possible_ways(&patterns, towel, &mut cache) > 0 {
-                1
-            } else {
-                0
-            };
+            ans += usize::from(possible_ways(&patterns, towel, &mut cache) > 0);
         }
         if PART == 2 {
             ans += possible_ways(&patterns, towel, &mut cache);

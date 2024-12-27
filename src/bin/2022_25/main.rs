@@ -11,11 +11,11 @@ fn encode(num: i64) -> String {
             2 => num_snafu.push('2'),
             3 => {
                 num_snafu.push('=');
-                num += 2
+                num += 2;
             }
             4 => {
                 num_snafu.push('-');
-                num += 1
+                num += 1;
             }
             _ => (),
         }
@@ -25,14 +25,14 @@ fn encode(num: i64) -> String {
 }
 
 fn decode(num_snafu: &str) -> i64 {
-    let mut num: i64 = 0;
     const BASE: i64 = 5;
+    let mut num: i64 = 0;
     for (i, x) in num_snafu.chars().rev().enumerate() {
         match x {
-            '1' => num += BASE.pow(i as u32),
-            '2' => num += 2 * BASE.pow(i as u32),
-            '-' => num -= BASE.pow(i as u32),
-            '=' => num -= 2 * BASE.pow(i as u32),
+            '1' => num += BASE.pow(u32::try_from(i).unwrap()),
+            '2' => num += 2 * BASE.pow(u32::try_from(i).unwrap()),
+            '-' => num -= BASE.pow(u32::try_from(i).unwrap()),
+            '=' => num -= 2 * BASE.pow(u32::try_from(i).unwrap()),
             _ => (),
         }
     }

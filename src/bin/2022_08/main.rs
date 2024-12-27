@@ -1,6 +1,7 @@
 use aoc::{common, grid::Grid};
 use itertools::iproduct;
 
+#[allow(clippy::cast_possible_wrap)]
 fn part1(grid: &Grid<u32>) -> usize {
     // Check visibility for each internal tree
     let mut visible = Grid::<bool>::new(grid.rows, grid.cols, false);
@@ -84,7 +85,7 @@ fn part2(grid: &Grid<u32>) -> i32 {
 fn get_grid_and_solve<const PART1: bool>(input: &str) -> i32 {
     let grid = Grid::from_str(input, |c| c.to_digit(10).unwrap());
     if PART1 {
-        return part1(&grid) as i32;
+        return i32::try_from(part1(&grid)).unwrap();
     }
     part2(&grid)
 }

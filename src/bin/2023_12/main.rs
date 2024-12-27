@@ -28,7 +28,7 @@ fn insert_in_cache_and_return(map: &mut HashMap<Id, usize>, id: Id, ret: usize) 
     ret
 }
 
-fn solve(s: Vec<char>, mut n: Vec<usize>, hashes: usize, mp: &mut HashMap<Id, usize>) -> usize {
+fn solve(s: &[char], mut n: Vec<usize>, hashes: usize, mp: &mut HashMap<Id, usize>) -> usize {
     let id = Id {
         arr_len: s.len(),
         num_len: n.len(),
@@ -40,11 +40,10 @@ fn solve(s: Vec<char>, mut n: Vec<usize>, hashes: usize, mp: &mut HashMap<Id, us
     }
 
     if n.is_empty() {
-        if cnt(&s, '#') == 0 {
+        if cnt(s, '#') == 0 {
             return insert_in_cache_and_return(mp, id, 1);
-        } else {
-            return insert_in_cache_and_return(mp, id, 0);
         }
+        return insert_in_cache_and_return(mp, id, 0);
     }
 
     if s.is_empty() && n.len() == 1 && n[0] == hashes {
@@ -59,32 +58,30 @@ fn solve(s: Vec<char>, mut n: Vec<usize>, hashes: usize, mp: &mut HashMap<Id, us
         if n[0] == hashes {
             return insert_in_cache_and_return(mp, id, 0);
         }
-        let ret = solve(s[1..].to_vec(), n.clone(), hashes + 1, mp);
+        let ret = solve(&s[1..], n.clone(), hashes + 1, mp);
         return insert_in_cache_and_return(mp, id, ret);
     } else if s[0] == '.' {
         if n[0] == hashes {
             n.remove(0);
-            let ret = solve(s[1..].to_vec(), n.clone(), 0, mp);
+            let ret = solve(&s[1..], n.clone(), 0, mp);
             return insert_in_cache_and_return(mp, id, ret);
         } else if hashes > 0 && hashes < n[0] {
             return insert_in_cache_and_return(mp, id, 0);
-        } else {
-            let ret = solve(s[1..].to_vec(), n.clone(), 0, mp);
-            return insert_in_cache_and_return(mp, id, ret);
         }
+        let ret = solve(&s[1..], n.clone(), 0, mp);
+        return insert_in_cache_and_return(mp, id, ret);
     } else if s[0] == '?' {
         if n[0] == hashes {
             n.remove(0);
-            let ret = solve(s[1..].to_vec(), n.clone(), 0, mp);
+            let ret = solve(&s[1..], n.clone(), 0, mp);
             return insert_in_cache_and_return(mp, id, ret);
         } else if hashes == 0 {
-            let dph = solve(s[1..].to_vec(), n.clone(), 1, mp);
-            let dpd = solve(s[1..].to_vec(), n.clone(), 0, mp);
-            return insert_in_cache_and_return(mp, id, dpd + dph);
-        } else {
-            let ret = solve(s[1..].to_vec(), n.clone(), hashes + 1, mp);
-            return insert_in_cache_and_return(mp, id, ret);
+            let dp1 = solve(&s[1..], n.clone(), 1, mp);
+            let dp0 = solve(&s[1..], n.clone(), 0, mp);
+            return insert_in_cache_and_return(mp, id, dp1 + dp0);
         }
+        let ret = solve(&s[1..], n.clone(), hashes + 1, mp);
+        return insert_in_cache_and_return(mp, id, ret);
     }
 
     0
@@ -102,13 +99,13 @@ fn process(input: &str, part1: bool) -> usize {
             .collect::<Vec<_>>();
 
         // Expand
-        let (arr, nums) = if !part1 {
-            expand(&arr, &nums)
-        } else {
+        let (arr, nums) = if part1 {
             (arr, nums)
+        } else {
+            expand(&arr, &nums)
         };
         let mut mp: HashMap<Id, usize> = HashMap::new();
-        let dp_sol = solve(arr.clone(), nums.clone(), 0, &mut mp);
+        let dp_sol = solve(&arr, nums.clone(), 0, &mut mp);
         ans += dp_sol;
     }
 

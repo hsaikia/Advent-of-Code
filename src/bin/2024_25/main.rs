@@ -9,7 +9,7 @@ fn solve(input: &str) -> usize {
         let grid = Grid::from_str(pat, |c| c);
         rows = grid.rows;
         let vec: Vec<usize> = (0..grid.cols)
-            .map(|c| grid.find_in_col(c, '#').len() - 1)
+            .map(|c| grid.find_in_col(c, &'#').len() - 1)
             .collect();
         if grid.get(&(0, 0)) == '#' {
             // lock

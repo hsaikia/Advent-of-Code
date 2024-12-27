@@ -33,7 +33,7 @@ fn score(
     }
 
     //println!("Plant {} got {} area.", farm.get(pos), cluster.len());
-    for c in cluster.iter() {
+    for c in &cluster {
         visited.push(*c);
     }
 
@@ -42,7 +42,7 @@ fn score(
 
     let mut corners_map: Grid<usize> = Grid::new(farm.rows + 1, farm.cols + 1, 0);
 
-    for c in cluster.iter() {
+    for c in &cluster {
         let val = corners_map.get(c);
         corners_map.set(c, val + 1);
 
@@ -107,13 +107,13 @@ fn solve<const PART: usize>(input: &str) -> usize {
     let farm = Grid::from_str(input, |c| c);
     let mut visited: Vec<(usize, usize)> = Vec::new();
     for p in 'A'..='Z' {
-        let pos = farm.positions(p);
+        let pos = farm.positions(&p);
 
         if pos.is_empty() {
             continue;
         }
 
-        for pp in pos.iter() {
+        for pp in &pos {
             let (area, peri, sides) = score(&farm, pp, &mut visited);
             ans += if PART == 1 { area * peri } else { area * sides };
         }

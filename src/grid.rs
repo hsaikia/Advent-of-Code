@@ -17,6 +17,7 @@ pub enum CardinalDirection {
 }
 
 impl CardinalDirection {
+    #[must_use]
     pub fn to_dir(&self) -> CellDir {
         match self {
             Self::North => (-1, 0),
@@ -26,6 +27,7 @@ impl CardinalDirection {
         }
     }
 
+    #[must_use]
     pub fn orthogonal(&self) -> Vec<Self> {
         match self {
             Self::North | Self::South => {
@@ -37,6 +39,7 @@ impl CardinalDirection {
         }
     }
 
+    #[must_use]
     pub fn opposite(&self) -> Self {
         match self {
             Self::North => Self::South,
@@ -64,17 +67,19 @@ impl<T: std::fmt::Debug + Clone + Default + PartialEq + Hash> Grid<T> {
         }
     }
 
+    #[must_use]
     pub fn get_hash(&self) -> u64 {
         let mut h = DefaultHasher::new();
         self.hash(&mut h);
         h.finish()
     }
 
+    #[must_use]
     pub fn from_str(input: &str, f: fn(char) -> T) -> Self {
         let lines = input
             .split('\n')
             .filter(|l| !l.is_empty())
-            .map(|l| l.trim())
+            .map(str::trim)
             .collect::<Vec<_>>();
         let mut grid = Grid::<T>::new(lines.len(), lines[0].len(), T::default());
         for (i, line) in lines.iter().enumerate() {
@@ -84,28 +89,31 @@ impl<T: std::fmt::Debug + Clone + Default + PartialEq + Hash> Grid<T> {
         grid
     }
 
+    #[must_use]
     pub fn rotate_clockwise(&self) -> Self {
         let mut ret = Grid::new(self.cols, self.rows, T::default());
         for (i, j) in iproduct!(0..self.rows, 0..self.cols) {
-            ret.set(&(j, self.rows - 1 - i), self.get(&(i, j)))
+            ret.set(&(j, self.rows - 1 - i), self.get(&(i, j)));
         }
         ret
     }
 
     // flips the column order
+    #[must_use]
     pub fn flip_vertical(&self) -> Self {
         let mut ret = Grid::new(self.rows, self.cols, T::default());
         for (i, j) in iproduct!(0..self.rows, 0..self.cols) {
-            ret.set(&(i, self.cols - 1 - j), self.get(&(i, j)))
+            ret.set(&(i, self.cols - 1 - j), self.get(&(i, j)));
         }
         ret
     }
 
-    pub fn positions(&self, x: T) -> Vec<CellIndex> {
+    #[must_use]
+    pub fn positions(&self, x: &T) -> Vec<CellIndex> {
         let mut ret = Vec::new();
         for r in 0..self.rows {
             for c in 0..self.cols {
-                if self.values[r][c] == x {
+                if self.values[r][c] == *x {
                     ret.push((r, c));
                 }
             }
@@ -113,6 +121,7 @@ impl<T: std::fmt::Debug + Clone + Default + PartialEq + Hash> Grid<T> {
         ret
     }
 
+    #[must_use]
     pub fn count(&self, x: &T) -> usize {
         self.values
             .iter()
@@ -120,18 +129,20 @@ impl<T: std::fmt::Debug + Clone + Default + PartialEq + Hash> Grid<T> {
             .sum::<usize>()
     }
 
-    pub fn find_in_row(&self, row: usize, x: T) -> Vec<CellIndex> {
+    #[must_use]
+    pub fn find_in_row(&self, row: usize, x: &T) -> Vec<CellIndex> {
         self.values[row]
             .iter()
             .enumerate()
-            .filter_map(|(col, c)| if *c == x { Some((row, col)) } else { None })
+            .filter_map(|(col, c)| if c == x { Some((row, col)) } else { None })
             .collect::<Vec<_>>()
     }
 
-    pub fn find_in_col(&self, col: usize, x: T) -> Vec<CellIndex> {
+    #[must_use]
+    pub fn find_in_col(&self, col: usize, x: &T) -> Vec<CellIndex> {
         (0..self.rows)
             .filter_map(|row| {
-                if self.values[row][col] == x {
+                if self.values[row][col] == *x {
                     Some((row, col))
                 } else {
                     None
@@ -140,30 +151,34 @@ impl<T: std::fmt::Debug + Clone + Default + PartialEq + Hash> Grid<T> {
             .collect::<Vec<_>>()
     }
 
+    #[must_use]
     pub fn common_elements_in_rows(&self, r1: usize, r2: usize) -> usize {
         let mut ans = 0;
         for i in 0..self.cols {
             if self.values[r1][i] == self.values[r2][i] {
-                ans += 1
+                ans += 1;
             }
         }
         ans
     }
 
+    #[must_use]
     pub fn common_elements_in_cols(&self, c1: usize, c2: usize) -> usize {
         let mut ans = 0;
         for i in 0..self.rows {
             if self.values[i][c1] == self.values[i][c2] {
-                ans += 1
+                ans += 1;
             }
         }
         ans
     }
 
+    #[must_use]
     pub fn are_rows_equal(&self, r1: usize, r2: usize) -> bool {
         self.common_elements_in_rows(r1, r2) == self.cols
     }
 
+    #[must_use]
     pub fn are_cols_equal(&self, c1: usize, c2: usize) -> bool {
         self.common_elements_in_cols(c1, c2) == self.rows
     }
@@ -209,24 +224,35 @@ impl<T: std::fmt::Debug + Clone + Default + PartialEq + Hash> Grid<T> {
                 ret += &format!("{}\n", (r - 1) / 2);
             }
         }
-        println!("{}", ret);
+        println!("{ret}");
     }
 
+    /// # Panics
+    ///
+    /// Panics if grid index is out of bounds
+    #[must_use]
     pub fn to_flat_idx(&self, idx: &CellIndex) -> usize {
-        if idx.0 >= self.rows || idx.1 >= self.cols {
-            panic!("Grid index out of bounds");
-        }
+        assert!(
+            !(idx.0 >= self.rows || idx.1 >= self.cols),
+            "Grid index out of bounds"
+        );
         idx.0 * self.cols + idx.1
     }
 
+    #[must_use]
     pub fn from_flat_idx(&self, idx: usize) -> CellIndex {
         (idx / self.cols, idx % self.cols)
     }
 
+    /// # Panics
+    ///
+    /// Panics if grid index is out of bounds
+    #[must_use]
     pub fn get(&self, idx: &CellIndex) -> T {
-        if idx.0 >= self.rows || idx.1 >= self.cols {
-            panic!("Grid index out of bounds");
-        }
+        assert!(
+            !(idx.0 >= self.rows || idx.1 >= self.cols),
+            "Grid index out of bounds"
+        );
         self.values[idx.0][idx.1].clone()
     }
 
@@ -234,13 +260,21 @@ impl<T: std::fmt::Debug + Clone + Default + PartialEq + Hash> Grid<T> {
         self.values[i] = row_vals;
     }
 
+    /// # Panics
+    ///
+    /// Panics if grid index is out of bounds
     pub fn set(&mut self, idx: &CellIndex, val: T) {
-        if idx.0 >= self.rows || idx.1 >= self.cols {
-            panic!("Grid index out of bounds");
-        }
+        assert!(
+            !(idx.0 >= self.rows || idx.1 >= self.cols),
+            "Grid index out of bounds"
+        );
         self.values[idx.0][idx.1] = val;
     }
 
+    #[must_use]
+    #[allow(clippy::cast_sign_loss)]
+    #[allow(clippy::cast_possible_truncation)]
+    #[allow(clippy::cast_possible_wrap)]
     pub fn cell_in_direction(&self, idx: &CellIndex, dir: &CellDir) -> Option<(usize, usize)> {
         let x = idx.0 as i32;
         let y = idx.1 as i32;
@@ -255,6 +289,7 @@ impl<T: std::fmt::Debug + Clone + Default + PartialEq + Hash> Grid<T> {
         None
     }
 
+    #[must_use]
     pub fn adjacent_in_dir(&self, idx: &CellIndex, dirs: &[(i32, i32)]) -> Vec<(usize, usize)> {
         let mut ret = Vec::new();
         for d in dirs {
@@ -266,6 +301,7 @@ impl<T: std::fmt::Debug + Clone + Default + PartialEq + Hash> Grid<T> {
         ret
     }
 
+    #[must_use]
     pub fn l1_distance(&self, idx1: &CellIndex, idx2: &CellIndex) -> usize {
         let dx = if idx1.0 > idx2.0 {
             idx1.0 - idx2.0
@@ -282,14 +318,17 @@ impl<T: std::fmt::Debug + Clone + Default + PartialEq + Hash> Grid<T> {
         dx + dy
     }
 
+    #[must_use]
     pub fn adjacent_2_row(&self, idx: &CellIndex) -> Vec<(usize, usize)> {
         self.adjacent_in_dir(idx, &[(0, 1), (0, -1)])
     }
 
+    #[must_use]
     pub fn adjacent_4(&self, idx: &CellIndex) -> Vec<(usize, usize)> {
         self.adjacent_in_dir(idx, &[(-1, 0), (0, -1), (1, 0), (0, 1)])
     }
 
+    #[must_use]
     pub fn adjacent_8(&self, idx: &CellIndex) -> Vec<(usize, usize)> {
         self.adjacent_in_dir(
             idx,
@@ -306,6 +345,7 @@ impl<T: std::fmt::Debug + Clone + Default + PartialEq + Hash> Grid<T> {
         )
     }
 
+    #[must_use]
     pub fn sweep_4(&self, idx: &CellIndex) -> [Vec<(usize, usize)>; 4] {
         const VAL: Vec<(usize, usize)> = vec![];
         let mut ret: [Vec<(usize, usize)>; 4] = [VAL; 4];
@@ -320,8 +360,8 @@ impl<T: std::fmt::Debug + Clone + Default + PartialEq + Hash> Grid<T> {
         ret
     }
 
-    /// Fill all cells where value = replace_id, neighboring the ones where value = cluster_id
-    pub fn flood_fill(&mut self, cluster_id: T, replace_id: T) {
+    /// Fill all cells where value = `replace_id`, neighboring the ones where value = `cluster_id`
+    pub fn flood_fill(&mut self, cluster_id: &T, replace_id: &T) {
         let mut q = VecDeque::new();
 
         for (i, j) in iproduct!(0..self.rows, 0..self.cols) {
@@ -331,9 +371,7 @@ impl<T: std::fmt::Debug + Clone + Default + PartialEq + Hash> Grid<T> {
         }
 
         let mut visited = Grid::<bool>::new(self.rows, self.cols, false);
-        while !q.is_empty() {
-            let x = q.pop_front().unwrap();
-
+        while let Some(x) = q.pop_front() {
             if visited.get(&x) {
                 continue;
             }

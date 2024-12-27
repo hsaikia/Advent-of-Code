@@ -2,25 +2,27 @@ use aoc::common;
 use aoc::grid::Grid;
 use itertools::Itertools;
 
+#[allow(clippy::cast_possible_truncation)]
+#[allow(clippy::cast_possible_wrap)]
 fn solve<const PART: i32>(input: &str) -> usize {
     let map = Grid::from_str(input, |c| c);
     let mut locations = Vec::new();
     let symbols = ('a'..='z').chain('A'..='Z').chain('0'..='9');
 
     for sym in symbols {
-        let pos = map.positions(sym);
+        let pos = map.positions(&sym);
         if pos.len() < 2 {
             continue;
         }
 
         if PART == 2 {
-            for p in pos.iter() {
+            for p in &pos {
                 locations.push(*p);
             }
         }
 
-        for p1 in pos.iter() {
-            for p2 in pos.iter() {
+        for p1 in &pos {
+            for p2 in &pos {
                 if p1 == p2 {
                     continue;
                 }

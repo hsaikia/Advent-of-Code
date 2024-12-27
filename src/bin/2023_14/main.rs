@@ -132,7 +132,7 @@ fn part1(grid: &Grid<char>) -> usize {
 
 fn part2(grid: &Grid<char>) -> usize {
     let (period, offset_front) = period_and_offset(grid);
-    let offset_back = (1000000000 - offset_front) % period;
+    let offset_back = (1_000_000_000 - offset_front) % period;
     let mut grid = grid.clone();
     simulate(&mut grid, period + offset_front + offset_back);
     north_load(&grid)

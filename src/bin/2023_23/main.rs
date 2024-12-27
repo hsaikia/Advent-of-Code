@@ -32,7 +32,7 @@ fn get_neighbors(g: &Grid<Cell>, lst: &CellIndex, slopes: bool) -> Vec<CellIndex
                     .collect::<Vec<_>>()
             }
         }
-        _ => vec![],
+        Cell::Forest => vec![],
     }
 }
 

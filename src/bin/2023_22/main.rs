@@ -10,9 +10,9 @@ use aoc::{
 fn show(brs: &Vec<[Range<usize>; 3]>) {
     for br in brs {
         for r in br {
-            println!("{:?}", r);
+            println!("{r:?}");
         }
-        println!()
+        println!();
     }
 }
 
@@ -117,7 +117,7 @@ fn solve(input: &str) -> (usize, usize) {
                 }
             }
             if can {
-                ans1 += 1
+                ans1 += 1;
             } else {
                 bad_bricks.push(i);
             }
@@ -166,6 +166,6 @@ fn solve(input: &str) -> (usize, usize) {
 fn main() {
     let input = common::get_input();
     let (a1, a2) = solve(&input);
-    println!("P1 {}", a1);
-    println!("P2 {}", a2);
+    println!("P1 {a1}");
+    println!("P2 {a2}");
 }

@@ -39,7 +39,7 @@ fn find<'a>(
             Yell::Yield(value) => return *value,
         }
     }
-    panic!("Should not reach here! {} Monkey not found!", monkey_name);
+    panic!("Should not reach here! {monkey_name} Monkey not found!");
 }
 
 fn part1(input_lines: &str) -> i64 {
@@ -50,7 +50,7 @@ fn part1(input_lines: &str) -> i64 {
 
         match tokens.len().cmp(&2) {
             Ordering::Greater => {
-                match tokens[2] {
+                match *tokens.get(2).unwrap() {
                     "+" => ops.insert(
                         &tokens[0][..tokens[0].len() - 1],
                         Yell::Call(tokens[1], Operator::Plus, tokens[3]),

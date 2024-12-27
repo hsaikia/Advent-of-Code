@@ -10,7 +10,7 @@ fn part1(stacks: &[Vec<char>], instructions: &Vec<Vec<usize>>) -> String {
         }
     }
 
-    stacks.iter().flat_map(|v| v.last()).collect::<String>()
+    stacks.iter().filter_map(|v| v.last()).collect::<String>()
 }
 
 fn part2(stacks: &[Vec<char>], instructions: &Vec<Vec<usize>>) -> String {
@@ -24,7 +24,7 @@ fn part2(stacks: &[Vec<char>], instructions: &Vec<Vec<usize>>) -> String {
         stacks[ins[1] - 1].truncate(l - ins[0]);
     }
 
-    stacks.iter().flat_map(|v| v.last()).collect::<String>()
+    stacks.iter().filter_map(|v| v.last()).collect::<String>()
 }
 
 fn process_and_solve<const PART1: bool>(input: &str) -> String {
@@ -61,7 +61,7 @@ fn process_and_solve<const PART1: bool>(input: &str) -> String {
         } else {
             instructions.push(
                 line.split(' ')
-                    .flat_map(|s| s.parse::<usize>())
+                    .flat_map(str::parse::<usize>)
                     .collect::<Vec<usize>>(),
             );
         }

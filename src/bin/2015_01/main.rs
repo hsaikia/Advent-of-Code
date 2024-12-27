@@ -1,8 +1,8 @@
 use aoc::common;
 
 fn part1(input: &str) -> i32 {
-    input.chars().filter(|&c| c == '(').count() as i32
-        - input.chars().filter(|&c| c == ')').count() as i32
+    i32::try_from(input.chars().filter(|&c| c == '(').count()).unwrap()
+        - i32::try_from(input.chars().filter(|&c| c == ')').count()).unwrap()
 }
 
 fn part2(input: &str) -> usize {

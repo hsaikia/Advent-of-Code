@@ -12,7 +12,7 @@ fn val(sz: usize) -> usize {
     if sz < 2 {
         return sz;
     }
-    2_usize.pow(sz as u32 - 1)
+    2_usize.pow(u32::try_from(sz).unwrap() - 1)
 }
 
 fn matching_cards(input: &str) -> Vec<Vec<usize>> {
@@ -26,7 +26,7 @@ fn matching_cards(input: &str) -> Vec<Vec<usize>> {
         let l1 = hash_set_from_str(&winning);
         let l2 = hash_set_from_str(&in_hand);
 
-        ret.push(l1.intersection(&l2).cloned().collect::<Vec<usize>>());
+        ret.push(l1.intersection(&l2).copied().collect::<Vec<usize>>());
     }
     ret
 }

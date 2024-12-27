@@ -4,7 +4,7 @@ use aoc::{common, grid::Grid};
 
 fn shortest_path(map: &Grid<char>) -> Vec<(usize, usize)> {
     let ans = Vec::new();
-    let pos = map.positions('S')[0];
+    let pos = map.positions(&'S')[0];
     let mut q = VecDeque::new();
     q.push_back(vec![pos]);
     let mut visited = Vec::new();
@@ -26,7 +26,7 @@ fn shortest_path(map: &Grid<char>) -> Vec<(usize, usize)> {
             .filter(|x| map.get(x) == '.' || map.get(x) == 'E')
             .collect();
 
-        for n in nx.iter() {
+        for n in &nx {
             let mut tp_tmp = tp.clone();
             tp_tmp.push(*n);
             q.push_back(tp_tmp);
@@ -44,7 +44,7 @@ fn solve<const PICOSECONDS: usize, const CHEAT_PICOSECONDS: usize>(input: &str) 
 
     let mut res: [usize; 10000] = [0; 10000];
 
-    for (v1, l1) in path_d.iter() {
+    for (v1, l1) in &path_d {
         for (v2, l2) in path_d.iter().skip(PICOSECONDS) {
             let dist = map.l1_distance(v1, v2);
             if dist <= CHEAT_PICOSECONDS && *l2 > *l1 + dist {

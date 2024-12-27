@@ -6,7 +6,7 @@ use aoc::{
 };
 
 const MAX_STEPS: usize = 1000;
-const MAX_STEPS_PART2: usize = 26501365;
+const MAX_STEPS_PART2: usize = 26_501_365;
 const ODD_EVEN: [usize; 2] = [7509, 7566];
 
 fn part1(g: &Grid<bool>, start: CellIndex) -> usize {
@@ -77,7 +77,7 @@ fn solve_quadratic(g: &Grid<bool>, start: CellIndex) -> usize {
     // Find the number of steps from ROW_SIZE/2 to MAX_STEPS in steps of ROW_SIZE
     for max_steps in (g.rows / 2..MAX_STEPS).step_by(g.rows) {
         let (val, _filled_grids) = solve(g, start, max_steps);
-        println!("In {} steps, plots visited {}", max_steps, val);
+        println!("In {max_steps} steps, plots visited {val}");
     }
 
     // This computation is in addition to what was seen in find_sequence and expand_series
@@ -129,7 +129,7 @@ fn find_sequence(g: &Grid<bool>, start: CellIndex) {
             let (val, filled_grids) = solve(g, start, max_steps);
 
             let mut grids = 0;
-            for (k, v) in filled_grids.iter() {
+            for (k, v) in &filled_grids {
                 let manhattan_dist = (k.0.unsigned_abs() + k.1.unsigned_abs()) as usize;
                 let curr_parity = manhattan_dist % 2;
                 let max_filled_cells_for_grid = if (curr_parity + global_parity) % 2 == 0 {
@@ -149,13 +149,12 @@ fn find_sequence(g: &Grid<bool>, start: CellIndex) {
             }
 
             println!(
-                "Solving for spread {}. In exactly {} steps, he can reach any of {} garden plots.",
-                grid_spread, max_steps, val
+                "Solving for spread {grid_spread}. In exactly {max_steps} steps, he can reach any of {val} garden plots."
             );
         }
     }
 
-    println!("{:?}", steps_to_fill);
+    println!("{steps_to_fill:?}");
 }
 
 fn solve_parts<const PART1: bool>(input: &str) -> usize {
@@ -252,7 +251,7 @@ fn solve(
                 }
 
                 let pos_next = InfPos { idx: *nn, gx, gy };
-                q.push_back((pos_next, steps + 1))
+                q.push_back((pos_next, steps + 1));
             }
         }
     }

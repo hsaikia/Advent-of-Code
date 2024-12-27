@@ -1,7 +1,7 @@
 use aoc::common;
 use std::cmp::Ordering;
 
-const DECRYPTION_KEY: i64 = 811589153;
+const DECRYPTION_KEY: i64 = 811_589_153;
 
 fn sum_grove(numbers: &[i64], order: &[usize], key: i64) -> i64 {
     let mut idx_0 = numbers.iter().position(|&n| n == 0).unwrap();
@@ -17,6 +17,9 @@ fn sum_grove(numbers: &[i64], order: &[usize], key: i64) -> i64 {
     ans
 }
 
+#[allow(clippy::cast_precision_loss)]
+#[allow(clippy::cast_possible_truncation)]
+#[allow(clippy::cast_possible_wrap)]
 fn mix(numbers: &[i64], key: i64, times: usize) -> i64 {
     let l = numbers.len();
     let mut ptrs = get_forward_backward_ptrs(numbers.len());

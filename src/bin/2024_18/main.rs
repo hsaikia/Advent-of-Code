@@ -27,7 +27,7 @@ fn shortest_path(map: &Grid<char>) -> Option<usize> {
             .filter(|x| map.get(x) == '.')
             .collect();
 
-        for n in nx.iter() {
+        for n in &nx {
             q.push_back((*n, l + 1));
         }
     }
@@ -47,18 +47,18 @@ fn solve<const PART: usize, const SIZE: usize, const PART_1_BYTES: usize>(input:
             map.set(coord, '#');
         }
         return std::format!("{}", shortest_path(&map).unwrap());
-    } else {
-        for bytes in PART_1_BYTES.. {
-            for coord in byte_coord.iter().take(bytes) {
-                map.set(coord, '#');
-            }
+    }
+    for bytes in PART_1_BYTES.. {
+        for coord in byte_coord.iter().take(bytes) {
+            map.set(coord, '#');
+        }
 
-            if shortest_path(&map).is_none() {
-                return std::format!("{},{}", byte_coord[bytes - 1].0, byte_coord[bytes - 1].1);
-            }
+        if shortest_path(&map).is_none() {
+            return std::format!("{},{}", byte_coord[bytes - 1].0, byte_coord[bytes - 1].1);
         }
     }
-    "".to_string()
+
+    String::new()
 }
 
 fn main() {

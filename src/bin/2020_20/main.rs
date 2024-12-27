@@ -13,8 +13,8 @@ enum Order {
     Reverse,
 }
 
-fn border(g: &Grid<char>, dir: &CardinalDirection) -> Vec<char> {
-    match *dir {
+fn border(g: &Grid<char>, dir: CardinalDirection) -> Vec<char> {
+    match dir {
         CardinalDirection::North => g.values[0].clone(),
         CardinalDirection::South => g.values[g.rows - 1].clone(),
         CardinalDirection::West => (0..g.rows).map(|r| g.values[r][0]).collect_vec(),
@@ -26,8 +26,8 @@ fn matching_borders(
     g1: (&Grid<char>, &CardinalDirection),
     g2: (&Grid<char>, &CardinalDirection),
 ) -> Option<Order> {
-    let val1 = border(g1.0, g1.1);
-    let val2 = border(g2.0, g2.1);
+    let val1 = border(g1.0, *g1.1);
+    let val2 = border(g2.0, *g2.1);
 
     if val1 == val2 {
         return Some(Order::Straight);
@@ -43,7 +43,7 @@ fn matching_borders(
 fn part1(input: &str) -> usize {
     let grid_strs = io::line_batches(input);
     let n = grid_strs.len();
-    println!("Cells {}", n);
+    println!("Cells {n}");
     let mut grid_with_ids: Vec<(Grid<char>, usize)> = Vec::new();
 
     for g in grid_strs {
@@ -86,9 +86,9 @@ fn part1(input: &str) -> usize {
         .filter(|(_, v)| v.len() == 2)
         .map(|(k, _)| *k)
         .product::<usize>();
-    for (key, val) in matches.iter() {
+    for (key, val) in &matches {
         if val.len() == 2 {
-            println!("{:?} => {:?}", key, val);
+            println!("{key:?} => {val:?}");
         }
     }
 

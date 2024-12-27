@@ -19,12 +19,15 @@ fn solve_brute_force1(t: usize, d: usize) -> usize {
 // x^2 - tx + d = 0 has two roots, (t - sqrt(t^2 - 4d)) / 2 and (t + sqrt(t^2 - 4d)) / 2
 // Since the winning distances must be strictly greater than d, we must take the ceil of the first root
 // and the floor of the second root
+#[allow(clippy::cast_precision_loss)]
+#[allow(clippy::cast_possible_truncation)]
+#[allow(clippy::cast_sign_loss)]
 fn solve_analytic(t: usize, d: usize) -> usize {
     let det = ((t * t - 4 * d) as f64).sqrt();
     let x1f = (t as f64 - det) / 2.0;
     let x2f = (t as f64 + det) / 2.0;
-    let x1 = x1f.ceil() as usize + ((x1f.ceil() - x1f).abs() < f64::EPSILON) as usize;
-    let x2 = x2f.floor() as usize + ((x2f - x2f.floor()).abs() < f64::EPSILON) as usize;
+    let x1 = x1f.ceil() as usize + usize::from((x1f.ceil() - x1f).abs() < f64::EPSILON);
+    let x2 = x2f.floor() as usize + usize::from((x2f - x2f.floor()).abs() < f64::EPSILON);
     x2 - x1 + 1
 }
 
@@ -32,8 +35,11 @@ fn solve_analytic(t: usize, d: usize) -> usize {
 // As before, we do not solve for the roots analytically but instead perform a binary search
 // in the range [0, x/2] where x is in [0, t] since the function x(t - x) = d is quadratic, it is
 // monotonic in this range, and hence we can perform binary search
+#[allow(clippy::cast_possible_truncation)]
+#[allow(clippy::cast_precision_loss)]
+#[allow(clippy::cast_sign_loss)]
 fn solve_binary_search(t: usize, d: usize) -> usize {
-    let mut lo = 0 as f64;
+    let mut lo = 0.0;
     let mut hi = t as f64 / 2.0;
     while lo + 0.001 < hi {
         let mid = (lo + hi) / 2.0;
@@ -45,9 +51,9 @@ fn solve_binary_search(t: usize, d: usize) -> usize {
         }
     }
     if (lo.ceil() - lo).abs() < f64::EPSILON {
-        return t - 2 * lo.ceil() as usize - 1;
+        return t - 2 * lo.ceil().abs() as usize - 1;
     }
-    t - 2 * lo.ceil() as usize + 1
+    t - 2 * lo.ceil().abs() as usize + 1
 }
 
 // Pascal's triangle - Brute Force improvement
@@ -63,8 +69,8 @@ fn solve_brute_force2(t: usize, d: usize) -> usize {
     2 * (h - i + 1) - (t + 1) % 2
 }
 
-fn solve(t: usize, d: usize, sol_type: Solution) -> usize {
-    match sol_type {
+fn solve(t: usize, d: usize, sol_type: &Solution) -> usize {
+    match *sol_type {
         Solution::BruteForce1 => solve_brute_force1(t, d),
         Solution::BruteForce2 => solve_brute_force2(t, d),
         Solution::BinarySearch => solve_binary_search(t, d),
@@ -89,7 +95,7 @@ fn part1(input: &str) -> usize {
 
     let mut ans: usize = 1;
     for (t, d) in ts.iter().zip(ds.iter()) {
-        let num_ways = solve(*t, *d, Solution::BruteForce1);
+        let num_ways = solve(*t, *d, &Solution::BruteForce1);
         ans *= num_ways;
     }
     ans
@@ -110,7 +116,7 @@ fn part2(input: &str) -> usize {
         .parse::<usize>()
         .unwrap();
 
-    solve(t, d, Solution::Analytic)
+    solve(t, d, &Solution::Analytic)
 }
 
 fn main() {

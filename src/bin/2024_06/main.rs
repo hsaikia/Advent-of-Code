@@ -4,18 +4,17 @@ use itertools::Itertools;
 const DIRS: [(i32, i32); 4] = [(-1, 0), (0, 1), (1, 0), (0, -1)];
 
 fn loop_positions(grid: &Grid<char>) -> (Vec<(usize, usize)>, bool) {
-    let mut pos = grid.positions('^')[0];
+    let mut pos = grid.positions(&'^')[0];
     let mut dir = 0;
     let mut visited: Vec<(usize, usize, usize)> = Vec::new();
     let mut looping = false;
 
     loop {
-        if !visited.contains(&(pos.0, pos.1, dir)) {
-            visited.push((pos.0, pos.1, dir));
-        } else {
+        if visited.contains(&(pos.0, pos.1, dir)) {
             looping = true;
             break;
         }
+        visited.push((pos.0, pos.1, dir));
 
         let next_positions = grid.adjacent_in_dir(&pos, &[DIRS[dir]]);
         if next_positions.is_empty() {
@@ -40,7 +39,7 @@ fn solve(input: &str) -> (usize, usize) {
     let grid = Grid::from_str(input, |c| c);
     let (positions, _) = loop_positions(&grid);
     let mut ans2 = 0;
-    for pos in positions.iter() {
+    for pos in &positions {
         if grid.get(pos) == '^' {
             continue;
         }

@@ -24,17 +24,17 @@ impl<'a> Gate<'a> {
                 }
             }
             ModType::FlipFlop(state) => *state = State::Off,
-            _ => {}
+            ModType::Broadcaster => {}
         }
     }
-    pub fn process(&mut self, from: &'a str, pulse: &Pulse) -> Option<Pulse> {
+    pub fn process(&mut self, from: &'a str, pulse: Pulse) -> Option<Pulse> {
         //println!("Receiving {:?} from {}", pulse, from);
         match &mut self.mt {
             ModType::Conjunction(pulse_map) => {
                 pulse_map
                     .entry(from)
-                    .and_modify(|p| *p = *pulse)
-                    .or_insert(*pulse);
+                    .and_modify(|p| *p = pulse)
+                    .or_insert(pulse);
                 //println!("{:?}", pulse_map);
                 if pulse_map.values().all(|x| *x == Pulse::High) {
                     Some(Pulse::Low)
@@ -56,7 +56,7 @@ impl<'a> Gate<'a> {
                 Pulse::High => None,
             },
 
-            ModType::Broadcaster => Some(*pulse),
+            ModType::Broadcaster => Some(pulse),
         }
     }
 }
@@ -76,6 +76,7 @@ enum ModType<'a> {
 }
 
 fn part1(input: &str) -> usize {
+    const PART1_TIMES: usize = 1000;
     let mut order: HashMap<&str, Vec<&str>> = HashMap::new();
     let mut states: HashMap<&str, Gate> = HashMap::new();
 
@@ -115,7 +116,7 @@ fn part1(input: &str) -> usize {
     // }
 
     // Fix Conjunction maps
-    for (key, vals) in order.iter() {
+    for (key, vals) in &order {
         for val in vals {
             if let Some(entry) = states.get_mut(val) {
                 if let ModType::Conjunction(map) = &mut entry.mt {
@@ -133,7 +134,6 @@ fn part1(input: &str) -> usize {
     // Determine button presses for vm, lm, jd, fv highs as they all connect to zg which must output low
     let mut ans1: usize = 0;
     let mut ans2: usize = 1;
-    const PART1_TIMES: usize = 1000;
 
     for elem in ["vm", "lm", "jd", "fv"] {
         // Reset all
@@ -159,7 +159,7 @@ fn part1(input: &str) -> usize {
                 let (md, opt_pulse) = q.pop_front().unwrap();
                 if let Some(pulse) = opt_pulse {
                     if md == elem && pulse == Pulse::High {
-                        println!("Found {} in {} presses", elem, button_presses);
+                        println!("Found {elem} in {button_presses} presses");
                         ans2 = ans2.lcm(&button_presses);
                         found_elem = true;
                         break;
@@ -167,14 +167,14 @@ fn part1(input: &str) -> usize {
 
                     for dg in order.get(md).unwrap() {
                         if button_presses <= PART1_TIMES && pulse == Pulse::High {
-                            sent[1] += 1
+                            sent[1] += 1;
                         } else {
-                            sent[0] += 1
+                            sent[0] += 1;
                         }
                         //println!("{} -> ({:?}) -> {}", md, pulse, dg);
 
                         if let Some(dst) = states.get_mut(dg) {
-                            let new_pulse = dst.process(md, &pulse);
+                            let new_pulse = dst.process(md, pulse);
                             q.push_back((dg, new_pulse));
                         }
                     }
@@ -187,7 +187,7 @@ fn part1(input: &str) -> usize {
         }
     }
 
-    println!("Part 1 {:?} Part 2 {}", ans1, ans2);
+    println!("Part 1 {ans1:?} Part 2 {ans2}");
     0
 }
 

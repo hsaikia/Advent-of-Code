@@ -1,5 +1,8 @@
 use aoc::{common, grid::Grid};
 
+#[allow(clippy::cast_possible_truncation)]
+#[allow(clippy::cast_possible_wrap)]
+#[allow(clippy::cast_sign_loss)]
 fn solve(grid: &Grid<char>, part1: bool) -> usize {
     let mut ans: usize = 0;
 
@@ -26,7 +29,7 @@ fn solve(grid: &Grid<char>, part1: bool) -> usize {
         let mut c2 = i as i32 + 1;
         let mut common_elements = 0;
         let mut elements = 0;
-        while c1 >= 0 && c2 < grid.cols as i32 {
+        while c1 >= 0 && c2 < i32::try_from(grid.cols).unwrap() {
             common_elements += grid.common_elements_in_cols(c1 as usize, c2 as usize);
             elements += grid.rows;
             c1 -= 1;

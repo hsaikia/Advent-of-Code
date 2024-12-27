@@ -4,6 +4,7 @@ const DIGITS: [&str; 9] = [
     "one", "two", "three", "four", "five", "six", "seven", "eight", "nine",
 ];
 
+#[allow(clippy::inefficient_to_string)]
 fn solve<const WORDS: bool>(input: &str) -> usize {
     let mut ans: usize = 0;
     let mut digit_map: Vec<(String, usize)> = Vec::new();

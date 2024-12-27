@@ -2,7 +2,7 @@ use aoc::{common, grid::Grid, io};
 use glam::I64Vec2;
 
 fn largest_cluster(grid: &Grid<char>) -> usize {
-    let pos = grid.positions('#');
+    let pos = grid.positions(&'#');
     let mut ans = 0;
 
     for p in pos {
@@ -10,11 +10,10 @@ fn largest_cluster(grid: &Grid<char>) -> usize {
         let mut q = Vec::new();
         q.push(p);
         while let Some(tp) = q.pop() {
-            if !cluster.contains(&tp) {
-                cluster.push(tp);
-            } else {
+            if cluster.contains(&tp) {
                 break;
             }
+            cluster.push(tp);
 
             for nx in grid.adjacent_4(&tp).iter().filter(|x| grid.get(x) == '#') {
                 q.push(*nx);
@@ -85,9 +84,16 @@ fn solve<const PART: usize, const SECONDS: usize, const MAX_X: i64, const MAX_Y:
         if PART == 1 {
             ans = quadrant[0] * quadrant[1] * quadrant[2] * quadrant[3];
         } else if PART == 2 {
-            let mut map: Grid<char> = Grid::new(MAX_X as usize, MAX_Y as usize, '.');
-            for p in positions.iter() {
-                map.set(&(p.x as usize, p.y as usize), '#');
+            let mut map: Grid<char> = Grid::new(
+                usize::try_from(MAX_X).unwrap(),
+                usize::try_from(MAX_Y).unwrap(),
+                '.',
+            );
+            for p in &positions {
+                map.set(
+                    &(usize::try_from(p.x).unwrap(), usize::try_from(p.y).unwrap()),
+                    '#',
+                );
             }
 
             if largest_cluster(&map) > 10 {

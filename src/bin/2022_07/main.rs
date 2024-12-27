@@ -2,17 +2,16 @@ use aoc::common;
 use std::collections::HashMap;
 
 fn process_and_solve<const PART1: bool>(input_lines: &str) -> usize {
+    const DIR_SEP: &str = "/";
     let mut curr_dir_path: Vec<String> = Vec::new();
     let mut curr_total_filesizes: usize = 0;
     let mut dir_size_map: HashMap<String, usize> = HashMap::new();
     let mut reading = false;
 
-    const DIR_SEP: &str = "/";
-
     for line in input_lines.split('\n') {
         let tokens = line
             .split(' ')
-            .map(|s| s.to_string())
+            .map(std::string::ToString::to_string)
             .collect::<Vec<String>>();
 
         if reading && tokens[0] != "$" && tokens[0] != "dir" {
@@ -64,7 +63,7 @@ fn process_and_solve<const PART1: bool>(input_lines: &str) -> usize {
 fn part1(dir_size_map: &HashMap<String, usize>) -> usize {
     let mut sum = 0;
     for v in dir_size_map.values() {
-        if *v <= 100000 {
+        if *v <= 100_000 {
             sum += *v;
         }
     }
@@ -73,8 +72,8 @@ fn part1(dir_size_map: &HashMap<String, usize>) -> usize {
 }
 
 fn part2(dir_size_map: &HashMap<String, usize>) -> usize {
-    const TOTAL_DISK_SPACE: usize = 70000000;
-    const UNUSED_SPACE_REQUIRED: usize = 30000000;
+    const TOTAL_DISK_SPACE: usize = 70_000_000;
+    const UNUSED_SPACE_REQUIRED: usize = 30_000_000;
 
     let unused_space = TOTAL_DISK_SPACE - dir_size_map.get("/").unwrap();
     let minimimum_space_to_free = UNUSED_SPACE_REQUIRED - unused_space;

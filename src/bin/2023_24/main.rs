@@ -10,6 +10,8 @@ struct Hail {
 }
 
 impl Hail {
+    #[allow(clippy::cast_possible_truncation)]
+    #[allow(clippy::cast_precision_loss)]
     fn pos_f(&self) -> DVec3 {
         DVec3 {
             x: self.p.x as f64,
@@ -37,6 +39,7 @@ impl Hail {
         Some((p12_v2.length() / v21_l, p12_v1.length() / v21_l))
     }
 
+    #[allow(clippy::cast_possible_truncation)]
     fn position_in_time(&self, time: f64) -> I64Vec3 {
         self.p
             + I64Vec3 {
@@ -67,11 +70,7 @@ fn intersecting_pairs(hails: &[Hail], limits: Option<(i64, i64)>) -> usize {
     let mut ans = 0;
     for i in 0..hails.len() {
         for j in i + 1..hails.len() {
-            ans += if intersect(&hails[i], &hails[j], limits) {
-                1
-            } else {
-                0
-            };
+            ans += usize::from(intersect(&hails[i], &hails[j], limits));
         }
     }
     ans
@@ -102,7 +101,7 @@ fn part1(input: &str) -> usize {
             },
         });
     }
-    intersecting_pairs(&hail, Some((200000000000000, 400000000000000)))
+    intersecting_pairs(&hail, Some((200_000_000_000_000, 400_000_000_000_000)))
 }
 
 fn test_rock_vel(rock_vel: &DVec3, hails: &[Hail]) -> Option<I64Vec3> {
@@ -135,7 +134,9 @@ fn test_rock_vel(rock_vel: &DVec3, hails: &[Hail]) -> Option<I64Vec3> {
     pos
 }
 
+#[allow(clippy::cast_precision_loss)]
 fn part2(input: &str) -> i64 {
+    const MAX_SPEED: i64 = 500;
     let mut hails: Vec<Hail> = Vec::new();
     for line in input.lines() {
         let (pos, vel) = line.split_once(" @ ").unwrap();
@@ -161,7 +162,6 @@ fn part2(input: &str) -> i64 {
         });
     }
 
-    const MAX_SPEED: i64 = 500;
     let bar = ProgressBar::new(8 * MAX_SPEED as u64 * MAX_SPEED as u64 * MAX_SPEED as u64);
     for vx in -MAX_SPEED..=MAX_SPEED {
         for vy in -MAX_SPEED..=MAX_SPEED {
@@ -177,8 +177,6 @@ fn part2(input: &str) -> i64 {
                 let opt_rock_pos = test_rock_vel(&rock_vel, &hails);
                 if let Some(rock_pos) = opt_rock_pos {
                     return rock_pos.to_array().iter().sum();
-                } else {
-                    continue;
                 }
             }
         }

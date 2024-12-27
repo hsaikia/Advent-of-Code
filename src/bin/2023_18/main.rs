@@ -78,7 +78,7 @@ fn incremental_reduction<const PART1: bool>(input: &str) -> i64 {
         };
 
         let dir = if PART1 {
-            match tok[0] {
+            match *tok.first().unwrap() {
                 "R" => CardinalDirection::East,
                 "L" => CardinalDirection::West,
                 "U" => CardinalDirection::North,
@@ -98,6 +98,9 @@ fn incremental_reduction<const PART1: bool>(input: &str) -> i64 {
     ans + 1
 }
 
+#[allow(clippy::cast_possible_truncation)]
+#[allow(clippy::cast_possible_wrap)]
+#[allow(clippy::cast_sign_loss)]
 fn analytic<const PART1: bool>(input: &str) -> usize {
     let mut positions: Vec<(i64, i64)> = Vec::new();
     let mut curr_position = (0, 0);
@@ -112,7 +115,7 @@ fn analytic<const PART1: bool>(input: &str) -> usize {
         };
         num_boundary_points += hops;
         let dir = if PART1 {
-            match tok[0] {
+            match *tok.first().unwrap() {
                 "R" => CardinalDirection::East.to_dir(),
                 "L" => CardinalDirection::West.to_dir(),
                 "U" => CardinalDirection::North.to_dir(),
@@ -122,8 +125,8 @@ fn analytic<const PART1: bool>(input: &str) -> usize {
         } else {
             DIRS[io::parse_num::<usize>(&tok[2][7..8])].to_dir()
         };
-        curr_position.0 += dir.0 as i64 * hops as i64;
-        curr_position.1 += dir.1 as i64 * hops as i64;
+        curr_position.0 += i64::from(dir.0) * hops as i64;
+        curr_position.1 += i64::from(dir.1) * hops as i64;
     }
 
     let area = analytic::polygon_area(&positions).abs() / 2;

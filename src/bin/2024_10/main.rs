@@ -3,7 +3,7 @@ use aoc::{common, grid::Grid};
 fn solve<const PART: i32>(input: &str) -> usize {
     let mut ans = 0;
     let map = Grid::from_str(input, |c| c.to_digit(10).unwrap());
-    let trailheads = map.positions(0);
+    let trailheads = map.positions(&0);
     for pos in trailheads {
         let mut q = Vec::new();
         q.push((pos, 0));
@@ -15,14 +15,14 @@ fn solve<const PART: i32>(input: &str) -> usize {
                 continue;
             }
             let nns = map.adjacent_4(&tp.0);
-            for nn in nns.iter() {
+            for nn in &nns {
                 if map.get(nn) == tp.1 + 1 {
                     q.push((*nn, tp.1 + 1));
                 }
             }
         }
         if PART == 1 {
-            trails.sort();
+            trails.sort_unstable();
             trails.dedup();
         }
         ans += trails.len();

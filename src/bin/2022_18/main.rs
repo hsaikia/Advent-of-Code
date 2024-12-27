@@ -30,15 +30,15 @@ fn part1(input: &str) -> usize {
             ncoord[1] += side.1;
             ncoord[2] += side.2;
             let idx = index(&ncoord);
-            if !cube_indices.contains(&idx) {
-                ans += 1;
-            } else {
+            if cube_indices.contains(&idx) {
                 ans -= 1;
+            } else {
+                ans += 1;
             }
         }
 
         let idx = index(&coords);
-        cube_indices.push(idx)
+        cube_indices.push(idx);
     }
 
     ans

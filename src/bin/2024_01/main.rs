@@ -2,17 +2,18 @@ use aoc::common;
 use aoc::io;
 
 fn solve<const PART: usize>(input: &str) -> usize {
-    let mut lst1 = Vec::new();
-    let mut lst2 = Vec::new();
-    for line in input.lines() {
-        let nums: Vec<usize> = io::tokenize_nums(line, " ");
-        lst1.push(nums[0]);
-        lst2.push(nums[1]);
-    }
-    lst1.sort();
-    lst2.sort();
+    let (mut lst1, mut lst2): (Vec<usize>, Vec<usize>) = input
+        .lines()
+        .map(|line| io::tokenize_nums(line, " "))
+        .fold((vec![], vec![]), |(mut v1, mut v2), nums| {
+            v1.push(nums[0]);
+            v2.push(nums[1]);
+            (v1, v2)
+        });
 
     if PART == 1 {
+        lst1.sort_unstable();
+        lst2.sort_unstable();
         lst1.iter()
             .zip(lst2.iter())
             .map(|(a, b)| a.max(b) - a.min(b))

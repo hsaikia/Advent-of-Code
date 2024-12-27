@@ -6,13 +6,13 @@ fn solve<const GALAXY_EXPANSION: usize>(input: &str) -> usize {
     let grid = Grid::<char>::from_str(input, |c| c);
 
     let empty_rows = (0..grid.rows)
-        .filter(|r| grid.find_in_row(*r, '#').is_empty())
+        .filter(|r| grid.find_in_row(*r, &'#').is_empty())
         .collect::<Vec<_>>();
     let empty_cols = (0..grid.cols)
-        .filter(|c| grid.find_in_col(*c, '#').is_empty())
+        .filter(|c| grid.find_in_col(*c, &'#').is_empty())
         .collect::<Vec<_>>();
 
-    let star_positions = grid.positions('#');
+    let star_positions = grid.positions(&'#');
 
     for (i, (r1, c1)) in star_positions.iter().enumerate() {
         for (r2, c2) in star_positions.iter().skip(i + 1) {
@@ -33,7 +33,7 @@ fn solve<const GALAXY_EXPANSION: usize>(input: &str) -> usize {
 fn main() {
     let input = common::get_input();
     common::timed(&input, solve::<2>, true);
-    common::timed(&input, solve::<1000000>, false);
+    common::timed(&input, solve::<1_000_000>, false);
 }
 
 #[cfg(test)]

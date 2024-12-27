@@ -77,7 +77,7 @@ fn part1(input: &str) -> usize {
     }
 
     let mut idx_map: HashMap<usize, Vec<usize>> = HashMap::new();
-    for (k, v) in map.iter() {
+    for (k, v) in &map {
         idx_map.insert(
             *idxs.get(k).unwrap(),
             v.iter()
@@ -91,7 +91,7 @@ fn part1(input: &str) -> usize {
     let mut att = 0;
     loop {
         att += 1;
-        println!("Attempt {}", att);
+        println!("Attempt {att}");
 
         let start = rng.gen_range(0..n);
         let dst = rng.gen_range(0..n);
@@ -112,8 +112,6 @@ fn part1(input: &str) -> usize {
                         .entry(path[i + 1])
                         .and_modify(|v| v.retain(|x| *x != path[i]));
                 }
-            } else {
-                continue;
             }
         }
 

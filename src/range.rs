@@ -4,6 +4,7 @@ use itertools::Itertools;
 use num::{traits::NumAssign, Integer, Num};
 
 /// A collection of ranges that dynamically maintain mutual exclusivity
+#[allow(clippy::module_name_repetitions)]
 #[derive(Clone)]
 pub struct RangeUnion<T: Integer + Default + Ord + Num + NumAssign + Copy + Clone + Display> {
     pub ranges: Vec<Range<T>>,
@@ -18,7 +19,7 @@ impl<T: Integer + Default + Ord + Num + NumAssign + Copy + Clone + Display> Debu
             .iter()
             .map(|r| format!("[{}, {}]", r.a, r.b))
             .join(" | ");
-        write!(f, "{}", s)
+        write!(f, "{s}")
     }
 }
 
@@ -31,13 +32,19 @@ impl<T: Integer + Default + Ord + Num + NumAssign + Copy + Clone + Display> Defa
 }
 
 impl<T: Integer + Default + Ord + Num + NumAssign + Copy + Clone + Display> RangeUnion<T> {
+    #[must_use]
     pub fn new() -> Self {
         Self { ranges: Vec::new() }
     }
 
+    /// # Panics
+    /// If ranges are empty
     pub fn merge(&mut self) {
         self.ranges.sort_by(|r1, r2| r1.a.cmp(&r2.a));
-        let mut new_ranges = vec![*self.ranges.first().unwrap()];
+        let mut new_ranges = vec![*self
+            .ranges
+            .first()
+            .expect("first() called on empty vector of ranges")];
         for range in self.ranges.iter().skip(1) {
             if let Some(last) = new_ranges.last_mut() {
                 if last.b < range.a {
@@ -55,6 +62,7 @@ impl<T: Integer + Default + Ord + Num + NumAssign + Copy + Clone + Display> Rang
         self.merge();
     }
 
+    #[must_use]
     pub fn spread(&self) -> T {
         let mut ans: T = T::default();
         for r in &self.ranges {
@@ -72,6 +80,7 @@ impl<T: Integer + Default + Ord + Num + NumAssign + Copy + Clone + Display> Rang
         false
     }
 
+    #[must_use]
     pub fn intersect(&self, range: &Range<T>) -> RangeUnion<T> {
         RangeUnion::<T> {
             ranges: self
@@ -82,6 +91,7 @@ impl<T: Integer + Default + Ord + Num + NumAssign + Copy + Clone + Display> Rang
         }
     }
 
+    #[must_use]
     pub fn difference(&self, range: &Range<T>) -> RangeUnion<T> {
         RangeUnion::<T> {
             ranges: self

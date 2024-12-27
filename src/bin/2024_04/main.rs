@@ -1,16 +1,16 @@
 use aoc::{common, grid::Grid};
 
+#[allow(clippy::similar_names)]
 fn solve2(input: &str) -> usize {
+    const DIRS: [(i32, i32); 4] = [(1, 1), (-1, 1), (-1, -1), (1, -1)];
+    const ADJ_DIRS: [(usize, usize); 4] = [(0, 1), (1, 2), (2, 3), (3, 0)];
     let mut ans = 0;
     let grid = Grid::from_str(input, |c| c);
 
-    const DIRS: [(i32, i32); 4] = [(1, 1), (-1, 1), (-1, -1), (1, -1)];
-    const ADJ_DIRS: [(usize, usize); 4] = [(0, 1), (1, 2), (2, 3), (3, 0)];
+    let a_positions = grid.positions(&'A');
 
-    let a_positions = grid.positions('A');
-
-    for a_pos in a_positions.iter() {
-        for (i1, i2) in ADJ_DIRS.iter() {
+    for a_pos in &a_positions {
+        for (i1, i2) in &ADJ_DIRS {
             let m_pos = [DIRS[*i1], DIRS[*i2]];
             let s_pos = [DIRS[(*i1 + 2) % 4], DIRS[(*i2 + 2) % 4]];
 
@@ -35,9 +35,6 @@ fn solve2(input: &str) -> usize {
 }
 
 fn solve1(input: &str) -> usize {
-    let mut ans = 0;
-    let grid = Grid::from_str(input, |c| c);
-
     const DIRS: [(i32, i32); 8] = [
         (-1, 0),
         (0, -1),
@@ -48,8 +45,10 @@ fn solve1(input: &str) -> usize {
         (1, 1),
         (-1, -1),
     ];
+    let mut ans = 0;
+    let grid = Grid::from_str(input, |c| c);
 
-    for x_pos in grid.positions('X').iter() {
+    for x_pos in &grid.positions(&'X') {
         for dir in DIRS {
             let mut pos = vec![*x_pos];
             let mut count = 0;

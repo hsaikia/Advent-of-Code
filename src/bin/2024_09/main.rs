@@ -78,11 +78,11 @@ fn solve<const PART: i32>(input: &str) -> usize {
             }
         }
 
-        if !found {
-            break;
-        } else {
+        if found {
             spaces.retain(|s| s.r.spread() > 0);
             spaces.sort_by(|s1, s2| s1.r.a.cmp(&s2.r.a));
+        } else {
+            break;
         }
     }
 

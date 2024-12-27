@@ -2,13 +2,15 @@ use aoc::{common, io};
 
 fn hash(s: &str) -> u32 {
     s.chars()
-        .fold(0, |acc, c| ((acc + (c as u8) as u32) * 17) % 256)
+        .fold(0, |acc, c| ((acc + u32::from(c as u8)) * 17) % 256)
 }
 
 fn part1(input: &str) -> u32 {
     input.split(',').map(hash).sum::<u32>()
 }
 
+#[allow(clippy::cast_possible_truncation)]
+#[allow(clippy::cast_lossless)]
 fn part2(input: &str) -> u32 {
     const VAL: Vec<(&str, u32)> = Vec::new();
     let mut box_map: [Vec<(&str, u32)>; 256] = [VAL; 256];

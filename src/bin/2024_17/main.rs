@@ -42,7 +42,7 @@ fn combo_operand(a: usize, b: usize, c: usize, op: usize) -> usize {
     if op == 6 {
         return c;
     }
-    panic!("{} is not a valid combo operator", op);
+    panic!("{op} is not a valid combo operator");
 }
 
 fn literal_operand(op: usize) -> usize {
@@ -67,38 +67,38 @@ fn generate(instructions: &[(Op, usize)], a: usize, b: usize, c: usize) -> Vec<u
         match opcode {
             Op::Adv => {
                 a = a / pow(2, combo_operand(a, b, c, operand));
-                idx += 1
+                idx += 1;
             }
             Op::Bxl => {
                 b = b.bitxor(literal_operand(operand));
-                idx += 1
+                idx += 1;
             }
             Op::Bst => {
                 b = combo_operand(a, b, c, operand) % 8;
-                idx += 1
+                idx += 1;
             }
             Op::Jnz => {
                 if a != 0 {
                     idx = literal_operand(operand) / 2;
                 } else {
-                    idx += 1
+                    idx += 1;
                 }
             }
             Op::Bxc => {
                 b = b.bitxor(c);
-                idx += 1
+                idx += 1;
             }
             Op::Out => {
                 output.push(combo_operand(a, b, c, operand) % 8);
-                idx += 1
+                idx += 1;
             }
             Op::Bdv => {
                 b = a / pow(2, combo_operand(a, b, c, operand));
-                idx += 1
+                idx += 1;
             }
             Op::Cdv => {
                 c = a / pow(2, combo_operand(a, b, c, operand));
-                idx += 1
+                idx += 1;
             }
         }
     }
@@ -107,7 +107,7 @@ fn generate(instructions: &[(Op, usize)], a: usize, b: usize, c: usize) -> Vec<u
 
 fn solve<const PART: usize>(input: &str) -> String {
     let batches: Vec<&str> = input.split("\n\n").collect();
-    let registers: Vec<&str> = batches[0].split("\n").collect();
+    let registers: Vec<&str> = batches[0].split('\n').collect();
     let a_s = io::tokenize(registers[0], " ");
     let a: usize = io::parse_num(a_s[2]);
     let b_s = io::tokenize(registers[1], " ");
@@ -115,7 +115,7 @@ fn solve<const PART: usize>(input: &str) -> String {
     let c_s = io::tokenize(registers[2], " ");
     let c: usize = io::parse_num(c_s[2]);
 
-    let ins_s: Vec<&str> = batches[1].split(" ").collect();
+    let ins_s: Vec<&str> = batches[1].split(' ').collect();
     let ins: Vec<usize> = io::tokenize_nums(ins_s[1], ",");
 
     let mut instructions: Vec<(Op, usize)> = Vec::new();
@@ -145,7 +145,7 @@ fn solve<const PART: usize>(input: &str) -> String {
                 }
             }
 
-            new_candidates.sort();
+            new_candidates.sort_unstable();
             new_candidates.dedup();
             candidates = new_candidates;
         }

@@ -3,7 +3,7 @@ use std::{collections::HashMap, ops::BitXor};
 use aoc::{common, io};
 
 fn mix_and_prune(secret: usize, b: usize) -> usize {
-    secret.bitxor(b) % 16777216
+    secret.bitxor(b) % 16_777_216
 }
 
 fn transform(secret: usize) -> usize {
@@ -32,9 +32,10 @@ fn generate_lst(lst: &mut Vec<usize>, times: usize) {
     let mut secret = *lst.last().unwrap();
     secret = transform(secret);
     lst.push(secret);
-    generate_lst(lst, times - 1)
+    generate_lst(lst, times - 1);
 }
 
+#[allow(clippy::cast_possible_wrap)]
 fn solve<const PART: usize>(input: &str) -> usize {
     let mut ans = 0;
     let mut map: HashMap<(i64, i64, i64, i64, usize), usize> = HashMap::new();
@@ -67,7 +68,7 @@ fn solve<const PART: usize>(input: &str) -> usize {
         return ans;
     }
     let mut total_map: HashMap<(i64, i64, i64, i64), usize> = HashMap::new();
-    for ((k1, k2, k3, k4, _), v) in map.iter() {
+    for ((k1, k2, k3, k4, _), v) in &map {
         if let Some(b) = total_map.get_mut(&(*k1, *k2, *k3, *k4)) {
             *b += *v;
         } else {

@@ -73,13 +73,13 @@ fn parse_rule<'a>(line: &'a str, map: &mut HashMap<&'a str, Vec<Rule<'a>>>) {
 }
 
 fn process_part_range<'a>(
-    prt: &[Range<i64>],
+    part_ranges: &[Range<i64>],
     map: &HashMap<&'a str, Vec<Rule<'a>>>,
     start: &'a str,
 ) -> i64 {
     let rules = map.get(start).unwrap();
     let mut ret = 0;
-    let mut part = prt.to_owned();
+    let mut part = part_ranges.to_owned();
 
     for rule in rules {
         match rule {
@@ -101,14 +101,17 @@ fn process_part_range<'a>(
                 part[idx] = part[idx].difference(&range)[0];
 
                 ret += match action {
-                    Action::Accepted => part_tmp.iter().map(|r| r.spread()).product::<i64>(),
+                    Action::Accepted => part_tmp
+                        .iter()
+                        .map(aoc::range::Range::spread)
+                        .product::<i64>(),
                     Action::Rejected => 0,
                     Action::SendTo(dst) => process_part_range(&part_tmp, map, dst),
                 };
             }
             Rule::Process(action) => {
                 ret += match action {
-                    Action::Accepted => part.iter().map(|r| r.spread()).product::<i64>(),
+                    Action::Accepted => part.iter().map(aoc::range::Range::spread).product::<i64>(),
                     Action::Rejected => 0,
                     Action::SendTo(dst) => process_part_range(&part, map, dst),
                 };

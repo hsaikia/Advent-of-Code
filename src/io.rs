@@ -14,12 +14,17 @@ where
         .collect::<Vec<T>>()
 }
 
+#[must_use]
 pub fn tokenize<'a>(line: &'a str, separator: &str) -> Vec<&'a str> {
     line.split(separator)
         .filter(|s| !s.trim().is_empty())
         .collect::<_>()
 }
 
+/// # Panics
+///
+/// Will panic if parsing fails
+#[must_use]
 pub fn parse_num<T: FromStr>(token: &str) -> T
 where
     <T as FromStr>::Err: Debug,
@@ -32,6 +37,7 @@ where
         .unwrap()
 }
 
+#[must_use]
 pub fn line_batches(input: &str) -> Vec<Vec<&str>> {
     input
         .split("\n\n")

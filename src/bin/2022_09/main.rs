@@ -1,6 +1,7 @@
 use aoc::common;
 use itertools::Itertools;
 
+#[allow(clippy::similar_names)]
 fn follow_knot(head_new: (i32, i32), tail_old: (i32, i32)) -> (i32, i32) {
     let mut dx = head_new.0 - tail_old.0;
     let mut dy = head_new.1 - tail_old.1;

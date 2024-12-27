@@ -5,10 +5,12 @@ use num::abs;
 
 const DIRS: [(i32, i32); 4] = [(-1, 0), (0, -1), (1, 0), (0, 1)];
 
+#[allow(clippy::cast_possible_wrap)]
+#[allow(clippy::cast_possible_truncation)]
 fn solve<const PART: usize>(input: &str) -> usize {
     let map = Grid::from_str(input, |c| c);
-    let spos = map.positions('S')[0];
-    let epos = map.positions('E')[0];
+    let spos = map.positions(&'S')[0];
+    let epos = map.positions(&'E')[0];
 
     let mut q = VecDeque::new();
     q.push_back((vec![spos], 3, 0));
@@ -25,7 +27,7 @@ fn solve<const PART: usize>(input: &str) -> usize {
                         best_seats.clear();
                     }
 
-                    for x in tp.iter() {
+                    for x in &tp {
                         best_seats.insert(*x);
                     }
                 }
@@ -37,9 +39,8 @@ fn solve<const PART: usize>(input: &str) -> usize {
         if let Some(v) = visited.get_mut(&(*tp.last().unwrap(), di)) {
             if *v < s {
                 continue;
-            } else {
-                *v = s;
             }
+            *v = s;
         } else {
             visited.insert((*tp.last().unwrap(), di), s);
         }

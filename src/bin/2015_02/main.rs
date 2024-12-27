@@ -8,7 +8,7 @@ fn part1(input: &str) -> i32 {
             .map(|s| s.parse::<i32>().unwrap())
             .collect::<Vec<_>>();
         let mut areas = [dims[0] * dims[1], dims[1] * dims[2], dims[2] * dims[0]];
-        areas.sort();
+        areas.sort_unstable();
         let wrapping_paper_area = areas[0] + 2 * (areas[0] + areas[1] + areas[2]);
         total_wrapping_paper_area += wrapping_paper_area;
     }
@@ -22,7 +22,7 @@ fn part2(input: &str) -> i32 {
             .split('x')
             .map(|s| s.parse::<i32>().unwrap())
             .collect::<Vec<_>>();
-        dims.sort();
+        dims.sort_unstable();
         let ribbon_length = 2 * (dims[0] + dims[1]) + dims[0] * dims[1] * dims[2];
         total_ribbon_length += ribbon_length;
     }

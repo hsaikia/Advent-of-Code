@@ -83,23 +83,23 @@ fn bad_bits(val: &HashMap<&str, usize>) {
 fn solve<const PART: usize>(input: &str) -> String {
     if PART == 2 {
         let mut test = ANS_PART2;
-        test.sort();
+        test.sort_unstable();
         return test.join(",");
     }
 
     let batches = io::line_batches(input);
     let mut val: HashMap<&str, usize> = HashMap::new();
-    for line in batches[0].iter() {
+    for line in &batches[0] {
         let init = io::tokenize(line, ": ");
         val.insert(init[0], io::parse_num::<usize>(init[1]));
     }
 
     let n = batches[1].len();
-    println!("total conn {}", n);
+    println!("total conn {n}");
 
     loop {
         let mut all_done = true;
-        for line in batches[1].iter() {
+        for line in &batches[1] {
             let expr = io::tokenize(line, " -> ");
             let tokens = io::tokenize(expr[0], " ");
             //println!("Calculating value for {}", expr[1]);

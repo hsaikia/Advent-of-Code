@@ -32,7 +32,7 @@ fn num_stones(stone: &str, times: usize, cache: &mut HashMap<(String, usize), us
     }
     let mut ans = 0;
     let next = evolve(stone);
-    for ns in next.iter() {
+    for ns in &next {
         ans += num_stones(ns, times - 1, cache);
     }
     cache.insert((stone.to_string(), times), ans);
@@ -43,10 +43,10 @@ fn solve<const ITERATIONS: usize>(input: &str) -> usize {
     let mut ans = 0;
     let stones: Vec<String> = io::tokenize(input, " ")
         .iter()
-        .map(|s| s.to_string())
+        .map(std::string::ToString::to_string)
         .collect();
     let mut cache: HashMap<(String, usize), usize> = HashMap::new();
-    for stone in stones.iter() {
+    for stone in &stones {
         ans += num_stones(stone, ITERATIONS, &mut cache);
     }
     ans

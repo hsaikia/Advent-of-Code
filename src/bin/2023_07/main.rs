@@ -28,15 +28,13 @@ fn hand_type_from_sizes(num_unique_cards: usize, largest_set_size: usize) -> Han
     } else if num_unique_cards == 3 {
         if largest_set_size == 3 {
             return HandType::ThreeOfAKind;
-        } else {
-            return HandType::TwoPair;
         }
+        return HandType::TwoPair;
     } else if num_unique_cards == 2 {
         if largest_set_size == 4 {
             return HandType::FourOfAKind;
-        } else {
-            return HandType::FullHouse;
         }
+        return HandType::FullHouse;
     }
 
     HandType::FiveOfAKind

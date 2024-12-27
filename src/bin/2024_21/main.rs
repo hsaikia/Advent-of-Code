@@ -100,7 +100,7 @@ fn seq_len(
     }
 
     if let Some(next) = hsh.get(&(start, next)) {
-        let tmp = next[0].to_vec();
+        let tmp = next[0].clone();
 
         if iterations == 0 {
             return tmp.len();
@@ -108,7 +108,7 @@ fn seq_len(
 
         let mut start = 4;
 
-        for idx in tmp.iter() {
+        for idx in &tmp {
             ans += seq_len(start, *idx, hsh, ans_hsh, iterations - 1);
             start = *idx;
         }
@@ -174,7 +174,7 @@ fn solve<const PART: usize, const ITERATIONS: usize>(input: &str) -> usize {
 
             let mut res = 0;
             let mut start = 4;
-            for idx in s.iter() {
+            for idx in &s {
                 res += seq_len(start, *idx, &hsh, &mut ans_hsh, ITERATIONS - 1);
                 start = *idx;
             }

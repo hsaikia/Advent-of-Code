@@ -4,6 +4,7 @@ use aoc::{
 };
 use itertools::Itertools;
 
+#[allow(clippy::cast_possible_wrap)]
 fn part1(coords: &[(i64, i64, i64, i64)], y: i64) {
     let known_beacon_positions = coords
         .iter()
@@ -29,9 +30,10 @@ fn part1(coords: &[(i64, i64, i64, i64)], y: i64) {
             .iter()
             .filter(|&x| range_union.contains(*x))
             .count() as i64;
-    println!("Answer Part 1 {}", pos_cannot_exist);
+    println!("Answer Part 1 {pos_cannot_exist}");
 }
 
+#[allow(clippy::cast_possible_wrap)]
 fn part2(coords: &[(i64, i64, i64, i64)], xy_max: i64) {
     let range_limit = Range::<i64>::new(0, xy_max);
 
@@ -59,7 +61,7 @@ fn part2(coords: &[(i64, i64, i64, i64)], xy_max: i64) {
                 if range_union.contains(x) {
                     continue;
                 }
-                println!("X = {} Y = {}. Ans Part 2 {}", x, y, 4000000 * x + y);
+                println!("X = {} Y = {}. Ans Part 2 {}", x, y, 4_000_000 * x + y);
                 break;
             }
         }
@@ -84,6 +86,6 @@ fn main() {
         ));
     }
 
-    part1(&coords, 2000000);
-    part2(&coords, 4000000);
+    part1(&coords, 2_000_000);
+    part2(&coords, 4_000_000);
 }

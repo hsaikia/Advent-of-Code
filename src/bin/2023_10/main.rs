@@ -100,15 +100,15 @@ fn lr_classification(ch: char, dir: &Dir) -> (Vec<CellDir>, Vec<CellDir>) {
     (l, r)
 }
 
-fn is_cluster_id_at_border(cluster: &mut Grid<Cluster>, cluster_id: Cluster) -> bool {
+fn is_cluster_id_at_border(cluster: &mut Grid<Cluster>, cluster_id: &Cluster) -> bool {
     for (i, j) in iproduct!(0..cluster.rows, [0, cluster.cols - 1]) {
-        if cluster.get(&(i, j)) == cluster_id {
+        if cluster.get(&(i, j)) == *cluster_id {
             return true;
         }
     }
 
     for (i, j) in iproduct!([0, cluster.rows - 1], 0..cluster.cols) {
-        if cluster.get(&(i, j)) == cluster_id {
+        if cluster.get(&(i, j)) == *cluster_id {
             return true;
         }
     }
@@ -163,11 +163,11 @@ fn solve<const PART1: bool>(input: &str) -> usize {
             path.push(idx);
 
             let mut queue = VecDeque::<(CellIndex, bool)>::new();
-            let nbs = grid.adjacent_4(&idx);
-            for nidx in &nbs {
+            let neighbors = grid.adjacent_4(&idx);
+            for nidx in &neighbors {
                 let ndirs = grid.get(nidx);
-                let nns = grid.adjacent_in_dir(nidx, &ndirs);
-                if nns.contains(&idx) {
+                let neighbors_in_dir = grid.adjacent_in_dir(nidx, &ndirs);
+                if neighbors_in_dir.contains(&idx) {
                     queue.push_back((*nidx, d));
                     d = !d;
                 }
@@ -226,12 +226,12 @@ fn solve<const PART1: bool>(input: &str) -> usize {
         }
     }
 
-    cluster.flood_fill(Cluster::Side1, Cluster::Empty);
-    cluster.flood_fill(Cluster::Side2, Cluster::Empty);
+    cluster.flood_fill(&Cluster::Side1, &Cluster::Empty);
+    cluster.flood_fill(&Cluster::Side2, &Cluster::Empty);
 
     // Find out which cluster is at the border
     // The other one is basically the inner one
-    if is_cluster_id_at_border(&mut cluster, Cluster::Side1) {
+    if is_cluster_id_at_border(&mut cluster, &Cluster::Side1) {
         return cluster.count(&Cluster::Side2);
     }
     cluster.count(&Cluster::Side1)

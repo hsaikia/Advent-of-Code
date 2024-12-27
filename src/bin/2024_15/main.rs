@@ -11,7 +11,7 @@ fn get_dir(ch: char) -> (i32, i32) {
     } else if ch == '^' {
         (-1, 0)
     } else {
-        panic!("Invalid char {}", ch);
+        panic!("Invalid char {ch}");
     }
 }
 
@@ -125,7 +125,7 @@ fn solve<const PART: usize>(input: &str) -> usize {
             continue;
         }
 
-        let pos = map.positions('@');
+        let pos = map.positions(&'@');
         let pp = push_possible(&map, &pos[0], ch);
         if pp {
             push(&mut map, pos[0], ch);
@@ -133,8 +133,8 @@ fn solve<const PART: usize>(input: &str) -> usize {
     }
 
     let mut ans = 0;
-    for pos in map.positions(if PART == 1 { 'O' } else { '[' }) {
-        ans += pos.0 * 100 + pos.1
+    for pos in map.positions(if PART == 1 { &'O' } else { &'[' }) {
+        ans += pos.0 * 100 + pos.1;
     }
     ans
 }

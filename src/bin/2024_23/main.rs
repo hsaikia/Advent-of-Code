@@ -54,20 +54,20 @@ fn solve<const PART: usize>(input: &str) -> String {
             sccs.sort();
             sccs.dedup();
 
-            let max_scc_size = sccs.iter().map(|s| s.len()).max().unwrap();
+            let max_scc_size = sccs.iter().map(std::vec::Vec::len).max().unwrap();
             sccs.retain(|x| x.len() == max_scc_size);
             //println!("Scc Max Size {} Number SCCs {}", max_scc_size, sccs.len());
             if sccs.len() == 1 {
                 break;
             }
 
-            for scc in sccs.iter_mut() {
+            for scc in &mut sccs {
                 for k in conn.keys() {
                     if !scc.contains(k) {
                         let all_conn = scc.iter().all(|x| conn.get(x).unwrap().contains(k));
                         if all_conn {
                             scc.push(k);
-                            scc.sort();
+                            scc.sort_unstable();
                         }
                     }
                 }
