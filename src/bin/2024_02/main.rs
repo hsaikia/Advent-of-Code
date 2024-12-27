@@ -1,35 +1,26 @@
 use aoc::common;
 use aoc::io;
 
-#[allow(clippy::cast_possible_truncation)]
-#[allow(clippy::cast_possible_wrap)]
-fn diff_vec(seq: &[usize]) -> Vec<i32> {
-    let mut num_diffs: Vec<i32> = Vec::new();
-    for i in 1..seq.len() {
-        num_diffs.push(seq[i] as i32 - seq[i - 1] as i32);
-    }
-    num_diffs
-}
-
-fn good_difference(seq: &[usize]) -> bool {
-    const ALLOWED_DIFF_POS: [i32; 3] = [1, 2, 3];
-    const ALLOWED_DIFF_NEG: [i32; 3] = [-1, -2, -3];
-    let diff_seq = diff_vec(seq);
+fn good_difference(seq: &[u32]) -> bool {
+    const ALLOWED_DIFF_POS: [i64; 3] = [1, 2, 3];
+    const ALLOWED_DIFF_NEG: [i64; 3] = [-1, -2, -3];
+    let diff_seq: Vec<i64> = seq
+        .windows(2)
+        .map(|w| i64::from(w[1]) - i64::from(w[0]))
+        .collect();
     diff_seq.iter().all(|x| ALLOWED_DIFF_POS.contains(x))
         || diff_seq.iter().all(|x| ALLOWED_DIFF_NEG.contains(x))
 }
 
-fn good_sequence<const PART: usize>(seq: &[usize]) -> bool {
+fn good_sequence<const PART: usize>(seq: &[u32]) -> bool {
     if good_difference(seq) {
         return true;
     } else if PART == 2 {
-        for drop_idx in 0..seq.len() {
+        return (0..seq.len()).any(|drop_idx| {
             let mut seq_new = seq.to_vec();
             seq_new.remove(drop_idx);
-            if good_difference(&seq_new) {
-                return true;
-            }
-        }
+            good_difference(&seq_new)
+        });
     }
     false
 }
