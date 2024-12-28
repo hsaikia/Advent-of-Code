@@ -38,6 +38,17 @@ where
 }
 
 #[must_use]
+pub fn try_parse_num<T: FromStr>(token: &str) -> Option<T>
+where
+    <T as FromStr>::Err: Debug,
+{
+    if token.chars().all(|x| x.is_ascii_digit() || x == '-') {
+        return Some(parse_num(token));
+    }
+    None
+}
+
+#[must_use]
 pub fn line_batches(input: &str) -> Vec<Vec<&str>> {
     input
         .split("\n\n")

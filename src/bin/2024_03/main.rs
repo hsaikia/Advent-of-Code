@@ -2,24 +2,17 @@ use aoc::common;
 use aoc::io;
 use itertools::Itertools;
 
-fn is_num(s: &str) -> bool {
-    s.chars().all(|x| x.is_ascii_digit())
-}
-
 // the ....mul(X,Y)...... part
-fn solve_muls(input: &str) -> usize {
+fn compute(input: &str) -> usize {
     let mut ans = 0;
-    for pattern in io::tokenize(input, "mul(") {
-        let tokens1 = io::tokenize(pattern, ",");
-        let num1 = tokens1.first().unwrap();
-        // check if num1 has all digits
-        if is_num(num1) {
-            let n1: usize = io::parse_num(num1);
-            let tokens2 = io::tokenize(tokens1[1], ")");
-            let num2 = tokens2.first().unwrap();
-            if is_num(num2) {
-                let n2: usize = io::parse_num(num2);
-                ans += n1 * n2;
+    for pattern in io::tokenize(input, "mul(").iter().skip(1) {
+        if let Some((num1_str, num2_str_plus)) = pattern.split_once(',') {
+            if let Some(n1) = io::try_parse_num::<usize>(num1_str) {
+                if let Some((num2_str, _)) = num2_str_plus.split_once(')') {
+                    if let Some(n2) = io::try_parse_num::<usize>(num2_str) {
+                        ans += n1 * n2;
+                    }
+                }
             }
         }
     }
@@ -27,32 +20,34 @@ fn solve_muls(input: &str) -> usize {
 }
 
 fn solve<const PART: usize>(input: &str) -> usize {
-    let mut ans = 0;
-
     if PART == 1 {
-        ans = solve_muls(input);
+        compute(input)
     } else {
-        let indices = input
+        let do_dont_indices = input
             .match_indices("do()")
             .chain(input.match_indices("don't()"))
-            .sorted_by_key(|x| x.0);
+            .sorted_by_key(|(idx, _)| *idx)
+            .map(|(idx, do_or_dont)| {
+                if do_or_dont == "do()" {
+                    (idx, true)
+                } else {
+                    (idx, false)
+                }
+            });
 
-        let mut last_idx = 0;
-        let mut yes: bool = true;
-        for (idx, ins) in indices {
-            if yes {
-                ans += solve_muls(&input[last_idx..idx]);
+        let mut checkpoints = vec![(0, true)];
+        for idx in do_dont_indices {
+            checkpoints.push(idx);
+        }
+        checkpoints.push((input.len(), false));
+
+        checkpoints.windows(2).fold(0, |mut acc, interval| {
+            if interval[0].1 {
+                acc += compute(&input[interval[0].0..interval[1].0]);
             }
-            last_idx = idx;
-            yes = ins == "do()";
-        }
-
-        if yes {
-            ans += solve_muls(&input[last_idx..]);
-        }
+            acc
+        })
     }
-
-    ans
 }
 
 fn main() {
