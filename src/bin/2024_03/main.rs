@@ -23,26 +23,16 @@ fn solve<const PART: usize>(input: &str) -> usize {
     if PART == 1 {
         compute(input)
     } else {
-        let do_dont_indices = input
-            .match_indices("do()")
+        let extreme_checkpoints = [(0, "do()"), (input.len(), "don't()")];
+        let checkpoints: Vec<(usize, &str)> = extreme_checkpoints
+            .into_iter()
+            .chain(input.match_indices("do()"))
             .chain(input.match_indices("don't()"))
             .sorted_by_key(|(idx, _)| *idx)
-            .map(|(idx, do_or_dont)| {
-                if do_or_dont == "do()" {
-                    (idx, true)
-                } else {
-                    (idx, false)
-                }
-            });
-
-        let mut checkpoints = vec![(0, true)];
-        for idx in do_dont_indices {
-            checkpoints.push(idx);
-        }
-        checkpoints.push((input.len(), false));
+            .collect();
 
         checkpoints.windows(2).fold(0, |mut acc, interval| {
-            if interval[0].1 {
+            if interval[0].1 == "do()" {
                 acc += compute(&input[interval[0].0..interval[1].0]);
             }
             acc
