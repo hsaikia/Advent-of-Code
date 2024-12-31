@@ -54,7 +54,7 @@ fn solve<const PART: usize>(input: &str) -> usize {
                 1001
             };
             let nx: Vec<(usize, usize)> = map
-                .adjacent_in_dir(tp.last().unwrap(), &[*d])
+                .adjacent_in_dirs(tp.last().unwrap(), &[*d])
                 .into_iter()
                 .filter(|x| map.get(x) == '.' || map.get(x) == 'E')
                 .collect();

@@ -290,7 +290,7 @@ impl<T: std::fmt::Debug + Clone + Default + PartialEq + Hash> Grid<T> {
     }
 
     #[must_use]
-    pub fn adjacent_in_dir(&self, idx: &CellIndex, dirs: &[(i32, i32)]) -> Vec<(usize, usize)> {
+    pub fn adjacent_in_dirs(&self, idx: &CellIndex, dirs: &[(i32, i32)]) -> Vec<(usize, usize)> {
         let mut ret = Vec::new();
         for d in dirs {
             let opt_cell = self.cell_in_direction(idx, d);
@@ -320,17 +320,17 @@ impl<T: std::fmt::Debug + Clone + Default + PartialEq + Hash> Grid<T> {
 
     #[must_use]
     pub fn adjacent_2_row(&self, idx: &CellIndex) -> Vec<(usize, usize)> {
-        self.adjacent_in_dir(idx, &[(0, 1), (0, -1)])
+        self.adjacent_in_dirs(idx, &[(0, 1), (0, -1)])
     }
 
     #[must_use]
     pub fn adjacent_4(&self, idx: &CellIndex) -> Vec<(usize, usize)> {
-        self.adjacent_in_dir(idx, &[(-1, 0), (0, -1), (1, 0), (0, 1)])
+        self.adjacent_in_dirs(idx, &[(-1, 0), (0, -1), (1, 0), (0, 1)])
     }
 
     #[must_use]
     pub fn adjacent_8(&self, idx: &CellIndex) -> Vec<(usize, usize)> {
-        self.adjacent_in_dir(
+        self.adjacent_in_dirs(
             idx,
             &[
                 (-1, 0),

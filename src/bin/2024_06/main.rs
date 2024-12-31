@@ -16,7 +16,7 @@ fn loop_positions(grid: &Grid<char>) -> (Vec<(usize, usize)>, bool) {
         }
         visited.push((pos.0, pos.1, dir));
 
-        let next_positions = grid.adjacent_in_dir(&pos, &[DIRS[dir]]);
+        let next_positions = grid.adjacent_in_dirs(&pos, &[DIRS[dir]]);
         if next_positions.is_empty() {
             break;
         } else if grid.get(&next_positions[0]) == '#' {

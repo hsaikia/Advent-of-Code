@@ -2,7 +2,6 @@ use aoc::common;
 use aoc::io;
 use itertools::Itertools;
 
-// the ....mul(X,Y)...... part
 fn compute(input: &str) -> usize {
     let mut ans = 0;
     for pattern in io::tokenize(input, "mul(").iter().skip(1) {

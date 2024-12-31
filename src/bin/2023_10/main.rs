@@ -166,7 +166,7 @@ fn solve<const PART1: bool>(input: &str) -> usize {
             let neighbors = grid.adjacent_4(&idx);
             for nidx in &neighbors {
                 let ndirs = grid.get(nidx);
-                let neighbors_in_dir = grid.adjacent_in_dir(nidx, &ndirs);
+                let neighbors_in_dir = grid.adjacent_in_dirs(nidx, &ndirs);
                 if neighbors_in_dir.contains(&idx) {
                     queue.push_back((*nidx, d));
                     d = !d;
@@ -186,7 +186,7 @@ fn solve<const PART1: bool>(input: &str) -> usize {
                 visited.set(&cidx, true);
 
                 let dirs = grid.get(&cidx);
-                let nc = grid.adjacent_in_dir(&cidx, &dirs);
+                let nc = grid.adjacent_in_dirs(&cidx, &dirs);
                 for nidx in &nc {
                     if !visited.get(nidx) {
                         queue.push_back((*nidx, lr));
@@ -214,12 +214,12 @@ fn solve<const PART1: bool>(input: &str) -> usize {
 
     for (dir, p) in directed_path.iter().zip(path.iter()) {
         let (l, r) = lr_classification(original.get(p), dir);
-        for idx in cluster.adjacent_in_dir(p, &l) {
+        for idx in cluster.adjacent_in_dirs(p, &l) {
             if cluster.get(&idx) == Cluster::Empty {
                 cluster.set(&idx, Cluster::Side1);
             }
         }
-        for idx in cluster.adjacent_in_dir(p, &r) {
+        for idx in cluster.adjacent_in_dirs(p, &r) {
             if cluster.get(&idx) == Cluster::Empty {
                 cluster.set(&idx, Cluster::Side2);
             }
