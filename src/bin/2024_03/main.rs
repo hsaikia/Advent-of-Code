@@ -3,19 +3,22 @@ use aoc::io;
 use itertools::Itertools;
 
 fn compute(input: &str) -> usize {
-    let mut ans = 0;
-    for pattern in io::tokenize(input, "mul(").iter().skip(1) {
-        if let Some((num1_str, num2_str_plus)) = pattern.split_once(',') {
-            if let Some(n1) = io::try_parse_num::<usize>(num1_str) {
-                if let Some((num2_str, _)) = num2_str_plus.split_once(')') {
-                    if let Some(n2) = io::try_parse_num::<usize>(num2_str) {
-                        ans += n1 * n2;
+    io::tokenize(input, "mul(")
+        .iter()
+        .skip(1)
+        .map(|pattern| {
+            if let Some((num1_str, num2_str_plus)) = pattern.split_once(',') {
+                if let Some(n1) = io::try_parse_num::<usize>(num1_str) {
+                    if let Some((num2_str, _)) = num2_str_plus.split_once(')') {
+                        if let Some(n2) = io::try_parse_num::<usize>(num2_str) {
+                            return n1 * n2;
+                        }
                     }
                 }
             }
-        }
-    }
-    ans
+            0
+        })
+        .sum()
 }
 
 fn solve<const PART: usize>(input: &str) -> usize {

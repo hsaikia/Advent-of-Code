@@ -1,5 +1,11 @@
 use aoc::{common, io};
 
+fn ordered(sequence: &[usize], page_orderings: &[[usize; 2]]) -> bool {
+    sequence
+        .windows(2)
+        .all(|x| page_orderings.contains(&[x[0], x[1]]))
+}
+
 fn first_unordered_index(sequence: &[usize], page_orderings: &[[usize; 2]]) -> Option<usize> {
     let unordered_indices: Vec<usize> = sequence
         .windows(2)
@@ -30,7 +36,7 @@ fn solve<const PART: usize>(input: &str) -> usize {
     page_sequences
         .iter()
         .map(|seq| {
-            if first_unordered_index(seq, &page_orderings).is_none() {
+            if ordered(seq, &page_orderings) {
                 if PART == 1 {
                     seq[seq.len() / 2]
                 } else {
