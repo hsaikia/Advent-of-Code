@@ -34,7 +34,7 @@ where
         .filter(|x| x.is_ascii_digit() || *x == '-')
         .collect::<String>()
         .parse::<T>()
-        .unwrap()
+        .expect("Could not parse number.")
 }
 
 #[must_use]

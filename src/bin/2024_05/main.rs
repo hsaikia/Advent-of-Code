@@ -1,60 +1,52 @@
 use aoc::{common, io};
 
+fn first_unordered_index(sequence: &[usize], page_orderings: &[[usize; 2]]) -> Option<usize> {
+    let unordered_indices: Vec<usize> = sequence
+        .windows(2)
+        .enumerate()
+        .filter(|(_, x)| !page_orderings.contains(&[x[0], x[1]]))
+        .map(|(i, _)| i)
+        .collect();
+
+    unordered_indices.first().copied()
+}
+
 // Only works when the input page_orderings have ALL NxN relationships / or all relationships
 // that occur in the page_sequences. Otherwise all transitive relationships, such as A->C
 // given A->B and B->C should be additionally added to the page_orderings to make this algorithm work.
 fn solve<const PART: usize>(input: &str) -> usize {
-    let mut page_orderings: Vec<(usize, usize)> = Vec::new();
-    let mut page_sequences: Vec<Vec<usize>> = Vec::new();
-
-    for line in input.lines() {
-        if line.is_empty() {
-            continue;
+    let batches = io::line_batches(input);
+    let page_orderings: Vec<[usize; 2]> = batches[0].iter().fold(vec![], |mut acc, x| {
+        if let Some((page1, page2)) = x.split_once('|') {
+            acc.push([io::parse_num(page1), io::parse_num(page2)]);
         }
-        if line.chars().any(|x| x == '|') {
-            let page_nums: Vec<usize> = io::tokenize_nums(line, "|");
-            page_orderings.push((page_nums[0], page_nums[1]));
-        } else {
-            let seq: Vec<usize> = io::tokenize_nums(line, ",");
-            page_sequences.push(seq);
-        }
-    }
+        acc
+    });
+    let page_sequences: Vec<Vec<usize>> = batches[1].iter().fold(vec![], |mut acc, x| {
+        acc.push(io::tokenize_nums(x, ","));
+        acc
+    });
 
-    let mut ans = 0;
-    for seq in page_sequences {
-        let l = seq.len();
-
-        let mut ordered = true;
-        for i in 1..l {
-            if !page_orderings.contains(&(seq[i - 1], seq[i])) {
-                ordered = false;
-            }
-        }
-
-        if ordered {
-            if PART == 1 {
-                ans += seq[l / 2];
-            }
-        } else if PART == 2 {
-            let mut new_seq = seq.clone();
-            while !ordered {
-                ordered = true;
-                for i in 1..l {
-                    if !page_orderings.contains(&(new_seq[i - 1], new_seq[i])) {
-                        new_seq.swap(i - 1, i);
-                        ordered = false;
-                        break;
-                    }
+    page_sequences
+        .iter()
+        .map(|seq| {
+            if first_unordered_index(seq, &page_orderings).is_none() {
+                if PART == 1 {
+                    seq[seq.len() / 2]
+                } else {
+                    0
                 }
-
-                if ordered {
-                    ans += new_seq[l / 2];
+            } else if PART == 2 {
+                let mut new_seq = seq.clone();
+                while let Some(unordered_index) = first_unordered_index(&new_seq, &page_orderings) {
+                    new_seq.swap(unordered_index, unordered_index + 1);
                 }
+                new_seq[seq.len() / 2]
+            } else {
+                0
             }
-        }
-    }
-
-    ans
+        })
+        .sum()
 }
 
 fn main() {
