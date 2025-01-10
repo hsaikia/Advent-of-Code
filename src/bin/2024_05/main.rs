@@ -1,16 +1,16 @@
 use aoc::{common, io};
 
-fn ordered(sequence: &[usize], page_orderings: &[[usize; 2]]) -> bool {
+fn ordered(sequence: &[usize], page_orderings: &[(usize, usize)]) -> bool {
     sequence
         .windows(2)
-        .all(|x| page_orderings.contains(&[x[0], x[1]]))
+        .all(|x| page_orderings.contains(&(x[0], x[1])))
 }
 
-fn first_unordered_index(sequence: &[usize], page_orderings: &[[usize; 2]]) -> Option<usize> {
+fn first_unordered_index(sequence: &[usize], page_orderings: &[(usize, usize)]) -> Option<usize> {
     let unordered_indices: Vec<usize> = sequence
         .windows(2)
         .enumerate()
-        .filter(|(_, x)| !page_orderings.contains(&[x[0], x[1]]))
+        .filter(|(_, x)| !page_orderings.contains(&(x[0], x[1])))
         .map(|(i, _)| i)
         .collect();
 
@@ -22,9 +22,9 @@ fn first_unordered_index(sequence: &[usize], page_orderings: &[[usize; 2]]) -> O
 // given A->B and B->C should be additionally added to the page_orderings to make this algorithm work.
 fn solve<const PART: usize>(input: &str) -> usize {
     let batches = io::line_batches(input);
-    let page_orderings: Vec<[usize; 2]> = batches[0].iter().fold(vec![], |mut acc, x| {
+    let page_orderings: Vec<(usize, usize)> = batches[0].iter().fold(vec![], |mut acc, x| {
         if let Some((page1, page2)) = x.split_once('|') {
-            acc.push([io::parse_num(page1), io::parse_num(page2)]);
+            acc.push((io::parse_num(page1), io::parse_num(page2)));
         }
         acc
     });
@@ -57,7 +57,6 @@ fn solve<const PART: usize>(input: &str) -> usize {
 
 fn main() {
     let input = common::get_input();
-    //println!("{input:?}");
     common::timed(&input, solve::<1>, true);
     common::timed(&input, solve::<2>, false);
 }
