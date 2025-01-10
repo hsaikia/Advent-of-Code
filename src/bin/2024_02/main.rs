@@ -6,8 +6,7 @@ fn good_difference(seq: &[u32]) -> bool {
         .windows(2)
         .map(|w| i64::from(w[1]) - i64::from(w[0]))
         .collect();
-    diff_seq.iter().all(|x| *x >= 1 && *x <= 3)
-        || diff_seq.iter().all(|x| *x >= -3 && *x <= -1)
+    diff_seq.iter().all(|x| *x >= 1 && *x <= 3) || diff_seq.iter().all(|x| *x >= -3 && *x <= -1)
 }
 
 fn good_sequence<const PART: usize>(seq: &[u32]) -> bool {
