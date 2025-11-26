@@ -2,6 +2,9 @@
 
 This repo contains my solutions to [Advent of Code](https://adventofcode.com/) problems in [Rust](https://www.rust-lang.org/). It also includes a helper library that I've developed over time, consisting of data structures and functions that have proven useful in solving past problems.
 
+![2024](stars2024.png)
+![2023](stars2023.png)
+
 ## How to run
 
 You need to have rustc (and cargo) installed. Instructions [here](https://www.rust-lang.org/tools/install).
