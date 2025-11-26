@@ -9,10 +9,10 @@ This repo contains my solutions to [Advent of Code](https://adventofcode.com/) p
 
 You need to have rustc (and cargo) installed. Instructions [here](https://www.rust-lang.org/tools/install).
 
-Then for any particular year_day we need to run this command from the root directory
+Then for any particular year `YYYY` and day `DD` we need to run this command from the root directory
 
 ```
-cargo run --release --bin <year_day> <input_file>
+cargo run --release --bin <YYYY_DD> <input_file>
 ```
 
 For example for binary `2022_01` say we have a `sample_input.txt` file with the following contents 
