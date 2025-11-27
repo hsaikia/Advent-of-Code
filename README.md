@@ -15,6 +15,12 @@ Then for any particular year `YYYY` and day `DD` we need to run this command fro
 cargo run --release --bin <YYYY_DD> <input_file>
 ```
 
+Alternatively, if an `input.txt` file exists in a directory `src/bin/<YYYY_DD>` along with the `main.rs` file, it will be used automatically. In that case, we just need to run
+
+```
+cargo run --release --bin <YYYY_DD>
+```
+
 For example for binary `2022_01` say we have a `sample_input.txt` file with the following contents 
 
 ```

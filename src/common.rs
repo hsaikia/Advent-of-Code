@@ -61,8 +61,12 @@ pub fn timed<T: core::fmt::Debug>(input: &str, f: fn(&str) -> T, part1: bool) {
 #[must_use]
 pub fn get_input() -> Option<String> {
     let args: Vec<String> = env::args().collect();
-    let tokens = io::tokenize(&args[0], "/");
-    let filepath = format!("./src/bin/{}/input.txt", tokens.last().unwrap());
+    let filepath = if args.len() == 1 {
+        let tokens = io::tokenize(&args[0], "/");
+        format!("./src/bin/{}/input.txt", tokens.last().unwrap())
+    } else {
+        args[1].clone()
+    };
     println!("Reading file {filepath}");
     if let Ok(input) = std::fs::read_to_string(filepath) {
         Some(input)
