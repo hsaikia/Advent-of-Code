@@ -50,7 +50,8 @@ fn solve<const ROPE_SIZE: usize>(input: &str) -> usize {
 }
 
 fn main() {
-    let input = common::get_input();
-    common::timed(&input, solve::<2>, true);
-    common::timed(&input, solve::<10>, false);
+    if let Some(input) = common::get_input() {
+        common::timed(&input, solve::<2>, true);
+        common::timed(&input, solve::<10>, false);
+    }
 }

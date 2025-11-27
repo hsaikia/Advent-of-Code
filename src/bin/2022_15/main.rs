@@ -69,23 +69,23 @@ fn part2(coords: &[(i64, i64, i64, i64)], xy_max: i64) {
 }
 
 fn main() {
-    let input = common::get_input();
+    if let Some(input) = common::get_input() {
+        let mut coords: Vec<(i64, i64, i64, i64)> = Vec::new();
+        for line in input.split('\n') {
+            let tokens = line
+                .split(' ')
+                .filter(|&s| s.contains('='))
+                .collect::<Vec<_>>();
+            //println!("{:?}", tokens);
+            coords.push((
+                tokens[0][2..tokens[0].len() - 1].parse::<i64>().unwrap(),
+                tokens[1][2..tokens[1].len() - 1].parse::<i64>().unwrap(),
+                tokens[2][2..tokens[2].len() - 1].parse::<i64>().unwrap(),
+                tokens[3][2..tokens[3].len()].parse::<i64>().unwrap(),
+            ));
+        }
 
-    let mut coords: Vec<(i64, i64, i64, i64)> = Vec::new();
-    for line in input.split('\n') {
-        let tokens = line
-            .split(' ')
-            .filter(|&s| s.contains('='))
-            .collect::<Vec<_>>();
-        //println!("{:?}", tokens);
-        coords.push((
-            tokens[0][2..tokens[0].len() - 1].parse::<i64>().unwrap(),
-            tokens[1][2..tokens[1].len() - 1].parse::<i64>().unwrap(),
-            tokens[2][2..tokens[2].len() - 1].parse::<i64>().unwrap(),
-            tokens[3][2..tokens[3].len()].parse::<i64>().unwrap(),
-        ));
+        part1(&coords, 2_000_000);
+        part2(&coords, 4_000_000);
     }
-
-    part1(&coords, 2_000_000);
-    part2(&coords, 4_000_000);
 }

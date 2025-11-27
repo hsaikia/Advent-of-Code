@@ -85,7 +85,8 @@ fn process_and_mix<const PART1: bool>(input: &str) -> i64 {
 }
 
 fn main() {
-    let input = common::get_input();
-    common::timed(&input, process_and_mix::<true>, true);
-    common::timed(&input, process_and_mix::<false>, false);
+    if let Some(input) = common::get_input() {
+        common::timed(&input, process_and_mix::<true>, true);
+        common::timed(&input, process_and_mix::<false>, false);
+    }
 }

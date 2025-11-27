@@ -186,10 +186,10 @@ fn solve<const PART: usize, const ITERATIONS: usize>(input: &str) -> usize {
 }
 
 fn main() {
-    let input = common::get_input();
-    println!("{input:?}");
-    common::timed(&input, solve::<1, 2>, true);
-    common::timed(&input, solve::<2, 25>, false);
+    if let Some(input) = common::get_input() {
+        common::timed(&input, solve::<1, 2>, true);
+        common::timed(&input, solve::<2, 25>, false);
+    }
 }
 
 #[cfg(test)]

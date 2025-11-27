@@ -110,10 +110,10 @@ fn solve<const PART: usize, const SECONDS: usize, const MAX_X: i64, const MAX_Y:
 }
 
 fn main() {
-    let input = common::get_input();
-    //println!("{input:?}");
-    common::timed(&input, solve::<1, 100, 101, 103>, true);
-    common::timed(&input, solve::<2, 10000, 101, 103>, false);
+    if let Some(input) = common::get_input() {
+        common::timed(&input, solve::<1, 100, 101, 103>, true);
+        common::timed(&input, solve::<2, 10000, 101, 103>, false);
+    }
 }
 
 #[cfg(test)]

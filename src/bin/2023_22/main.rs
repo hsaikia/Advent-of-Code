@@ -164,8 +164,9 @@ fn solve(input: &str) -> (usize, usize) {
 }
 
 fn main() {
-    let input = common::get_input();
-    let (a1, a2) = solve(&input);
-    println!("P1 {a1}");
-    println!("P2 {a2}");
+    if let Some(input) = common::get_input() {
+        let (a1, a2) = solve(&input);
+        println!("P1 {a1}");
+        println!("P2 {a2}");
+    }
 }

@@ -54,9 +54,9 @@ fn solve(input: &str) -> (usize, usize) {
 }
 
 fn main() {
-    let input = common::get_input();
-    //println!("{input:?}");
-    common::timed(&input, solve, true);
+    if let Some(input) = common::get_input() {
+        common::timed(&input, solve, true);
+    }
 }
 
 #[cfg(test)]

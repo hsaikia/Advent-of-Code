@@ -95,7 +95,8 @@ fn get_grid_and_solve<const PART1: bool>(input: &str) -> usize {
 }
 
 fn main() {
-    let input = common::get_input();
-    common::timed(&input, get_grid_and_solve::<true>, true);
-    common::timed(&input, get_grid_and_solve::<false>, false);
+    if let Some(input) = common::get_input() {
+        common::timed(&input, get_grid_and_solve::<true>, true);
+        common::timed(&input, get_grid_and_solve::<false>, false);
+    }
 }

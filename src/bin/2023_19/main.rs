@@ -190,7 +190,8 @@ fn part2<'a>(input: &'a str) -> i64 {
 }
 
 fn main() {
-    let input = common::get_input();
-    common::timed(&input, part1, true);
-    common::timed(&input, part2, false);
+    if let Some(input) = common::get_input() {
+        common::timed(&input, part1, true);
+        common::timed(&input, part2, false);
+    }
 }

@@ -59,7 +59,8 @@ fn part2(input_lines: &str) -> common::GridDisplay {
 }
 
 fn main() {
-    let input = common::get_input();
-    common::timed(&input, part1, true);
-    common::timed(&input, part2, false);
+    if let Some(input) = common::get_input() {
+        common::timed(&input, part1, true);
+        common::timed(&input, part2, false);
+    }
 }

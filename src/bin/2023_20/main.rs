@@ -192,7 +192,8 @@ fn part1(input: &str) -> usize {
 }
 
 fn main() {
-    let input = common::get_input();
-    common::timed(&input, part1, true);
-    //common::timed(&input, part2, false);
+    if let Some(input) = common::get_input() {
+        common::timed(&input, part1, true);
+        //common::timed(&input, part2, false);
+    }
 }

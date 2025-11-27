@@ -56,9 +56,10 @@ fn solve<const PART: usize>(input: &str) -> usize {
 }
 
 fn main() {
-    let input = common::get_input();
-    common::timed(&input, solve::<1>, true);
-    common::timed(&input, solve::<2>, false);
+    if let Some(input) = common::get_input() {
+        common::timed(&input, solve::<1>, true);
+        common::timed(&input, solve::<2>, false);
+    }
 }
 
 #[cfg(test)]

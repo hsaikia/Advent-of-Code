@@ -31,9 +31,10 @@ fn solve<const GALAXY_EXPANSION: usize>(input: &str) -> usize {
 }
 
 fn main() {
-    let input = common::get_input();
-    common::timed(&input, solve::<2>, true);
-    common::timed(&input, solve::<1_000_000>, false);
+    if let Some(input) = common::get_input() {
+        common::timed(&input, solve::<2>, true);
+        common::timed(&input, solve::<1_000_000>, false);
+    }
 }
 
 #[cfg(test)]

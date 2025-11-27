@@ -80,7 +80,8 @@ fn process_and_solve<const PART1: bool>(input: &str) -> String {
 }
 
 fn main() {
-    let input = common::get_input();
-    common::timed(&input, process_and_solve::<true>, true);
-    common::timed(&input, process_and_solve::<false>, false);
+    if let Some(input) = common::get_input() {
+        common::timed(&input, process_and_solve::<true>, true);
+        common::timed(&input, process_and_solve::<false>, false);
+    }
 }

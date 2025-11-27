@@ -62,10 +62,11 @@ fn solve<const PICOSECONDS: usize, const CHEAT_PICOSECONDS: usize>(input: &str) 
 }
 
 fn main() {
-    let input = common::get_input();
-    //println!("{input:?}");
-    common::timed(&input, solve::<100, 2>, true);
-    common::timed(&input, solve::<100, 20>, false);
+    if let Some(input) = common::get_input() {
+        //println!("{input:?}");
+        common::timed(&input, solve::<100, 2>, true);
+        common::timed(&input, solve::<100, 20>, false);
+    }
 }
 
 #[cfg(test)]

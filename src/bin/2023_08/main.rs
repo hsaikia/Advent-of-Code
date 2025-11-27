@@ -81,7 +81,8 @@ fn process<const PART1: bool>(input: &str) -> usize {
 }
 
 fn main() {
-    let input = common::get_input();
-    common::timed(&input, process::<true>, true);
-    common::timed(&input, process::<false>, false);
+    if let Some(input) = common::get_input() {
+        common::timed(&input, process::<true>, true);
+        common::timed(&input, process::<false>, false);
+    }
 }

@@ -135,11 +135,12 @@ fn analytic<const PART1: bool>(input: &str) -> usize {
 }
 
 fn main() {
-    let input = common::get_input();
-    println!("Incremental Reduction");
-    common::timed(&input, incremental_reduction::<true>, true);
-    common::timed(&input, incremental_reduction::<false>, false);
-    println!("\nAnalytic");
-    common::timed(&input, analytic::<true>, true);
-    common::timed(&input, analytic::<false>, false);
+    if let Some(input) = common::get_input() {
+        println!("Incremental Reduction");
+        common::timed(&input, incremental_reduction::<true>, true);
+        common::timed(&input, incremental_reduction::<false>, false);
+        println!("\nAnalytic");
+        common::timed(&input, analytic::<true>, true);
+        common::timed(&input, analytic::<false>, false);
+    }
 }

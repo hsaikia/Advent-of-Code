@@ -32,7 +32,8 @@ fn solve<const PART1: bool>(input: &str) -> i64 {
 }
 
 fn main() {
-    let input = common::get_input();
-    common::timed(&input, solve::<true>, true);
-    common::timed(&input, solve::<false>, false);
+    if let Some(input) = common::get_input() {
+        common::timed(&input, solve::<true>, true);
+        common::timed(&input, solve::<false>, false);
+    }
 }

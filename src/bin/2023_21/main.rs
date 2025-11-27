@@ -171,9 +171,10 @@ fn solve_parts<const PART1: bool>(input: &str) -> usize {
 }
 
 fn main() {
-    let input = common::get_input();
-    //common::timed(&input, solve_parts::<true>, true);
-    common::timed(&input, solve_parts::<false>, false);
+    if let Some(input) = common::get_input() {
+        //common::timed(&input, solve_parts::<true>, true);
+        common::timed(&input, solve_parts::<false>, false);
+    }
 }
 
 fn solve(

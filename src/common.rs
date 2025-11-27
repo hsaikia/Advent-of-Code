@@ -6,6 +6,8 @@ use std::{
     time::Instant,
 };
 
+use crate::io;
+
 pub trait HashMapVector<K: Copy + Hash + Eq + PartialEq, V> {
     fn add_to_vector_hashmap(&mut self, key: &K, value: V);
     fn contains(&self, key: &K, value: &V) -> bool
@@ -57,11 +59,16 @@ pub fn timed<T: core::fmt::Debug>(input: &str, f: fn(&str) -> T, part1: bool) {
 ///
 /// Panics if the file is not found or cannot be read.
 #[must_use]
-pub fn get_input() -> String {
+pub fn get_input() -> Option<String> {
     let args: Vec<String> = env::args().collect();
-    let filepath = &args[1];
+    let tokens = io::tokenize(&args[0], "/");
+    let filepath = format!("./src/bin/{}/input.txt", tokens.last().unwrap());
     println!("Reading file {filepath}");
-    std::fs::read_to_string(filepath).unwrap()
+    if let Ok(input) = std::fs::read_to_string(filepath) {
+        Some(input)
+    } else {
+        None
+    }
 }
 
 pub struct GridDisplay {
