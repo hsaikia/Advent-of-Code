@@ -18,6 +18,7 @@ where
 pub fn tokenize<'a>(line: &'a str, separator: &str) -> Vec<&'a str> {
     line.split(separator)
         .filter(|s| !s.trim().is_empty())
+        .map(|s| s.trim())
         .collect::<_>()
 }
 

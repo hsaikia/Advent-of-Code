@@ -5,8 +5,8 @@ fn solve<const PART: usize>(input: &str) -> i32 {
     let mut num_zeros = 0;
     for line in input.split("\n") {
         //let old_zeros = num_zeros;
+        let mut steps = line[1..].parse::<i32>().unwrap();
         if line.starts_with("L") {
-            let mut steps = line[1..].parse::<i32>().unwrap();
             if PART == 2 {
                 num_zeros += steps / 100;
                 steps = steps % 100;
@@ -14,10 +14,8 @@ fn solve<const PART: usize>(input: &str) -> i32 {
                     num_zeros += 1;
                 }
             }
-
             dial = (dial - steps + 100) % 100;
         } else if line.starts_with("R") {
-            let mut steps = line[1..].parse::<i32>().unwrap();
             if PART == 2 {
                 num_zeros += steps / 100;
                 steps = steps % 100;
