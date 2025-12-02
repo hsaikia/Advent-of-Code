@@ -15,17 +15,7 @@ fn invalid<const PART: usize>(num: usize) -> bool {
 
     for l in lengths {
         if len % l == 0 {
-            let mut found: bool = true;
-            let mut y = 0;
-
-            while y + 2 * l <= len {
-                if s[y..y + l] != s[y + l..y + 2 * l] {
-                    found = false;
-                    break;
-                }
-                y += l;
-            }
-            if found {
+            if s.as_bytes().chunks(l).all(|c| c == s[0..l].as_bytes()) {
                 return true;
             }
         }
@@ -41,10 +31,6 @@ fn solve<const PART: usize>(input: &str) -> usize {
         for x in nums[0]..=nums[1] {
             if invalid::<PART>(x) {
                 ans += x;
-                // println!(
-                //     "{} is an invalid number between {} and {}",
-                //     x, nums[0], nums[1]
-                // );
             }
         }
     }
