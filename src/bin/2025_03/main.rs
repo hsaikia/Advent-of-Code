@@ -2,38 +2,44 @@ use std::collections::HashMap;
 
 use aoc::common;
 
-fn find(bank: &[u64], i: usize, l: usize, mp: &mut HashMap<(usize, usize), u64>) -> Option<u64> {
-    if let Some(x) = mp.get(&(i, l)) {
+fn find(
+    bank: &[u64],
+    start: usize,
+    amount: usize,
+    cache: &mut HashMap<(usize, usize), u64>,
+) -> Option<u64> {
+    if let Some(x) = cache.get(&(start, amount)) {
         return Some(*x);
     }
 
-    if i >= bank.len() {
+    if start >= bank.len() {
         return None;
     }
 
-    if l == 1 {
-        let mx = (i..bank.len()).map(|x| bank[x]).max().unwrap();
-        mp.insert((i, l), mx);
-        return Some(mx);
-    }
-
-    let x1 = find(bank, i + 1, l - 1, mp).map(|x| x + 10u64.pow(l as u32 - 1) * bank[i]);
-    let x2 = find(bank, i + 1, l, mp);
-    //dbg!(i, l, x1, x2);
-    if let Some(x) = x1 {
-        if let Some(y) = x2 {
-            mp.insert((i, l), x.max(y));
-            Some(x.max(y))
-        } else {
-            mp.insert((i, l), x);
-            Some(x)
-        }
-    } else if let Some(y) = x2 {
-        mp.insert((i, l), y);
-        Some(y)
+    let ret = if amount == 1 {
+        Some((start..bank.len()).map(|i| bank[i]).max().unwrap())
     } else {
-        None
+        let solution_take = find(bank, start + 1, amount - 1, cache)
+            .map(|x| x + 10u64.pow(amount as u32 - 1) * bank[start]);
+        let solution_skip = find(bank, start + 1, amount, cache);
+
+        if let Some(x) = solution_take {
+            if let Some(y) = solution_skip {
+                Some(x.max(y))
+            } else {
+                Some(x)
+            }
+        } else if let Some(y) = solution_skip {
+            Some(y)
+        } else {
+            None
+        }
+    };
+
+    if let Some(x) = ret {
+        cache.insert((start, amount), x);
     }
+    ret
 }
 
 fn solve<const PART: usize>(input: &str) -> u64 {
@@ -48,10 +54,9 @@ fn solve<const PART: usize>(input: &str) -> u64 {
             .map(|c| c.to_digit(10).unwrap_or(0) as u64)
             .collect::<Vec<u64>>();
 
-        let mut mp: HashMap<(usize, usize), u64> = HashMap::new();
-        if let Some(mx) = find(&batteries, 0, if PART == 1 { 2 } else { 12 }, &mut mp) {
-            //dbg!(line, mx);
-            ans += mx;
+        let mut cache: HashMap<(usize, usize), u64> = HashMap::new();
+        if let Some(x) = find(&batteries, 0, if PART == 1 { 2 } else { 12 }, &mut cache) {
+            ans += x;
         }
     }
     ans
