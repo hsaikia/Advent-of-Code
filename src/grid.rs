@@ -121,6 +121,12 @@ impl<T: std::fmt::Debug + Clone + Default + PartialEq + Hash> Grid<T> {
         ret
     }
 
+    pub fn set_all(&mut self, positions: &[CellIndex], val: T) {
+        for idx in positions.iter() {
+            self.set(idx, val.clone());
+        }
+    }
+
     #[must_use]
     pub fn count(&self, x: &T) -> usize {
         self.values

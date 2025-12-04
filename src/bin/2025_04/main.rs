@@ -1,23 +1,19 @@
 use aoc::{common, grid::Grid};
 
 fn remove_if_possible(grid: &mut Grid<char>) -> Option<usize> {
-    let positions = grid.positions(&'@');
-    let mut to_be_removed = Vec::new();
-    for pos in positions.iter() {
-        let nbs = grid.adjacent_8(pos);
-        //dbg!(pos, &nbs);
-        if nbs.iter().filter(|x| grid.get(x) == '@').count() < 4 {
-            to_be_removed.push(pos);
-        }
-    }
+    let to_be_removed: Vec<(usize, usize)> = grid
+        .positions(&'@')
+        .iter()
+        .map(|idx| (idx, grid.adjacent_8(idx)))
+        .filter(|(_idx, neighbors)| neighbors.iter().filter(|x| grid.get(x) == '@').count() < 4)
+        .map(|(idx, _neighbors)| *idx)
+        .collect();
 
     if to_be_removed.is_empty() {
         return None;
     }
 
-    for idx in to_be_removed.iter() {
-        grid.set(idx, '.');
-    }
+    grid.set_all(&to_be_removed, '.');
 
     Some(to_be_removed.len())
 }
