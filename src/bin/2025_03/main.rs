@@ -76,7 +76,7 @@ fn solve<const PART: usize>(input: &str) -> u64 {
 fn main() {
     if let Some(input) = common::get_input() {
         common::timed(&input, solve::<1>, true);
-        common::timed(&input, solve::<2>, true);
+        common::timed(&input, solve::<2>, false);
     }
 }
 
