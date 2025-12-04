@@ -68,11 +68,7 @@ pub fn get_input() -> Option<String> {
         args[1].clone()
     };
     println!("Reading file {filepath}");
-    if let Ok(input) = std::fs::read_to_string(filepath) {
-        Some(input)
-    } else {
-        None
-    }
+    std::fs::read_to_string(filepath).ok()
 }
 
 pub struct GridDisplay {

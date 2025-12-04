@@ -309,18 +309,8 @@ impl<T: std::fmt::Debug + Clone + Default + PartialEq + Hash> Grid<T> {
 
     #[must_use]
     pub fn l1_distance(&self, idx1: &CellIndex, idx2: &CellIndex) -> usize {
-        let dx = if idx1.0 > idx2.0 {
-            idx1.0 - idx2.0
-        } else {
-            idx2.0 - idx1.0
-        };
-
-        let dy = if idx1.1 > idx2.1 {
-            idx1.1 - idx2.1
-        } else {
-            idx2.1 - idx1.1
-        };
-
+        let dx = idx1.0.abs_diff(idx2.0);
+        let dy = idx1.1.abs_diff(idx2.1);
         dx + dy
     }
 

@@ -62,8 +62,8 @@ fn part2(grid: &Grid<usize>, end: (usize, usize)) -> usize {
         for j in 0..grid.cols {
             if grid.get(&(i, j)) == 0 {
                 let steps = shortest_from(grid, (i, j), end);
-                if steps.is_some() {
-                    best = best.min(steps.unwrap());
+                if let Some(s) = steps {
+                    best = best.min(s);
                 }
             }
         }
@@ -78,12 +78,12 @@ fn get_grid_and_solve<const PART1: bool>(input: &str) -> usize {
 
     for (i, line) in input.lines().enumerate() {
         let si = line.chars().position(|c| c == 'S');
-        if si.is_some() {
-            start = (i, si.unwrap());
+        if let Some(x) = si {
+            start = (i, x);
         }
         let ei = line.chars().position(|c| c == 'E');
-        if ei.is_some() {
-            end = (i, ei.unwrap());
+        if let Some(x) = ei {
+            end = (i, x);
         }
     }
 

@@ -132,7 +132,7 @@ fn find_sequence(g: &Grid<bool>, start: CellIndex) {
             for (k, v) in &filled_grids {
                 let manhattan_dist = (k.0.unsigned_abs() + k.1.unsigned_abs()) as usize;
                 let curr_parity = manhattan_dist % 2;
-                let max_filled_cells_for_grid = if (curr_parity + global_parity) % 2 == 0 {
+                let max_filled_cells_for_grid = if (curr_parity + global_parity).is_multiple_of(2) {
                     ODD_EVEN[1]
                 } else {
                     ODD_EVEN[0]

@@ -4,7 +4,7 @@ fn invalid<const PART: usize>(num: usize) -> bool {
     let s = num.to_string();
     let len = s.len();
     let lengths: Vec<usize> = if PART == 1 {
-        if len % 2 == 0 {
+        if len.is_multiple_of(2) {
             vec![len / 2]
         } else {
             vec![]
@@ -14,10 +14,8 @@ fn invalid<const PART: usize>(num: usize) -> bool {
     };
 
     for l in lengths {
-        if len % l == 0 {
-            if s.as_bytes().chunks(l).all(|c| c == s[0..l].as_bytes()) {
-                return true;
-            }
+        if len.is_multiple_of(l) && s.as_bytes().chunks(l).all(|c| c == &s.as_bytes()[0..l]) {
+            return true;
         }
     }
 

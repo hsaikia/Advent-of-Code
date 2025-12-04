@@ -9,7 +9,7 @@ fn solve<const PART: usize>(input: &str) -> i32 {
         if line.starts_with("L") {
             if PART == 2 {
                 num_zeros += steps / 100;
-                steps = steps % 100;
+                steps %= 100;
                 if dial > 0 && dial < steps {
                     num_zeros += 1;
                 }
@@ -18,7 +18,7 @@ fn solve<const PART: usize>(input: &str) -> i32 {
         } else if line.starts_with("R") {
             if PART == 2 {
                 num_zeros += steps / 100;
-                steps = steps % 100;
+                steps %= 100;
                 if dial + steps > 100 {
                     num_zeros += 1;
                 }

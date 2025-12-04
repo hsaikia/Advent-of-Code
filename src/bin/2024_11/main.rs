@@ -14,7 +14,7 @@ fn evolve(input: &str) -> Vec<String> {
     let mut ret: Vec<String> = Vec::new();
     if input == "0" {
         ret.push("1".to_string());
-    } else if input.len() % 2 == 0 {
+    } else if input.len().is_multiple_of(2) {
         ret.push(reduce(&input[0..input.len() / 2], false));
         ret.push(reduce(&input[input.len() / 2..], false));
     } else {
