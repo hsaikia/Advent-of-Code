@@ -29,10 +29,8 @@ fn find(
             } else {
                 Some(x)
             }
-        } else if let Some(y) = solution_skip {
-            Some(y)
         } else {
-            None
+            solution_skip
         }
     };
 
