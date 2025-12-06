@@ -7,9 +7,9 @@ enum Operation {
 
 fn solve2(input: &str) -> usize {
     let grid = Grid::from_str_no_trim(input, |c| c, &' ');
-    grid.print();
+    //grid.print();
     let grid2 = grid.rotate_clockwise();
-    grid2.print();
+    //grid2.print();
 
     let mut ans = 0;
     let mut op = Operation::Add;
@@ -37,6 +37,7 @@ fn solve2(input: &str) -> usize {
             }
         } else {
             ans += ret;
+            ret = 0;
         }
     }
     ans += ret;
