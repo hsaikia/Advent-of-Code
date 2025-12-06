@@ -90,6 +90,20 @@ impl<T: std::fmt::Debug + Clone + Default + PartialEq + Hash> Grid<T> {
     }
 
     #[must_use]
+    pub fn from_str_no_trim(input: &str, f: fn(char) -> T) -> Self {
+        let lines = input
+            .split('\n')
+            .filter(|l| !l.is_empty())
+            .collect::<Vec<_>>();
+        let mut grid = Grid::<T>::new(lines.len(), lines[0].len(), T::default());
+        for (i, line) in lines.iter().enumerate() {
+            let row = line.chars().map(f).collect::<Vec<_>>();
+            grid.set_row(i, row);
+        }
+        grid
+    }
+
+    #[must_use]
     pub fn rotate_clockwise(&self) -> Self {
         let mut ret = Grid::new(self.cols, self.rows, T::default());
         for (i, j) in iproduct!(0..self.rows, 0..self.cols) {
