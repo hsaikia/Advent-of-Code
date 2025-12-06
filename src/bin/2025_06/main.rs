@@ -1,72 +1,49 @@
 use aoc::{common, grid::Grid, io};
 
+enum Operation {
+    Add,
+    Multiply,
+}
+
 fn solve2(input: &str) -> usize {
-    let mut grid = Grid::from_str_no_trim(input, |c| c);
-    //grid.print();
-    let max_l = grid.values.iter().map(|v| v.len()).max().unwrap_or(0);
-    //dbg!(max_l);
-    for val in grid.values.iter_mut() {
-        val.resize(max_l, ' ');
-    }
-    grid.cols = max_l;
-    //grid.print();
+    let grid = Grid::from_str_no_trim(input, |c| c, &' ');
+    grid.print();
     let grid2 = grid.rotate_clockwise();
-    //grid2.print();
+    grid2.print();
 
     let mut ans = 0;
-    let mut op_mul = false;
+    let mut op = Operation::Add;
     let mut ret = 0;
     for val in grid2.values.iter() {
-        let str = val.iter().collect::<String>();
-        //println!("{}\n", str);
-        if str.trim().is_empty() {
-            //dbg!(ret);
-            ans += ret;
+        if val[0] == '+' {
+            op = Operation::Add;
             ret = 0;
-            op_mul = false;
-            continue;
-        }
-        let x = if str.contains("*") {
-            op_mul = true;
+        } else if val[0] == '*' {
+            op = Operation::Multiply;
             ret = 1;
-            str[1..]
-                .trim()
-                .chars()
-                .rev()
-                .collect::<String>()
-                .parse::<usize>()
-                .unwrap()
-        } else if str.contains("+") {
-            op_mul = false;
-            ret = 0;
-            str[1..]
-                .trim()
-                .chars()
-                .rev()
-                .collect::<String>()
-                .parse::<usize>()
-                .unwrap()
-        } else {
-            str.trim()
-                .chars()
-                .rev()
-                .collect::<String>()
-                .parse::<usize>()
-                .unwrap()
         };
-
-        //dbg!(x);
-        if op_mul {
-            ret *= x;
+        if let Ok(number) = val
+            .iter()
+            .skip(1)
+            .rev()
+            .collect::<String>()
+            .trim()
+            .parse::<usize>()
+        {
+            //dbg!(number);
+            match op {
+                Operation::Add => ret += number,
+                Operation::Multiply => ret *= number,
+            }
         } else {
-            ret += x;
+            ans += ret;
         }
     }
     ans += ret;
     ans
 }
 
-fn solve<const PART: usize>(input: &str) -> usize {
+fn solve1(input: &str) -> usize {
     let mut ans = 0;
     let mut nums_tot: Vec<Vec<usize>> = Vec::new();
     for line in input.lines() {
@@ -80,15 +57,15 @@ fn solve<const PART: usize>(input: &str) -> usize {
                 match *op {
                     "+" => {
                         let mut ret = 0;
-                        for i in 0..nums_tot.len() {
-                            ret += nums_tot[i][j];
+                        for row in &nums_tot {
+                            ret += row[j];
                         }
                         ans += ret;
                     }
                     "*" => {
                         let mut ret = 1;
-                        for i in 0..nums_tot.len() {
-                            ret *= nums_tot[i][j];
+                        for row in &nums_tot {
+                            ret *= row[j];
                         }
                         ans += ret;
                     }
@@ -106,7 +83,7 @@ fn solve<const PART: usize>(input: &str) -> usize {
 
 fn main() {
     if let Some(input) = common::get_input() {
-        common::timed(&input, solve::<1>, true);
+        common::timed(&input, solve1, true);
         common::timed(&input, solve2, false);
     }
 }
@@ -118,7 +95,7 @@ mod tests {
     #[test]
     fn test_samples() {
         let sample_input = "123 328  51 64\n 45 64  387 23\n  6 98  215 314\n*   +   *   +  ";
-        assert_eq!(solve::<1>(sample_input), 4277556);
+        assert_eq!(solve1(sample_input), 4277556);
         assert_eq!(solve2(sample_input), 3263827);
     }
 }

@@ -90,14 +90,16 @@ impl<T: std::fmt::Debug + Clone + Default + PartialEq + Hash> Grid<T> {
     }
 
     #[must_use]
-    pub fn from_str_no_trim(input: &str, f: fn(char) -> T) -> Self {
+    pub fn from_str_no_trim(input: &str, f: fn(char) -> T, default_fill: &T) -> Self {
         let lines = input
             .split('\n')
             .filter(|l| !l.is_empty())
             .collect::<Vec<_>>();
-        let mut grid = Grid::<T>::new(lines.len(), lines[0].len(), T::default());
+        let max_col_len = lines.iter().map(|v| v.len()).max().unwrap_or(0);
+        let mut grid = Grid::<T>::new(lines.len(), max_col_len, default_fill.clone());
         for (i, line) in lines.iter().enumerate() {
-            let row = line.chars().map(f).collect::<Vec<_>>();
+            let mut row = line.chars().map(f).collect::<Vec<_>>();
+            row.resize(max_col_len, default_fill.clone());
             grid.set_row(i, row);
         }
         grid
@@ -277,6 +279,7 @@ impl<T: std::fmt::Debug + Clone + Default + PartialEq + Hash> Grid<T> {
     }
 
     pub fn set_row(&mut self, i: usize, row_vals: Vec<T>) {
+        assert!(row_vals.len() == self.cols);
         self.values[i] = row_vals;
     }
 
