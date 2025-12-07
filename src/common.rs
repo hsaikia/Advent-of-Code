@@ -40,6 +40,23 @@ impl<K: Copy + Hash + Eq + PartialEq, V, S: BuildHasher> HashMapVector<K, V>
     }
 }
 
+pub trait HashMapCount<K: Copy + Hash + Eq + PartialEq> {
+    fn insert_with_count(&mut self, key: &K, value: usize);
+}
+
+impl<K: Copy + Hash + Eq + PartialEq> HashMapCount<K> for HashMap<K, usize> {
+    fn insert_with_count(&mut self, key: &K, value: usize) {
+        match self.get_mut(key) {
+            Some(vals) => {
+                *vals += value;
+            }
+            None => {
+                self.insert(*key, value);
+            }
+        }
+    }
+}
+
 pub fn minmax<T: Ord + Copy>(x: &T, y: &T) -> (T, T) {
     (*x.min(y), *x.max(y))
 }
