@@ -133,10 +133,10 @@ fn solve2(input: &str) -> usize {
 
         solutions.sort_by(|a, b| a.1.cmp(&b.1));
         let x = solutions[0].1;
-        println!(
-            "{:?} | Cost {} => Steps {} ",
-            solutions[0].0, solutions[0].1, x
-        );
+        // println!(
+        //     "{:?} | Cost {} => Steps {} ",
+        //     solutions[0].0, solutions[0].1, x
+        // );
         ans2 += x;
     }
     ans2
