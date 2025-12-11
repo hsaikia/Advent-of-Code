@@ -108,20 +108,24 @@ fn solve2(input: &str) -> usize {
                 let b_idx = rng.gen_range(0..num_solutions_to_keep);
                 let c_idx = rng.gen_range(0..num_solutions_to_keep);
 
-                for d in 0..dimensions {
+                for (d, max_val) in min_vals.iter().enumerate() {
                     let x = solutions[a_idx].0[d] + solutions[b_idx].0[d];
                     let y = solutions[c_idx].0[d];
                     if y > x {
                         solutions[idx].0[d] = 0;
                     } else {
-                        solutions[idx].0[d] = (x - y).min(min_vals[d]);
+                        solutions[idx].0[d] = (x - y).min(*max_val);
                     }
                 }
             }
 
-            for idx in num_solutions_to_keep + num_solitions_to_replace..num_solutions {
-                for d in 0..dimensions {
-                    solutions[idx].0[d] = rng.gen_range(0..=min_vals[d])
+            for sol in solutions
+                .iter_mut()
+                .take(num_solutions)
+                .skip(num_solutions_to_keep + num_solitions_to_replace)
+            {
+                for (val, max_val) in sol.0.iter_mut().zip(min_vals.iter()) {
+                    *val = rng.gen_range(0..=*max_val);
                 }
             }
         }
