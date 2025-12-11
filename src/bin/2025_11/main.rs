@@ -45,7 +45,7 @@ fn solve<const PART: usize>(input: &str) -> usize {
     if PART == 1 {
         path_count("you", "out", &map, &mut cache)
     } else {
-        // Assuming there are no cycles, there can only be a path from fft to dac or dac to fft
+        // Assuming there are no cycles, there can only be paths from fft to dac or dac to fft
         let paths_fft_dac = path_count("fft", "dac", &map, &mut cache);
         cache.clear();
         let paths_dac_fft = path_count("dac", "fft", &map, &mut cache);
