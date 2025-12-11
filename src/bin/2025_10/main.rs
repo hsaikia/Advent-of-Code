@@ -177,10 +177,7 @@ fn solve1(input: &str) -> usize {
         let mut map: HashMap<Vec<bool>, usize> = HashMap::new();
         let mut q: VecDeque<(Vec<bool>, usize)> = VecDeque::new();
         let s1: Vec<bool> = (0..pat.len()).map(|_| false).collect();
-        let s2: Vec<bool> = pat
-            .chars()
-            .map(|c| if c == '#' { true } else { false })
-            .collect();
+        let s2: Vec<bool> = pat.chars().map(|c| c == '#').collect();
         q.push_back((s1, 0));
         while !q.is_empty() {
             let (s, n) = q.pop_front().unwrap();
