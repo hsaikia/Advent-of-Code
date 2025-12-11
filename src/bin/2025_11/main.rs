@@ -21,10 +21,10 @@ fn path_count<'a>(
                 path_count(nxt, to, map, cache)
             };
 
-            cache.insert(nxt, x);
             ans += x;
         }
     }
+    cache.insert(from, ans);
     ans
 }
 
@@ -35,9 +35,9 @@ fn solve<const PART: usize>(input: &str) -> usize {
         if line.is_empty() {
             continue;
         }
-        if let Some(inout) = line.split_once(": ") {
-            let outputs = io::tokenize(inout.1, " ");
-            map.insert(inout.0, outputs);
+        if let Some((input, outputs)) = line.split_once(": ") {
+            let outputs = io::tokenize(outputs, " ");
+            map.insert(input, outputs);
         }
     }
 
